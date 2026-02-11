@@ -1,0 +1,18 @@
+@import './app.css';
+
+/* Visitor-specific styles */
+.visitor-layout {
+    @apply bg-white min-h-screen;
+}
+
+.visitor-header {
+    @apply bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50;
+}
+
+.visitor-main {
+    @apply container mx-auto px-4 py-8;
+}
+
+.visitor-footer {
+    @apply bg-gray-50 border-t border-gray-200 mt-16;
+}

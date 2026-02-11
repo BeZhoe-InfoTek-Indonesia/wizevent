@@ -1,0 +1,29 @@
+{
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "build": "vite build",
+        "dev": "vite",
+        "watch": "vite",
+        "prepare": "husky",
+        "lint": "composer phpstan"
+    },
+    "devDependencies": {
+        "@tailwindcss/forms": "^0.5.2",
+        "autoprefixer": "^10.4.2",
+        "axios": "^1.7.4",
+        "concurrently": "^9.0.1",
+        "husky": "^9.0.11",
+        "laravel-vite-plugin": "^1.2.0",
+        "lint-staged": "^15.2.0",
+        "postcss": "^8.4.31",
+        "tailwindcss": "^3.1.0",
+        "vite": "^6.0.11"
+    },
+    "lint-staged": {
+        "*.php": [
+            "vendor/bin/pint",
+            "vendor/bin/phpstan analyse --memory-limit=2G"
+        ]
+    }
+}

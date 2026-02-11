@@ -1,0 +1,21 @@
+includes:
+    - ./vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 5
+    paths:
+        - app
+        - config
+        - database
+        - routes
+    
+    # Exclude paths
+    excludePaths:
+        - database/migrations/*
+    
+    # Additional configuration
+    ignoreErrors:
+        - '#Call to an undefined method.*hasRole.*#'
+        - '#Undefined method.*hasRole.*#'
+    
+    

@@ -1,0 +1,11 @@
+## 1. Implementation
+- [x] 1.1 Create migration for `settings` table with columns: `id`, `key`, `name`, `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`
+- [x] 1.2 Create migration for `setting_components` table with columns: `id`, `setting_id`, `name`, `type`, `value`, `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`
+- [x] 1.3 Create `App\Models\Setting` model with `HasMany` relation to `SettingComponent`, SoftDeletes, and User tracking trait
+- [x] 1.4 Create `App\Models\SettingComponent` model with `BelongsTo` relation to `Setting`, SoftDeletes, User tracking trait, and Accessor/Mutator for `value` based on `type`
+- [x] 1.5 Create Filament Resource `App\Filament\Resources\SettingResource` for full CRUD on Settings
+- [x] 1.6 Create RelationManager or nested form in Filament for `SettingComponent` management within `SettingResource`
+- [x] 1.7 Add validation rules in Filament/Model: `key` unique on `settings`, `type` constraint on `setting_components`, `value` format check based on `type`
+- [x] 1.8 Create `App\Services\SettingService` with method `getAllSettings()` that returns a structured array/collection of settings
+- [x] 1.9 (Optional) `App\Http\Controllers\Api\SettingController` if external API access is required (user request said "Include API endpoints or methods", so a service method is sufficient unless explicitly an API route is needed). Stick to Service + Filament + simple route if desired.
+- [x] 1.10 Write unit/feature tests for `SettingService` and Model behavior (soft deletes, value casting).

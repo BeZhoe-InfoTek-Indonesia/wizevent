@@ -1,0 +1,32 @@
+n# Project Rules & Guidelines
+
+## 🚨 CRITICAL INSTRUCTION: ALWAYS REFER TO AGENTS.md
+**The file `AGENTS.md` is the SINGLE SOURCE OF TRUTH for this project.**
+
+Before starting any task, you MUST check `AGENTS.md` for:
+1.  **Current Implementation Status**: extensive details on what is built vs. planned.
+2.  **Tech Stack & Architecture**: Laravel 11, Filament v4.7, Livewire, Spatie Permission.
+3.  **Domain Business Rules**: Verification flows, state machines, and permission logic.
+4.  **Coding Standards**: Naming conventions, service layer patterns, and testing requirements.
+
+## ⚠️ Development Rules (Strict Adherence Required)
+- **Zero Hallucination**: Do NOT invent new database tables, columns, or routes. Use ONLY what exists or is explicitly requested.
+- **Service Layer Pattern**: Adhere to "Fat Model, Skinny Controller" principle. Move complex business logic into specialized Service Classes in `App\Services`.
+- **Strict Typing**: ALWAYS use Type Hinting and Return Types for every method (PHPStan Level 5+).
+- **Code Style**: Follow PSR-12. camelCase methods, snake_case vars, PascalCase classes. NO inline namespaces (use imports).
+- **Documentation**: Add `@param`/`@return` tags and `laravel-ide-helper` blocks.
+- **Filament Standards**: Use Filament Resources with Modals/Slideovers (not separate pages) for create/edit.
+- **Premium Aesthetics**: Maintain the high-quality, modern design standard established for Invoices (PDF), Tickets (PDF), and Email notifications. Use consistent branding, curated typography (Helvetica/Inter), and visual elements like watermarks or status badges.
+- **Async Workflows**: Post-payment actions (PDF generation, Email delivery) MUST be handled asynchronously via Jobs (e.g., `ProcessOrderCompletion`) to ensure a smooth user experience.
+- **Internationalization**: ALWAYS use `->placeholder()` and `__()` translations for ALL user-facing text and form fields.
+- **English Language Priority**: English (`en`) is the PRIMARY language reference. When adding translations, always create/update `lang/en/*.php` files FIRST, then translate to other languages (`lang/id/*.php`). All translation keys must exist in English before adding to other languages.
+- **No Data Deletion**: Never clear data suggestions/seeders in the database.
+- **Ask Before Breaking**: Migrations, auth logic changes, or destructive actions require user approval.
+
+## Context Shortcuts
+- **Admin Panel**: `/admin` (Filament)
+- **Visitor Site**: `/` (Livewire)
+- **Auth**: Laravel Breeze (Standard `web` guard)
+- **Permissions**: `Spatie\Permission` (Cached)
+
+**IF IN DOUBT, READ `AGENTS.md` FIRST.**

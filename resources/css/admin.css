@@ -1,0 +1,18 @@
+@import './app.css';
+
+/* Admin-specific styles */
+.admin-layout {
+    @apply bg-gray-100 min-h-screen;
+}
+
+.admin-sidebar {
+    @apply bg-gray-900 text-white w-64 min-h-screen;
+}
+
+.admin-main {
+    @apply flex-1 p-6;
+}
+
+.admin-header {
+    @apply bg-white shadow-sm border-b border-gray-200;
+}
