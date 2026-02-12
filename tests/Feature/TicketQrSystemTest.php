@@ -9,13 +9,10 @@ use App\Models\Ticket;
 use App\Models\TicketType;
 use App\Models\User;
 use App\Services\TicketService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TicketQrSystemTest extends TestCase
 {
-    use RefreshDatabase;
-
     private TicketService $ticketService;
 
     protected function setUp(): void

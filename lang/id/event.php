@@ -3,6 +3,7 @@
 return [
     'label' => 'Acara',
     'plural_label' => 'Acara',
+    'event_management_group' => 'Manajemen Acara',
 
     'title' => 'Judul',
     'title_placeholder' => 'cth. Pekan Musik 2026',
@@ -82,4 +83,5 @@ return [
     'starting_from' => 'Mulai dari',
     'doors_open' => 'Pintu dibuka pukul',
     'open_in_maps' => 'Buka di Peta',
+    'get_directions' => 'Dapatkan petunjuk'
 ];

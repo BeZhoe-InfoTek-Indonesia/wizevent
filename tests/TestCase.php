@@ -2,12 +2,11 @@
 
 namespace Tests;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 
 abstract class TestCase extends BaseTestCase
 {
-    use CreatesApplication, RefreshDatabase;
+    use CreatesApplication;
 
     /**
      * Setup the test environment.
@@ -16,7 +15,8 @@ abstract class TestCase extends BaseTestCase
     {
         parent::setUp();
 
-        // RefreshDatabase will handle migrations automatically
-        // Only seed if needed for specific tests
+        // Use in-memory SQLite database for test isolation
+        // Tests create their own data using factories
+        // Never delete existing data or use RefreshDatabase
     }
 }

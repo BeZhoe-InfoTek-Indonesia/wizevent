@@ -3,12 +3,13 @@
 use App\Livewire\Event\Checkout;
 use App\Livewire\Event\EventDetail;
 use App\Livewire\Event\EventList;
-use App\Livewire\Order\OrderStatus;
 use App\Livewire\Order\BookingConfirmation;
+use App\Livewire\Order\OrderStatus;
 
 Route::get('/events', EventList::class)->name('events.index');
 Route::get('/events/{slug}', EventDetail::class)->name('events.show');
 Route::get('/events/{slug}/checkout', Checkout::class)->name('events.checkout');
+Route::get('/events/{slug}/calendar', [\App\Http\Controllers\EventController::class, 'downloadCalendar'])->name('events.calendar');
 
 // Order routes
 Route::prefix('orders')->name('orders.')->middleware(['auth'])->group(function () {

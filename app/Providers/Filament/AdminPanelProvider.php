@@ -62,9 +62,10 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Event Management')
             ->favicon(asset('favicon.ico'))
             ->navigationGroups([
-                'Master Data',
-                'User Management',
-                'System',
+                __('admin.groups.event_management'),
+                __('admin.groups.operations'),
+                __('admin.groups.master_data'),
+                __('admin.groups.system'),
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
@@ -72,13 +73,23 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->userMenuItems([
                 MenuItem::make()
-                    ->label('English')
+                    ->label(__('admin.nav.english'))
                     ->url(fn (): string => route('lang.switch', 'en'))
                     ->icon('heroicon-o-language'),
                 MenuItem::make()
-                    ->label('Indonesian')
+                    ->label(__('admin.nav.indonesian'))
                     ->url(fn (): string => route('lang.switch', 'id'))
                     ->icon('heroicon-o-language'),
+                MenuItem::make()
+                    ->label(__('admin.nav.roles'))
+                    ->url(fn (): string => route('filament.admin.resources.roles.index'))
+                    ->icon('heroicon-o-shield-check')
+                    ->visible(fn (): bool => auth()->user()?->can('view_any', \Spatie\Permission\Models\Role::class)),
+                MenuItem::make()
+                    ->label(__('admin.nav.permissions'))
+                    ->url(fn (): string => route('filament.admin.resources.permissions.index'))
+                    ->icon('heroicon-o-key')
+                    ->visible(fn (): bool => auth()->user()?->can('view_any', \Spatie\Permission\Models\Permission::class)),
             ]);
     }
 }

@@ -5,13 +5,10 @@ namespace Tests\Unit;
 use App\Models\Event;
 use App\Models\TicketType;
 use Database\Seeders\RolePermissionSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TicketTypeModelTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

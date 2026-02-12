@@ -5,6 +5,7 @@ namespace App\Livewire\Order;
 use App\Models\Order;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
@@ -21,7 +22,8 @@ class OrderStatus extends Component
             ->firstOrFail();
     }
 
-    public function getStatusColorAttribute(): string
+    #[Computed]
+    public function statusColor(): string
     {
         return match ($this->order->status) {
             'pending_payment' => 'yellow',
@@ -33,12 +35,14 @@ class OrderStatus extends Component
         };
     }
 
-    public function getStatusLabelAttribute(): string
+    #[Computed]
+    public function status_label(): string
     {
         return __("order.status.{$this->order->status}");
     }
 
-    public function getPaymentStatusLabelAttribute(): string
+    #[Computed]
+    public function paymentStatusLabel(): string
     {
         if (! $this->order->paymentProof) {
             return __('payment_proof.not_uploaded');

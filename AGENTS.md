@@ -1401,6 +1401,51 @@ class EventService
 5. Test both happy path and error cases
 6. Mock external services (OAuth, email, etc.)
 
+### Database Testing Rules
+
+**CRITICAL - Data Preservation:**
+- **NEVER use `RefreshDatabase` trait** in tests - this will delete all existing data
+- **NEVER delete old data in tables** during test execution
+- **Use in-memory SQLite database** for isolated test execution (already configured in `phpunit.xml`)
+- **Create test-specific data** using factories, never modify existing records
+- **Test isolation**: Each test should create its own data and clean up after itself
+- **Seeders**: Only use seeders in development/production, never in test suites
+
+**Rationale:**
+- Preserves development data and seeders
+- Prevents accidental data loss in development environment
+- Ensures tests are deterministic and isolated
+- Allows parallel test execution without conflicts
+
+**Example - Correct Test Pattern:**
+```php
+public function test_create_ticket()
+{
+    // ✅ CORRECT: Create test data with factory
+    $ticketType = TicketType::factory()->create();
+    $ticket = Ticket::factory()->for($ticketType)->create();
+    
+    $this->assertDatabaseHas('tickets', [
+        'id' => $ticket->id,
+        'ticket_type_id' => $ticketType->id,
+    ]);
+    
+    // Clean up created test data
+    $ticket->delete();
+    $ticketType->delete();
+}
+```
+
+**Example - INCORRECT Pattern:**
+```php
+// ❌ INCORRECT: Never use RefreshDatabase
+use RefreshDatabase; // FORBIDDEN
+
+// ❌ INCORRECT: Never delete existing data
+Ticket::truncate(); // FORBIDDEN
+Ticket::where('status', 'old')->delete(); // FORBIDDEN
+```
+
 **Running Tests:**
 ```bash
 # Run all tests

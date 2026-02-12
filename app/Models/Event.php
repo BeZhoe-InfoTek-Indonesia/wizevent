@@ -54,6 +54,11 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TicketType> $ticketTypes
  * @property-read int|null $ticket_types_count
  * @property-read \App\Models\User|null $updater
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Favorite> $favorites
+ * @property-read int|null $favorites_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Testimonial> $testimonials
+ * @property-read int|null $testimonials_count
+ * @property-read int $total_favorites
  *
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Event draft()
  * @method static \Database\Factories\EventFactory factory($count = null, $state = [])
@@ -207,6 +212,26 @@ class Event extends Model
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function testimonials(): HasMany
+    {
+        return $this->hasMany(Testimonial::class);
+    }
+
+    public function getTotalFavoritesAttribute(): int
+    {
+        return $this->favorites()->count();
+    }
+
+    public function isLovedBy(User $user): bool
+    {
+        return $this->favorites()->where('user_id', $user->id)->exists();
     }
 
     public function getAvailableTicketsAttribute(): int

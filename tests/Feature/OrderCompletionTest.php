@@ -12,15 +12,12 @@ use App\Models\TicketType;
 use App\Models\User;
 use App\Services\InvoiceService;
 use App\Services\TicketService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class OrderCompletionTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_order_completion_generates_files_and_sends_email()
     {
         Mail::fake();

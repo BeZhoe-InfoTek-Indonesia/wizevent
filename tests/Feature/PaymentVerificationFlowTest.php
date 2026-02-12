@@ -11,7 +11,6 @@ use App\Models\User;
 use App\Services\FileBucketService;
 use App\Services\OrderService;
 use Database\Seeders\RolePermissionSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
@@ -19,8 +18,6 @@ use Tests\TestCase;
 
 class PaymentVerificationFlowTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

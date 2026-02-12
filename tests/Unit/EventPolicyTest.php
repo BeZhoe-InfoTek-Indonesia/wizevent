@@ -8,13 +8,10 @@ use App\Models\TicketType;
 use App\Models\User;
 use App\Policies\EventPolicy;
 use Database\Seeders\RolePermissionSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class EventPolicyTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

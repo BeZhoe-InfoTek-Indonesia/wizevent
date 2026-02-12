@@ -6,13 +6,10 @@ use App\Models\Setting;
 use App\Models\SettingComponent;
 use App\Models\User;
 use App\Services\SettingService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SettingServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     private SettingService $settingService;
 
     protected function setUp(): void

@@ -20,9 +20,9 @@ This guide provides step-by-step instructions for manually testing the QR code g
 2.  Go to **My Tickets** or the **Order Status** page.
 3.  View a specific ticket.
 4.  **Verification**: 
-    - [ ] A QR code is visible on the ticket.
-    - [ ] The QR code looks sharp and scannable.
-    - [ ] Other ticket details (Number, Type, Holder Name) are correct.
+    - [x] A QR code is visible on the ticket.
+    - [x] The QR code looks sharp and scannable.
+    - [x] Other ticket details (Number, Type, Holder Name) are correct.
 
 ### TC-02: Offline Availability (Service Worker)
 **Objective**: Verify that visitors can access their tickets without an active internet connection.

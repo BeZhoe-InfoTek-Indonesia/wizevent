@@ -37,7 +37,8 @@ new #[Layout('layouts.visitor-auth')] class extends Component
             return 'filament.admin.pages.dashboard';
         }
 
-        return 'dashboard';
+        // Visitors go to events page
+        return 'events.index';
     }
 }; ?>
 

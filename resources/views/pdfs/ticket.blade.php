@@ -200,23 +200,15 @@
 <div class="ticket-wrapper">
     <!-- Header Hero Section -->
     <div class="ticket-header">
-        <img src="{{ $ticket->ticketType->event->banner_image ?? 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=1200&q=80' }}" alt="Event Banner" class="hero-image">
+        @if($ticket->ticketType->event->banner && $ticket->ticketType->event->banner->url)
+            <img src="{{ $ticket->ticketType->event->banner->url }}" alt="Event Banner" class="hero-image">
+        @else
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-OYyPDtX0yy-3iUHuCdgkU62XxS7udOnfhIsGCMTqtIJitHif0WbBfqpRVzTRqe4fVXdBIGlycsnclr5bMrzNAIRKYne9vUnLAnp54jN6XkskJ0_4DhYjpOWwkzeaVZ7yOP5wC0MoET49iZFVovQyyf73t16m1NRz735NODG-sfcASlVOp0RdQfuJu15NySohbC7CcH-vHB12QcZwnMmkXG6gposLZq7IErrVZXgY-RF7229ODQLJMWCtzoYkf8h0wg5oNMoXYlnA" alt="Event Banner" class="hero-image">
+        @endif
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1 class="event-title">
-                {{-- Match the multi-color text style if possible --}}
-                @php
-                    $titleParts = explode(' ', $ticket->ticketType->event->title);
-                    $middleIndex = count($titleParts) > 1 ? floor(count($titleParts)/2) : -1;
-                @endphp
-                @foreach($titleParts as $index => $part)
-                    @if($index == $middleIndex)
-                        <span>{{ $part }}</span>
-                    @else
-                        {{ $part }}
-                    @endif
-                    @if(!$loop->last) &nbsp; @endif
-                @endforeach
+                {{ $ticket->ticketType->event->title }}
             </h1>
             <div class="ticket-badge">{{ $ticket->ticketType->name }}</div>
         </div>

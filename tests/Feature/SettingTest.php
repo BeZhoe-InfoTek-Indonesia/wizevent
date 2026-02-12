@@ -5,13 +5,10 @@ namespace Tests\Feature;
 use App\Models\Setting;
 use App\Models\SettingComponent;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class SettingTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_setting_can_be_created()
     {
         $setting = Setting::create([

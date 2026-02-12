@@ -9,14 +9,11 @@ use App\Models\TicketType;
 use App\Models\User;
 use App\Services\OrderService;
 use Database\Seeders\RolePermissionSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Tests\TestCase;
 
 class OrderServiceTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected OrderService $orderService;
 
     protected function setUp(): void

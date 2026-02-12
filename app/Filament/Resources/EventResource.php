@@ -30,6 +30,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\Action as TableAction;
 use Filament\Tables\Table;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -56,7 +57,7 @@ class EventResource extends Resource
 
     public static function getNavigationGroup(): ?string
     {
-        return 'Event Management';
+        return __('admin.groups.event_management');
     }
 
     public static function form(Schema $schema): Schema
@@ -456,6 +457,11 @@ class EventResource extends Resource
             TrashedFilter::make(),
         ])
         ->actions([
+            TableAction::make('scan')
+                ->label(__('scanner.start_scanning'))
+                ->icon('heroicon-o-qr-code')
+                ->color('success')
+                ->url(fn () => \App\Filament\Pages\ScanTickets::getUrl()),
             EditAction::make(),
             DeleteAction::make()
                 ->using(fn (Model $record) => DB::transaction(fn () => $record->delete())),

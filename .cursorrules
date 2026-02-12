@@ -21,6 +21,7 @@ Before starting any task, you MUST check `AGENTS.md` for:
 - **Internationalization**: ALWAYS use `->placeholder()` and `__()` translations for ALL user-facing text and form fields.
 - **English Language Priority**: English (`en`) is the PRIMARY language reference. When adding translations, always create/update `lang/en/*.php` files FIRST, then translate to other languages (`lang/id/*.php`). All translation keys must exist in English before adding to other languages.
 - **No Data Deletion**: Never clear data suggestions/seeders in the database.
+- **Testing Data Preservation**: NEVER use `RefreshDatabase` trait or delete old data in tables during tests. Use in-memory SQLite with factories for test isolation.
 - **Ask Before Breaking**: Migrations, auth logic changes, or destructive actions require user approval.
 
 ## Context Shortcuts

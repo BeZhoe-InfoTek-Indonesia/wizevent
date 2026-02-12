@@ -29,11 +29,10 @@ class OrderController extends Controller
     {
         Gate::authorize('view', $ticket->orderItem->order);
 
-        $path = "orders/{$ticket->orderItem->order_id}/tickets/{$ticket->id}.pdf";
-
-        if (! Storage::disk('public')->exists($path)) {
+        // $path = "orders/{$ticket->orderItem->order_id}/tickets/{$ticket->id}.pdf";
+        // if (! Storage::disk('public')->exists($path)) {
              $path = $ticketService->generateTicketPdf($ticket);
-        }
+        // }
 
         return Storage::disk('public')->download($path, "ticket-{$ticket->ticket_number}.pdf");
     }

@@ -12,9 +12,21 @@ class TicketScanner extends Component
     public ?Ticket $scannedTicket = null;
     public ?string $status = null; // 'success', 'error'
     public ?string $message = null;
+    public bool $isProcessing = false;
 
-    public function scan(string $qrContent)
+    /**
+     * Process a scanned QR code content.
+     * 
+     * @param string $qrContent
+     * @return void
+     */
+    public function scan(string $qrContent): void
     {
+        if ($this->isProcessing) {
+            return;
+        }
+
+        $this->isProcessing = true;
         $this->resetFeedback();
         
         $ticketService = new TicketService();
@@ -33,21 +45,27 @@ class TicketScanner extends Component
         }
     }
 
-    public function checkManual()
+    /**
+     * Handle manual ticket number check.
+     * 
+     * @return void
+     */
+    public function checkManual(): void
     {
         $this->resetFeedback();
         
         if (empty($this->manualTicketNumber)) {
             $this->status = 'error';
-            $this->message = 'Please enter a ticket number';
+            $this->message = __('scanner.enter_ticket_number_error');
             return;
         }
 
+        /** @var Ticket|null $ticket */
         $ticket = Ticket::where('ticket_number', $this->manualTicketNumber)->first();
 
         if (!$ticket) {
             $this->status = 'error';
-            $this->message = 'Ticket not found';
+            $this->message = __('scanner.ticket_not_found');
             return;
         }
 
@@ -59,24 +77,41 @@ class TicketScanner extends Component
         }
     }
 
-    protected function processCheckIn(Ticket $ticket)
+    /**
+     * Execute the check-in for a valid ticket.
+     * 
+     * @param Ticket $ticket
+     * @return void
+     */
+    protected function processCheckIn(Ticket $ticket): void
     {
         $ticketService = new TicketService();
         $ticketService->markTicketAsUsed($ticket);
         
-        $this->scannedTicket = $ticket->load(['orderItem.order.user', 'ticketType']);
+        $this->scannedTicket = $ticket->load(['orderItem.order.event', 'orderItem.order.user', 'ticketType']);
         $this->status = 'success';
-        $this->message = 'Check-in successful!';
+        $this->message = __('scanner.check_in_successful');
     }
 
-    public function resetFeedback()
+    /**
+     * Reset the feedback state.
+     * 
+     * @return void
+     */
+    public function resetFeedback(): void
     {
         $this->status = null;
         $this->message = null;
         $this->scannedTicket = null;
+        $this->isProcessing = false;
     }
 
-    public function render()
+    /**
+     * Render the component view.
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function render(): \Illuminate\View\View
     {
         return view('livewire.admin.ticket-scanner');
     }

@@ -1,4 +1,9 @@
-<div class="bg-[#F8FAFC] min-h-screen font-sans pb-96 md:pb-32">
+<div class="bg-[#F8FAFC] min-h-screen font-sans pb-20 md:pb-32">
+    <style>
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+    </style>
     {{-- Full Screen Loading Overlay --}}
     <div wire:loading.flex wire:target="confirmBooking" class="fixed inset-0 z-[10000] bg-[#F1F5F9]/90 backdrop-blur-sm flex items-center justify-center transition-opacity">
         <div class="flex flex-col items-center w-full max-w-md mx-4">
@@ -70,6 +75,59 @@
             </div>
         </div>
     </div>
+    {{-- Modern Stepper & Breadcrumbs --}}
+    <div class="bg-white border-b border-[#F1F5F9]">
+        <div class="container mx-auto px-4 max-w-6xl">
+            {{-- Stepper Container --}}
+            <div class="py-8 md:py-12">
+                <div class="flex items-center justify-center max-w-3xl mx-auto">
+                    {{-- Step 1: Select --}}
+                    <div class="flex flex-col items-center gap-4 group">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#1A8DFF] shadow-lg shadow-blue-500/20 flex items-center justify-center text-white ring-4 ring-blue-50 transition-all">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#1A8DFF] uppercase">1. Select</span>
+                    </div>
+
+                    {{-- Progress Line 1 --}}
+                    <div class="flex-1 h-0.5 bg-gradient-to-r from-[#1A8DFF] to-[#1A8DFF] mx-4 md:mx-8 -mt-9 md:-mt-11"></div>
+
+                    {{-- Step 2: Review --}}
+                    <div class="flex flex-col items-center gap-4 group">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#1A8DFF] shadow-lg shadow-blue-500/20 flex items-center justify-center text-white ring-4 ring-blue-50 transition-all">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#1A8DFF] uppercase">2. Review</span>
+                    </div>
+
+                    {{-- Progress Line 2 --}}
+                    <div class="flex-1 h-0.5 bg-gradient-to-r from-[#1A8DFF] to-[#1A8DFF] mx-4 md:mx-8 -mt-9 md:-mt-11"></div>
+
+                    {{-- Step 3: Payment (Current) --}}
+                    <div class="flex flex-col items-center gap-4 group">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#1A8DFF] shadow-lg shadow-blue-500/20 flex items-center justify-center text-white font-black text-[15px] md:text-[16px] ring-4 ring-blue-50">
+                            3
+                        </div>
+                        <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#1E293B] uppercase">3. Payment</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Breadcrumbs Sub-header --}}
+        <div class="bg-[#F8FAFC] border-t border-[#F1F5F9] py-4">
+            <div class="container mx-auto px-4 max-w-6xl">
+                <nav class="flex items-center gap-3 text-[10px] md:text-[11px] font-black tracking-[0.2em] text-[#94A3B8] uppercase">
+                    <a href="/" class="hover:text-[#1A8DFF] transition-colors">Home</a>
+                    <span class="text-gray-300">/</span>
+                    <a href="#" class="hover:text-[#1A8DFF] transition-colors">Concerts</a>
+                    <span class="text-gray-300">/</span>
+                    <span class="text-[#1E293B]">Tickets</span>
+                </nav>
+            </div>
+        </div>
+    </div>
+
     <div class="container mx-auto px-4 sm:px-6 max-w-6xl py-6 md:py-8">
         {{-- Page Header --}}
         <div class="mb-6 md:mb-8">
@@ -169,7 +227,37 @@
                     </div>
                 </div>
 
+                {{-- Total Payment Section (Compact & Relocated) --}}
+                <div class="mt-6">
+                    <div class="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] overflow-hidden">
+                        {{-- Gradient Header --}}
+                        <div class="bg-gradient-to-r from-[#00DDA3] to-[#7150FF] px-5 py-3 flex items-center gap-3">
+                            <div class="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center border border-white/20">
+                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <span class="text-[13px] font-bold text-white uppercase tracking-tight">You one more step to booking</span>
+                        </div>
 
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-[15px] font-bold text-[#64748B]">Total Payment</span>
+                                <div class="flex items-center gap-2 group cursor-pointer">
+                                    <span class="text-[18px] font-black text-[#1E293B]">IDR {{ number_format($order->total_amount) }}</span>
+                                    <svg class="w-4 h-4 text-[#94A3B8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                </div>
+                            </div>
+
+                            <div class="pt-5 border-t border-dashed border-[#E2E8F0] flex justify-end">
+                                <button
+                                    wire:click="confirmBooking"
+                                    class="px-10 py-3 bg-[#0081FF] hover:bg-[#0071E3] text-white font-black text-[14px] rounded-[10px] transition-all shadow-md active:scale-[0.98] uppercase tracking-tight"
+                                >
+                                    Continue to payment
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             {{-- Right Column (4 cols) - Event Summary --}}
@@ -232,10 +320,12 @@
                         {{-- Card Total --}}
                         <div class="mt-6 pt-6 border-t border-[#F1F5F9] border-dashed">
                             <div class="flex items-center justify-between group cursor-pointer">
-                                <span class="text-[14px] font-bold text-[#64748B]">Total Payment</span>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-[18px] font-black text-[#111827]">IDR {{ number_format($order->total_amount) }}</span>
-                                    <svg class="w-4 h-4 text-[#C2CCD6] group-hover:text-[#1E293B] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path></svg>
+                                <span class="text-[13px] font-bold text-[#64748B] uppercase tracking-wider">Total Payment</span>
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-[20px] font-black text-[#1E293B] tracking-tight">IDR {{ number_format($order->total_amount) }}</span>
+                                    <div class="w-6 h-6 rounded-full bg-[#F8FAFC] flex items-center justify-center group-hover:bg-[#F1F5F9] transition-colors">
+                                        <svg class="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#1E293B] transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -243,56 +333,7 @@
                 </div>
             </div>
         </div>
+    
     </div>
-
-    {{-- Bottom Action Bar - Mobile First (Outside main container for proper fixed positioning) --}}
-    <div class="fixed bottom-0 left-0 right-0 z-[9999] w-full bg-white shadow-[0_-4px_20px_rgba(0,0,0,0.1)]" style="padding-bottom: env(safe-area-inset-bottom);">
-        {{-- Mobile View --}}
-        <div class="block md:hidden border-t-2 border-[#E2E8F0] bg-white">
-            <div class="px-4 py-4 flex items-center justify-between gap-3">
-                <div class="flex-1 min-w-0">
-                    <p class="text-[10px] font-bold text-[#64748B] mb-0.5">Total Payment</p>
-                    <p class="text-[16px] font-black text-[#1E293B] truncate">IDR {{ number_format($order->total_amount) }}</p>
-                </div>
-                
-                <button 
-                    wire:click="confirmBooking"
-                    class="flex-none px-8 py-3.5 bg-[#0077EE] hover:bg-[#0066CC] text-white font-black text-[14px] rounded-[12px] transition-all shadow-lg shadow-[#0077EE]/25 active:scale-[0.97] disabled:bg-[#CBD5E1] disabled:text-[#94A3B8] disabled:shadow-none disabled:cursor-not-allowed whitespace-nowrap"
-                >
-                    PAY NOW
-                </button>
-            </div>
-        </div>
-
-        {{-- Desktop View --}}
-        <div class="hidden md:block p-6">
-            <div class="container mx-auto max-w-6xl">
-                <div class="bg-white rounded-[24px] shadow-[0_-8px_30px_rgba(0,0,0,0.15)] border border-[#E2E8F0] overflow-hidden">
-                    <div class="bg-gradient-to-r from-[#00DDA3] to-[#7150FF] px-8 py-3 flex items-center gap-3">
-                        <div class="bg-white/20 p-1.5 rounded-lg border border-white/20">
-                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path></svg>
-                        </div>
-                        <span class="text-[14px] font-black text-white">You're one step closer to get <span class="uppercase">Lowest Price Guarantee</span></span>
-                    </div>
-
-                    <div class="px-10 py-6 flex items-center justify-between gap-6">
-                        <div>
-                            <p class="text-[14px] font-bold text-[#64748B] mb-0.5">Total Payment</p>
-                            <div class="flex items-center gap-2 group cursor-pointer">
-                                <p class="text-[24px] font-black text-[#1E293B]">IDR {{ number_format($order->total_amount) }}</p>
-                                <svg class="w-5 h-5 text-[#C2CCD6] group-hover:text-[#1E293B] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                            </div>
-                        </div>
-                        
-                        <button
-                            wire:click="confirmBooking"
-                                    class="px-20 py-3 bg-[#0077EE] hover:bg-[#0066CC] text-white font-black text-[18px] rounded-[16px] transition-all shadow-xl shadow-[#0077EE]/25 active:scale-[0.97] disabled:bg-[#F1F5F9] disabled:text-[#94A3B8] disabled:shadow-none disabled:cursor-not-allowed tracking-tight"
-                        >
-                            Continue to booking
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+</div>
 </div>

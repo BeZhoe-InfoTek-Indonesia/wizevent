@@ -4,13 +4,10 @@ namespace Tests\Feature;
 
 use App\Models\Event;
 use App\Models\TicketType;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class EventDiscoveryTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

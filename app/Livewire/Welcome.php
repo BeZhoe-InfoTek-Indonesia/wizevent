@@ -20,12 +20,12 @@ class Welcome extends Component
             (object) [
                 'name' => 'Tech Conference 2026',
                 'description' => 'Join us for the latest in technology innovation',
-                'start_date' => now()->addDays(30),
+                'event_date' => now()->addDays(30),
             ],
             (object) [
                 'name' => 'Music Festival',
                 'description' => 'Experience amazing live performances',
-                'start_date' => now()->addDays(45),
+                'event_date' => now()->addDays(45),
             ],
         ])->filter(function ($event) {
             return str_contains(strtolower($event->name), strtolower($this->search));

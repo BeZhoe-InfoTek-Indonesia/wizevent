@@ -81,8 +81,8 @@ new #[Layout('layouts.visitor-auth')] class extends Component
     private function getRedirectRoute(string $role): string
     {
         return match ($role) {
-            'Super Admin', 'Event Manager', 'Finance Admin', 'Check-in Staff' => 'admin.dashboard',
-            default => 'dashboard',
+            'Super Admin', 'Event Manager', 'Finance Admin', 'Check-in Staff' => 'filament.admin.pages.dashboard',
+            default => 'events.index',
         };
     }
 }; ?>

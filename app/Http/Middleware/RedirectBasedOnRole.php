@@ -22,6 +22,11 @@ class RedirectBasedOnRole
             return redirect()->route('filament.admin.pages.dashboard');
         }
 
+        // Visitors go to events page
+        if ($user && $user->hasRole('Visitor')) {
+            return redirect()->route('events.index');
+        }
+
         return $next($request);
     }
 }

@@ -7,13 +7,10 @@ use App\Models\TicketType;
 use App\Models\User;
 use App\Policies\TicketTypePolicy;
 use Database\Seeders\RolePermissionSeeder;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class TicketTypePolicyTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected function setUp(): void
     {
         parent::setUp();

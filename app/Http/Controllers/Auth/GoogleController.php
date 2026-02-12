@@ -66,6 +66,7 @@ class GoogleController extends Controller
             return route('filament.admin.pages.dashboard');
         }
 
-        return route('dashboard');
+        // Visitors go to events page
+        return route('events.index');
     }
 }

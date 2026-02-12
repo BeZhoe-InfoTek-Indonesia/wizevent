@@ -40,7 +40,7 @@
                                 </p>
                                 <div class="flex items-center justify-between">
                                     <span class="text-sm text-gray-500">
-                                        {{ $event->start_date?->format('M j, Y') ?? 'Coming Soon' }}
+                                        {{ $event->event_date?->format('M j, Y') ?? 'Coming Soon' }}
                                     </span>
                                     <button class="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700">
                                         Book Now

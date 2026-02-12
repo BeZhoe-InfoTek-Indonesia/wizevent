@@ -3,6 +3,7 @@
 return [
     'label' => 'Event',
     'plural_label' => 'Events',
+    'event_management_group' => 'Event Management',
 
     'title' => 'Title',
     'title_placeholder' => 'e.g., Summer Music Festival 2026',
@@ -82,4 +83,5 @@ return [
     'starting_from' => 'Starting from',
     'doors_open' => 'Doors open at',
     'open_in_maps' => 'Open in Maps',
+    'get_directions' => 'Get Directions',
 ];
