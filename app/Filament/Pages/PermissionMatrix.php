@@ -18,22 +18,16 @@ class PermissionMatrix extends Page
 
     protected static ?int $navigationSort = 2;
 
-    public $roles;
-    public $permissions;
-
-    public function mount()
+    protected function getViewData(): array
     {
-        $this->refreshData();
-    }
-
-    public function refreshData()
-    {
-        $this->roles = Role::with('permissions')->where('name', '!=', 'Super Admin')->get(); 
-        $this->permissions = Permission::all()
-            ->groupBy(function ($permission) {
-                return explode('.', $permission->name)[0] ?? 'Other'; // Group by prefix (users.create -> users)
-            })
-            ->sortKeys();
+        return [
+            'roles' => Role::with('permissions')->where('name', '!=', 'Super Admin')->get(),
+            'permissions' => Permission::all()
+                ->groupBy(function ($permission) {
+                    return explode('.', $permission->name)[0] ?? 'Other';
+                })
+                ->sortKeys(),
+        ];
     }
 
     public function togglePermission($roleId, $permissionName)
@@ -51,5 +45,67 @@ class PermissionMatrix extends Page
             ->title('Permission updated')
             ->success()
             ->send();
+    }
+
+    public function toggleRole($roleId)
+    {
+        $role = Role::findById($roleId);
+        $permissions = Permission::all();
+        
+        $hasMissing = $permissions->contains(fn ($p) => !$role->hasPermissionTo($p));
+
+        if ($hasMissing) {
+            $role->syncPermissions($permissions);
+        } else {
+            $role->syncPermissions([]);
+        }
+
+        Notification::make()
+            ->title("Permissions sync'd for {$role->name}")
+            ->success()
+            ->send();
+    }
+
+    public function toggleGroup($groupName)
+    {
+        $groupPermissions = Permission::where('name', 'like', "{$groupName}.%")->get();
+        $roles = Role::where('name', '!=', 'Super Admin')->get();
+
+        $allHaveAll = true;
+        foreach ($roles as $role) {
+            foreach ($groupPermissions as $permission) {
+                if (!$role->hasPermissionTo($permission)) {
+                    $allHaveAll = false;
+                    break 2;
+                }
+            }
+        }
+
+        foreach ($roles as $role) {
+            if ($allHaveAll) {
+                $role->revokePermissionTo($groupPermissions);
+            } else {
+                $role->givePermissionTo($groupPermissions);
+            }
+        }
+
+        Notification::make()
+            ->title("Group '{$groupName}' updated for all roles")
+            ->success()
+            ->send();
+    }
+
+    public function getCategoryIcon($category): string
+    {
+        return match (strtolower($category)) {
+            'events' => 'heroicon-o-calendar',
+            'finance' => 'heroicon-o-credit-card',
+            'permissions' => 'heroicon-o-key',
+            'roles' => 'heroicon-o-user-group',
+            'system' => 'heroicon-o-cog-6-tooth',
+            'users' => 'heroicon-o-users',
+            'tickets' => 'heroicon-o-ticket',
+            default => 'heroicon-o-squares-2x2',
+        };
     }
 }

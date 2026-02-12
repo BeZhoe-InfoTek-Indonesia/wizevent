@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources\Roles\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Actions\EditAction;
+use Filament\Actions\CreateAction;
+use Illuminate\Support\Facades\DB;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Database\Eloquent\Model;
 
 class RolesTable
 {
@@ -52,7 +54,14 @@ class RolesTable
             ])
             ->recordActions([
                 EditAction::make()
-                    ->modal(),
+                    ->modal()
+                    ->using(function (Model $record, array $data): Model {
+                        return DB::transaction(function () use ($record, $data) {
+                            $record->update($data);
+
+                            return $record;
+                        });
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

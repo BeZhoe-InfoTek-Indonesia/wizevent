@@ -45,4 +45,6 @@ return [
     'validation.cancellation_note_required' => 'Catatan pembatalan wajib diisi saat status dibatalkan.',
     'cancellation_notes' => 'Catatan Pembatalan',
     'cancellation_notes_placeholder' => 'Tambahkan alasan pembatalan...',
+    'plural_label' => 'Pesanan',
+    'singular_label' => 'Pesanan',
 ];

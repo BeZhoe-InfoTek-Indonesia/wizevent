@@ -100,13 +100,6 @@ class TicketResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ])
-            ->headerActions([
-                TableAction::make('scan')
-                    ->label(__('scanner.open_scanner'))
-                    ->icon('heroicon-o-qr-code')
-                    ->color('success')
-                    ->url(fn () => \App\Filament\Pages\ScanTickets::getUrl()),
             ]);
     }
 

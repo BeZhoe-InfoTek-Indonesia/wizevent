@@ -1,5 +1,8 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
+import fs from 'fs';
+
+const host = 'event-management.test';
 
 export default defineConfig({
     plugins: [
@@ -16,13 +19,11 @@ export default defineConfig({
         }),
     ],
     server: {
-        // host: '127.0.0.1',
-        // port: 5173,
-        // strictPort: true,
-        host: 'event-management.test',
-        port: 5173,
-        hmr: {
-            host: 'event-management.test',
+        host,
+        hmr: { host },
+        https: {
+            key: fs.readFileSync(`/Users/dwipurwanto/.config/valet/Certificates/${host}.key`),
+            cert: fs.readFileSync(`/Users/dwipurwanto/.config/valet/Certificates/${host}.crt`),
         },
     },
 });

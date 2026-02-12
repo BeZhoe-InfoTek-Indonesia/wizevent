@@ -40,6 +40,22 @@ class PermissionSeeder extends Seeder
             'users.manage-permissions',
         ];
 
+        // Role Management Permissions
+        $rolePermissions = [
+            'roles.view',
+            'roles.create',
+            'roles.edit',
+            'roles.delete',
+        ];
+
+        // Permission Management Permissions
+        $permissionPermissions = [
+            'permissions.view',
+            'permissions.create',
+            'permissions.edit',
+            'permissions.delete',
+        ];
+
         // Finance Management Permissions
         $financePermissions = [
             'finance.view-reports',
@@ -58,6 +74,8 @@ class PermissionSeeder extends Seeder
             ...$eventPermissions,
             ...$ticketPermissions,
             ...$userPermissions,
+            ...$rolePermissions,
+            ...$permissionPermissions,
             ...$financePermissions,
             ...$systemPermissions,
         ];
@@ -67,10 +85,12 @@ class PermissionSeeder extends Seeder
             Permission::firstOrCreate(['name' => $permission]);
         }
 
-        $this->command->info('Created '.count($allPermissions).' permissions across 5 categories:');
+        $this->command->info('Created '.count($allPermissions).' permissions across 7 categories:');
         $this->command->info('- Events: '.count($eventPermissions).' permissions');
         $this->command->info('- Tickets: '.count($ticketPermissions).' permissions');
         $this->command->info('- Users: '.count($userPermissions).' permissions');
+        $this->command->info('- Roles: '.count($rolePermissions).' permissions');
+        $this->command->info('- Permissions: '.count($permissionPermissions).' permissions');
         $this->command->info('- Finance: '.count($financePermissions).' permissions');
         $this->command->info('- System: '.count($systemPermissions).' permissions');
     }

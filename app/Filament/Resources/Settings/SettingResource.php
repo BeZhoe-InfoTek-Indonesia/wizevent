@@ -24,6 +24,11 @@ class SettingResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'Master Data';
 
+    public static function getNavigationGroup(): string
+    {
+        return __('admin.groups.master_data');
+    }
+
     protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';

@@ -45,4 +45,6 @@ return [
     'validation.cancellation_note_required' => 'A cancellation note is required when status is cancelled.',
     'cancellation_notes' => 'Cancellation Notes',
     'cancellation_notes_placeholder' => 'Add reason for cancellation...',
+    'plural_label' => 'Orders',
+    'singular_label' => 'Order',
 ];

@@ -68,7 +68,8 @@ class AdminPanelProvider extends PanelProvider
                 __('admin.groups.system'),
             ])
             ->plugins([
-                FilamentShieldPlugin::make(),
+                FilamentShieldPlugin::make()
+                    ->navigationGroup(__('admin.groups.master_data')),
                 FilamentExceptionsPlugin::make()
             ])
             ->userMenuItems([

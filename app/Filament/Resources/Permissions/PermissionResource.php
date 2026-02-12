@@ -23,6 +23,11 @@ class PermissionResource extends Resource
 
     protected static UnitEnum|string|null $navigationGroup = 'Master Data';
 
+    public static function getNavigationGroup(): string
+    {
+        return __('admin.groups.master_data');
+    }
+
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?int $navigationSort = 3;
@@ -59,5 +64,30 @@ class PermissionResource extends Resource
     public static function getPluralLabel(): string
     {
         return 'Permissions';
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()?->can('permissions.view') ?? false;
+    }
+
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->can('permissions.create') ?? false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return auth()->user()?->can('permissions.edit') ?? false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return auth()->user()?->can('permissions.delete') ?? false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()?->can('permissions.delete') ?? false;
     }
 }
