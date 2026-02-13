@@ -9,7 +9,7 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('layouts.visitor')]
+#[Layout('layouts.app-visitor')]
 class OrderStatus extends Component
 {
     public Order $order;

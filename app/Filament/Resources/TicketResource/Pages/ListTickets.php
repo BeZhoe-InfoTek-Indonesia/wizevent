@@ -15,7 +15,7 @@ class ListTickets extends ListRecords
             \Filament\Actions\Action::make('scan')
                 ->label('Scan Tickets')
                 ->icon('heroicon-o-qr-code')
-                ->color('success')
+                ->color('primary')
                 ->url(fn () => \App\Filament\Pages\ScanTickets::getUrl()),
         ];
     }

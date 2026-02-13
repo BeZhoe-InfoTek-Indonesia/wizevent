@@ -14,18 +14,18 @@
 
 ## Phase 3: Frontend - Event Details
 - [x] 3.1 Add Social Share buttons to `EventDetail` Livewire component.
-- [ ] 3.2 Add "Add to Calendar" button.
-- [ ] 3.3 Add heart icon toggle for favoriting (Livewire action).
-- [ ] 3.4 Implement Testimonials list on event page.
-- [ ] 3.5 Implement Testimonial submission form (gated by ticket purchase).
-- [ ] 3.6 Implement helpful/not helpful voting toggle on testimonials.
+- [x] 3.2 Add "Add to Calendar" button.
+- [x] 3.3 Add heart icon toggle for favoriting (Livewire action).
+- [x] 3.4 Implement Testimonials list on event page.
+- [x] 3.5 Implement Testimonial submission form (gated by ticket purchase).
+- [x] 3.6 Implement helpful/not helpful voting toggle on testimonials.
 
 ## Phase 4: Frontend - Dashboard
-- [ ] 4.1 Create `LovedEventsList` Livewire component.
-- [ ] 4.2 Integrate `LovedEventsList` into the visitor dashboard.
+- [x] 4.1 Create `LovedEventsList` Livewire component.
+- [x] 4.2 Integrate `LovedEventsList` into the visitor dashboard.
 
 ## Phase 5: Validation & Polish
-- [ ] 5.1 Write unit tests for `SocialShareService` and `CalendarService`.
-- [ ] 5.2 Write feature tests for favoriting and testimonial voting.
+- [x] 5.1 Write unit tests for `SocialShareService` and `CalendarService`.
+- [x] 5.2 Write feature tests for favoriting and testimonial voting.
 - [ ] 5.3 Manual verification of `.ics` file in Google Calendar.
 - [ ] 5.4 Verify UTM parameters in share links.

@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 class CreateEvent extends CreateRecord
 {
     protected static string $resource = EventResource::class;
+    public static bool $formActionsAreSticky = true;
 
     protected function handleRecordCreation(array $data): Model
     {

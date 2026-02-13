@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 class EditEvent extends EditRecord
 {
     protected static string $resource = EventResource::class;
+    public static bool $formActionsAreSticky = true;
 
     protected function getHeaderActions(): array
     {
@@ -22,6 +23,14 @@ class EditEvent extends EditRecord
             Actions\ForceDeleteAction::make(),
             Actions\RestoreAction::make(),
         ];
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Load banner image paths into the form state
+        $data['banner_image'] = $this->record->banners->pluck('file_path')->toArray();
+
+        return $data;
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model

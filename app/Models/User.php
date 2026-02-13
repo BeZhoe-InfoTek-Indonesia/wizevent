@@ -41,6 +41,12 @@ use Spatie\Permission\Traits\HasRoles;
  * @property-read int|null $testimonials_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\TestimonialVote> $testimonialVotes
  * @property-read int|null $testimonial_votes_count
+ * @property int $unread_notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Illuminate\Notifications\DatabaseNotification> $unreadNotifications
+ * @property array|null $email_notifications
+ * @property array|null $in_app_notifications
+ * @property array|null $email_notifications
+ * @property array|null $in_app_notifications
  *
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
@@ -58,9 +64,12 @@ use Spatie\Permission\Traits\HasRoles;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutPermission($permissions)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|User withoutRole($roles, $guard = null)
- *
+ * @method bool hasEmailNotificationEnabled(string $type)
+ * @method bool hasInAppNotificationEnabled(string $type)
+ * @method array getDefaultNotificationPreferences()
+ * @method int getUnreadNotificationsCount()
+ * @method static void boot()
+ *                            *
  * @mixin \Eloquent
  */
 class User extends Authenticatable implements FilamentUser
@@ -78,6 +87,8 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'avatar',
         'google_id',
+        'email_notifications',
+        'in_app_notifications',
     ];
 
     /**
@@ -100,6 +111,8 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'email_notifications' => 'array',
+            'in_app_notifications' => 'array',
         ];
     }
 
@@ -129,7 +142,7 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     * Determine if the user can access the Filament admin panel.
+     * Determine if the user can access Filament admin panel.
      */
     public function canAccessPanel(Panel $panel): bool
     {
@@ -140,5 +153,70 @@ class User extends Authenticatable implements FilamentUser
             'Finance Admin',
             'Check-in Staff',
         ]);
+    }
+
+    /**
+     * Get the default notification preferences for a new user.
+     */
+    public static function getDefaultNotificationPreferences(): array
+    {
+        return [
+            'email_notifications' => [
+                'payment' => true,
+                'events' => true,
+                'loved_events' => true,
+                'promotions' => true,
+            ],
+            'in_app_notifications' => [
+                'payment' => true,
+                'events' => true,
+                'loved_events' => true,
+                'promotions' => true,
+            ],
+        ];
+    }
+
+    /**
+     * Check if user has email notification enabled for a specific type.
+     */
+    public function hasEmailNotificationEnabled(string $type): bool
+    {
+        $preferences = $this->email_notifications ?? self::getDefaultNotificationPreferences()['email_notifications'];
+
+        return $preferences[$type] ?? true;
+    }
+
+    /**
+     * Check if user has in-app notification enabled for a specific type.
+     */
+    public function hasInAppNotificationEnabled(string $type): bool
+    {
+        $preferences = $this->in_app_notifications ?? self::getDefaultNotificationPreferences()['in_app_notifications'];
+
+        return $preferences[$type] ?? true;
+    }
+
+    /**
+     * Get unread notifications count.
+     */
+    public function getUnreadNotificationsCountAttribute(): int
+    {
+        return $this->unreadNotifications()->count();
+    }
+
+    /**
+     * Boot method to set default notification preferences.
+     */
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::created(function ($user) {
+            if (empty($user->email_notifications) || empty($user->in_app_notifications)) {
+                $user->email_notifications = self::getDefaultNotificationPreferences()['email_notifications'];
+                $user->in_app_notifications = self::getDefaultNotificationPreferences()['in_app_notifications'];
+                $user->saveQuietly();
+            }
+        });
     }
 }

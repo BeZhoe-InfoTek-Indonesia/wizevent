@@ -26,28 +26,40 @@ Route::get('/tickets/{ticket}/pdf', [\App\Http\Controllers\OrderController::clas
     ->name('tickets.download')
     ->middleware(['auth']);
 
-Route::view('/', 'welcome')->name('welcome');
+use App\Livewire\Event\EventDiscovery;
 
-Route::view('dashboard', 'dashboard')
+use App\Livewire\User\LovedEventsList;
+use App\Livewire\User\NotificationCenter;
+
+Route::get('/', EventDiscovery::class)->name('welcome');
+
+Route::get('dashboard', \App\Livewire\Order\OrderList::class)
     ->middleware(['auth', 'role.redirect'])
     ->name('dashboard');
+
+Route::get('dashboard/loved-events', LovedEventsList::class)
+    ->middleware(['auth', 'role.redirect'])
+    ->name('dashboard.loved-events');
+
+Route::get('/notifications', NotificationCenter::class)
+    ->middleware(['auth', 'role.redirect'])
+    ->name('notifications.center');
+
+Route::prefix('profile')
+    ->middleware(['auth'])
+    ->name('profile.notifications')
+    ->group(function () {
+        Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])
+            ->name('profile.notifications.index');
+
+        Route::post('/notifications', [\App\Http\Controllers\NotificationController::class, 'update'])
+            ->name('profile.notifications.update');
+    });
 
 Route::get('lang/{locale}', [\App\Http\Controllers\LanguageController::class, 'switch'])->name('lang.switch');
 
 // Profile routes
-Route::prefix('profile')->name('profile.')->middleware(['auth'])->group(function () {
-    Route::get('/', [App\Http\Controllers\ProfileController::class, 'show'])->name('show');
-    Route::get('/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('edit');
-    Route::put('/', [App\Http\Controllers\ProfileController::class, 'update'])->name('update');
-    Route::put('/password', [App\Http\Controllers\ProfileController::class, 'updatePassword'])->name('password.update');
-    Route::post('/avatar', [App\Http\Controllers\ProfileController::class, 'updateAvatar'])->name('avatar.update');
-    Route::delete('/avatar', [App\Http\Controllers\ProfileController::class, 'deleteAvatar'])->name('avatar.delete');
-    Route::get('/activity', [App\Http\Controllers\ProfileController::class, 'activity'])->name('activity');
-    Route::get('/delete', [App\Http\Controllers\ProfileController::class, 'deleteAccount'])->name('delete');
-    Route::delete('/', [App\Http\Controllers\ProfileController::class, 'destroy'])->name('destroy');
-});
-
-Route::view('profile', 'profile')
+Route::get('profile', \App\Livewire\Profile\ProfileComponent::class)
     ->middleware(['auth'])
     ->name('profile');
 

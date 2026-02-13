@@ -1,3 +1,41 @@
+## 19. 🧩 Project Skills: Automated Code Review
+
+This project includes custom AI skills for automated code review and best practices enforcement:
+
+- **Laravel 11 Code Review Skill** (`laravel-11-code-review`)
+  - Location: `prompter/skills/laravel-11-code-review/SKILL.md`
+  - Use for: General Laravel, Livewire, and service layer code review, security, i18n, and N+1 query prevention.
+  - Trigger by asking: "Review code for Laravel 11 best practices", "Analyze this file for N+1 issues", etc.
+
+- **Filament v4 Code Review Skill** (`fillamentv4-code-review`)
+  - Location: `prompter/skills/fillamentv4-code-review/SKILL.md`
+  - Use for: Reviewing Filament admin resources, widgets, and pages for UI/UX, modal usage, i18n, and permission checks.
+  - Trigger by asking: "Review all Filament resources for best practices", "Check admin panel for i18n issues", etc.
+
+**How to Use Skills:**
+- Simply describe your review or analysis goal in your request (e.g., "review code for N+1 queries", "analyze Filament resource for i18n").
+- The AI agent will load the relevant SKILL.md and follow its workflows and review criteria.
+- You can specify a file, directory, or focus area (e.g., security, service layer) in your request.
+
+See each SKILL.md for detailed workflows, review steps, and bundled scripts or references.
+<!-- PROMPTER:START -->
+# Prompter Instructions
+
+These instructions are for AI assistants working in this project.
+
+Always open `@/prompter/AGENTS.md` when the request:
+- Mentions planning or proposals (words like proposal, spec, change, plan)
+- Introduces new capabilities, breaking changes, architecture shifts, or big performance/security work
+- Sounds ambiguous and you need the authoritative spec before coding
+
+Use `@/prompter/AGENTS.md` to learn:
+- How to create and apply change proposals
+- Spec format and conventions
+- Project structure and guidelines
+- Show Remaining Tasks
+
+<!-- PROMPTER:END -->
+
 # AGENTS — Project Knowledge Base
 
 ## 1. 📍 Project Summary

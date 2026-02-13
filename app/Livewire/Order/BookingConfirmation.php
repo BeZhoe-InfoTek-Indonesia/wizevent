@@ -12,7 +12,7 @@ use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
-#[Layout('layouts.visitor')]
+#[Layout('layouts.app-visitor')]
 class BookingConfirmation extends Component
 {
     use WithFileUploads;

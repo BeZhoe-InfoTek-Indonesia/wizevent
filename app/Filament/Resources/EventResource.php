@@ -72,20 +72,20 @@ class EventResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
-                                    ->placeholder('Enter event title')
+                                    ->placeholder(__('event.placeholders.title'))
                                     ->afterStateUpdated(
                                         fn (string $operation, $state, Set $set) =>
                                             $operation === 'create'
                                                 ? $set('slug', Str::slug($state))
                                                 : null
-                                    ),  
+                                    ),
 
                                 TextInput::make('slug')
                                     ->disabled()
                                     ->dehydrated()
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('event-url-slug')
+                                    ->placeholder(__('event.placeholders.slug'))
                                     ->unique(Event::class, 'slug', ignoreRecord: true),
 
                                 Select::make('categories')
@@ -97,12 +97,12 @@ class EventResource extends Resource
                                     ->multiple()
                                     ->searchable()
                                     ->preload()
-                                    ->placeholder('Select event categories'),
+                                    ->placeholder(__('event.placeholders.categories')),
 
                                 RichEditor::make('description')
                                     ->required()
                                     ->minLength(1)
-                                    ->placeholder('Provide a detailed description of the event')
+                                    ->placeholder(__('event.placeholders.description'))
                                     ->columnSpanFull()
                                     ->floatingToolbars([
                                         'paragraph' => [
@@ -126,22 +126,22 @@ class EventResource extends Resource
                             ->schema([
                                 DateTimePicker::make('event_date')
                                     ->required()
-                                    ->label('Start Date & Time')
-                                    ->placeholder('Select start date and time'),
+                                    ->label(__('event.labels.start_date_time'))
+                                    ->placeholder(__('event.placeholders.start_date_time')),
 
                                 DateTimePicker::make('event_end_date')
-                                    ->label('End Date & Time')
+                                    ->label(__('event.labels.end_date_time'))
                                     ->after('event_date')
-                                    ->placeholder('Select end date and time'),
+                                    ->placeholder(__('event.placeholders.end_date_time')),
 
                                 TextInput::make('venue_name')
-                                    ->placeholder('e.g. Grand Ballroom, Hotel Indonesia')
+                                    ->placeholder(__('event.placeholders.venue_name'))
                                     ->maxLength(255),
 
                                 TextInput::make('location')
-                                    ->label('Address / Location Name')
+                                    ->label(__('event.labels.location'))
                                     ->required()
-                                    ->placeholder('Enter full address or building name')
+                                    ->placeholder(__('event.placeholders.location'))
                                     ->maxLength(500)
                                     ->columnSpanFull(),
 
@@ -250,11 +250,11 @@ class EventResource extends Resource
                                         TextInput::make('latitude')
                                             ->numeric()
                                             ->required()
-                                            ->placeholder('-6.20880000')
+                                            ->placeholder(__('event.placeholders.latitude'))
                                             ->step('any')
                                             ->live()
                                             ->afterStateUpdated(function ($state, Set $set, $get, $livewire) {
-                                                if ($state && $get('longitude')) {
+                                                if (filled($state) && filled($get('longitude'))) {
                                                     $set('location_map', [
                                                         'lat' => (float)$state,
                                                         'lng' => (float)$get('longitude')
@@ -265,11 +265,11 @@ class EventResource extends Resource
                                         TextInput::make('longitude')
                                             ->numeric()
                                             ->required()
-                                            ->placeholder('106.84560000')
+                                            ->placeholder(__('event.placeholders.longitude'))
                                             ->step('any')
                                             ->live()
                                             ->afterStateUpdated(function ($state, Set $set, $get, $livewire) {
-                                                if ($state && $get('latitude')) {
+                                                if (filled($state) && filled($get('latitude'))) {
                                                     $set('location_map', [
                                                         'lat' => (float)$get('latitude'),
                                                         'lng' => (float)$state
@@ -299,7 +299,7 @@ class EventResource extends Resource
 
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->helperText('Recommended size: 1200x600px (2:1 ratio). Max 5MB.')
-                                    ->afterStateHydrated(fn (FileUpload $component, ?\Illuminate\Database\Eloquent\Model $record) => $component->state($record?->banners->pluck('file_path')->toArray() ?? []))
+                                    ->afterStateHydrated(fn (FileUpload $component, ?\Illuminate\Database\Eloquent\Model $record) => $component->state($record ? $record->banners->pluck('file_path')->toArray() : []))
                                     ->dehydrated(true),
                                     // ->required(),
                             ]),
@@ -312,26 +312,26 @@ class EventResource extends Resource
                             ->schema([
                                 Select::make('status')
                                     ->options([
-                                        'draft' => 'Draft',
-                                        'published' => 'Published',
-                                        'sold_out' => 'Sold Out',
-                                        'cancelled' => 'Cancelled',
+                                        'draft' => __('event.status.draft'),
+                                        'published' => __('event.status.published'),
+                                        'sold_out' => __('event.status.sold_out'),
+                                        'cancelled' => __('event.status.cancelled'),
                                     ])
                                     ->default('draft')
                                     ->required()
-                                    ->placeholder('Select event status'),
+                                    ->placeholder(__('event.placeholders.status')),
 
                                 DateTimePicker::make('published_at')
                                     ->visible(fn ($get) => $get('status') === 'published')
-                                    ->placeholder('Schedule publication date'),
+                                    ->placeholder(__('event.placeholders.published_at')),
                             ]),
 
                         Section::make('Sales Configuration')
                             ->schema([
                                 DatePicker::make('sales_start_at')
-                                    ->placeholder('When tickets go on sale'),
+                                    ->placeholder(__('event.placeholders.sales_start_at')),
                                 DatePicker::make('sales_end_at')
-                                    ->placeholder('When ticket sales end'),
+                                    ->placeholder(__('event.placeholders.sales_end_at')),
                                 Toggle::make('seating_enabled')
                                     ->label('Enable Seating Layout')
                                     ->default(false),
@@ -344,7 +344,7 @@ class EventResource extends Resource
                                     ->multiple()
                                     ->searchable()
                                     ->preload()
-                                    ->placeholder('Select event tags'),
+                                    ->placeholder(__('event.placeholders.tags')),
                                 
                                 Section::make('Ticket Types')
                                     ->schema([
@@ -356,20 +356,20 @@ class EventResource extends Resource
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
-                                                    ->placeholder('Select ticket type')
+                                                    ->placeholder(__('event.placeholders.ticket_type'))
                                                     ->columnSpanFull(),
                                                 TextInput::make('price')
                                                     ->numeric()
                                                     ->prefix('IDR')
                                                     ->required()
-                                                    ->placeholder('0.00')
+                                                    ->placeholder(__('event.placeholders.price'))
                                                     ->columnSpanFull(),
                                                 Grid::make(3)
                                                     ->schema([
                                                         TextInput::make('quantity')
                                                             ->numeric()
                                                             ->required()
-                                                            ->placeholder('100'),
+                                                            ->placeholder(__('event.placeholders.quantity')),
                                                         TextInput::make('min_purchase')
                                                             ->numeric()
                                                             ->label('Min')
@@ -384,11 +384,11 @@ class EventResource extends Resource
                                                 Grid::make(2)
                                                     ->schema([
                                                         DatePicker::make('sales_start_at')
-                                                            ->label('Sales Start')
-                                                            ->placeholder('Start date'),
+                                                            ->label(__('event.labels.sales_start'))
+                                                            ->placeholder(__('event.placeholders.ticket_sales_start')),
                                                         DatePicker::make('sales_end_at')
-                                                            ->label('Sales End')
-                                                            ->placeholder('End date'),
+                                                            ->label(__('event.labels.sales_end'))
+                                                            ->placeholder(__('event.placeholders.ticket_sales_end')),
                                                     ]),
                                                 Toggle::make('is_active')
                                                     ->label('Active for Sale')
@@ -425,8 +425,7 @@ class EventResource extends Resource
 
                 TextColumn::make('categories.name')
                     ->label('Categories')
-                    ->badge()
-                    ->sortable(),
+                    ->badge(),
 
                 TextColumn::make('event_date')
                     ->dateTime()

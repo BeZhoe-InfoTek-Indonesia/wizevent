@@ -2,7 +2,7 @@
 
 /* Visitor-specific styles */
 .visitor-layout {
-    @apply bg-white min-h-screen;
+    @apply bg-white min-h-screen text-gray-900;
 }
 
 .visitor-header {
@@ -15,4 +15,42 @@
 
 .visitor-footer {
     @apply bg-gray-50 border-t border-gray-200 mt-16;
+}
+
+/* Header / nav custom styles to match reference UI */
+.site-nav { display: flex; align-items: center; }
+.site-nav .nav-item {
+    @apply text-sm font-semibold text-gray-600 hover:text-gray-900 px-3 py-2 rounded-full;
+}
+.site-nav .nav-active {
+    @apply bg-gray-100 text-gray-900 px-4 py-2 rounded-full shadow-sm;
+}
+
+.mail-btn {
+    @apply w-9 h-9 bg-white border border-gray-100 rounded-md flex items-center justify-center shadow-sm hover:shadow-md;
+}
+
+.avatar-btn {
+    @apply relative w-9 h-9 rounded-full overflow-hidden border-2 border-transparent hover:border-blue-400 transition-all;
+}
+.avatar-btn img { @apply w-full h-full object-cover; }
+.avatar-btn:focus { outline: none; @apply ring-2 ring-blue-500; }
+
+.avatar-menu { @apply hidden absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden z-50; }
+.avatar-menu .profile-card { @apply p-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white; }
+.avatar-menu .profile-actions { @apply p-3 bg-white; }
+.avatar-menu a { @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50; }
+
+.dark .site-nav .nav-item { @apply text-gray-300 hover:text-white; }
+.dark .site-nav .nav-active { @apply bg-gray-800 text-white; }
+
+/* Dark mode overrides */
+.dark .visitor-layout {
+    @apply bg-gray-900 text-gray-100;
+}
+.dark .visitor-header {
+    @apply bg-gray-800 border-gray-700;
+}
+.dark .visitor-footer {
+    @apply bg-gray-900 border-t-gray-800;
 }

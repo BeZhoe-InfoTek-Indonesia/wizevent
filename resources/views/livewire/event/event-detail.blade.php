@@ -83,14 +83,21 @@
                             </svg>
                         </button>
                         
-                        {{-- Favorite Button --}}
-                        <div class="absolute top-6 right-6 z-20">
-                            <button class="w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 hover:bg-white/20 transition-all text-white group/fav">
-                                <svg class="w-6 h-6 transition-colors group-hover/fav:text-red-500" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                                </svg>
-                            </button>
-                        </div>
+                         {{-- Favorite Button --}}
+                         <div class="absolute top-6 right-6 z-20">
+                             <button wire:click="toggleFavorite"
+                                     class="w-12 h-12 bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl flex items-center justify-center shadow-2xl hover:scale-110 active:scale-95 hover:bg-white/20 transition-all text-white group/fav">
+                                 @if($this->isFavorited)
+                                     <svg class="w-6 h-6 text-red-500 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                                     </svg>
+                                 @else
+                                     <svg class="w-6 h-6 transition-colors group-hover/fav:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                     </svg>
+                                 @endif
+                             </button>
+                         </div>
                         
                         {{-- Next Button --}}
                         <button x-show="images.length > 1"
@@ -311,33 +318,40 @@
 
                                                 <div class="w-px h-4 bg-gray-200"></div>
 
-                                                {{-- Social Icons --}}
-                                                <div class="flex items-center gap-1">
-                                                    <a href="https://wa.me/?text={{ urlencode($event->title . ' ' . route('events.show', $event->slug)) }}"
-                                                       target="_blank"
-                                                       rel="noopener noreferrer"
-                                                       class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#25D366] hover:bg-green-50 transition-all duration-200">
-                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-4.821 4.754a8.117 8.117 0 01-3.834-.963l-.275-.163-2.851.748.761-2.779-.179-.285C5.467 14.71 4.88 13.064 4.88 11.31c0-4.437 3.613-8.05 8.05-8.05 2.15 0 4.17.837 5.69 2.357 1.52 1.52 2.357 3.54 2.357 5.694 0 4.438-3.612 8.051-8.049 8.051"/>
-                                                        </svg>
-                                                    </a>
-                                                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('events.show', $event->slug)) }}"
-                                                       target="_blank"
-                                                       rel="noopener noreferrer"
-                                                       class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#1877F2] hover:bg-blue-50 transition-all duration-200">
-                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                                                        </svg>
-                                                    </a>
-                                                    <a href="https://twitter.com/intent/tweet?text={{ urlencode($event->title) }}&url={{ urlencode(route('events.show', $event->slug)) }}"
-                                                       target="_blank"
-                                                       rel="noopener noreferrer"
-                                                       class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-black hover:bg-gray-100 transition-all duration-200">
-                                                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                                                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                                                        </svg>
-                                                    </a>
-                                                </div>
+                                                 {{-- Social Icons --}}
+                                                 <div class="flex items-center gap-1">
+                                                     <a href="{{ $this->calendarUrl }}"
+                                                        download
+                                                        class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#1A8DFF] hover:bg-blue-50 transition-all duration-200">
+                                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                                                         </svg>
+                                                     </a>
+                                                     <a href="{{ $this->shareUrls['whatsapp'] ?? '' }}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#25D366] hover:bg-green-50 transition-all duration-200">
+                                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                             <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-4.821 4.754a8.117 8.117 0 01-3.834-.963l-.275-.163-2.851.748.761-2.779-.179-.285C5.467 14.71 4.88 13.064 4.88 11.31c0-4.437 3.613-8.05 8.05-8.05 2.15 0 4.17.837 5.69 2.357 1.52 1.52 2.357 3.54 2.357 5.694 0 4.438-3.612 8.051-8.049 8.051"/>
+                                                         </svg>
+                                                     </a>
+                                                     <a href="{{ $this->shareUrls['facebook'] ?? '' }}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-[#1877F2] hover:bg-blue-50 transition-all duration-200">
+                                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                                                         </svg>
+                                                     </a>
+                                                     <a href="{{ $this->shareUrls['twitter'] ?? '' }}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        class="w-9 h-9 rounded-lg flex items-center justify-center text-gray-400 hover:text-black hover:bg-gray-100 transition-all duration-200">
+                                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                                         </svg>
+                                                     </a>
+                                                 </div>
                                             </div>
                                         </div>
                                     </div>
@@ -417,6 +431,165 @@
                             </div> {{-- closes lg:w-[420px] --}}
                         </div> {{-- closes Detail/Sidebar row --}}
 
+                    {{-- Testimonials Section --}}
+                    @if($this->approvedTestimonials->isNotEmpty())
+                    <section class="border-t border-gray-100 pt-16">
+                        <div class="flex items-center justify-between mb-10">
+                            <div class="flex items-center gap-4">
+                                <div class="w-1.5 h-8 bg-yellow-500 rounded-full"></div>
+                                <h2 class="text-2xl font-black text-gray-900 tracking-tight">What People Say</h2>
+                            </div>
+                            <span class="px-3 py-1 bg-yellow-50 text-yellow-600 text-xs font-bold uppercase tracking-widest rounded-full">
+                                {{ $this->approvedTestimonials->count() }} Reviews
+                            </span>
+                        </div>
+
+                        <div class="grid md:grid-cols-2 gap-6">
+                            @foreach($this->approvedTestimonials as $testimonial)
+                                <div class="bg-white border border-gray-100 rounded-[24px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.04)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.08)] transition-all duration-500">
+                                    <div class="flex items-start justify-between gap-4 mb-6">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                                                {{ strtoupper(substr($testimonial->user->name, 0, 1)) }}
+                                            </div>
+                                            <div>
+                                                <h4 class="font-bold text-gray-900">{{ $testimonial->user->name }}</h4>
+                                                <div class="flex items-center gap-1 mt-0.5">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <svg class="w-4 h-4 {{ $i <= $testimonial->rating ? 'text-yellow-400' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                        </svg>
+                                                    @endfor
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <span class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">
+                                            {{ $testimonial->created_at->diffForHumans() }}
+                                        </span>
+                                    </div>
+
+                                    <p class="text-gray-600 leading-relaxed mb-6">
+                                        "{{ $testimonial->content }}"
+                                    </p>
+
+                                    <div class="flex items-center justify-between pt-6 border-t border-gray-50">
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Was this helpful?</span>
+                                            <div class="flex items-center gap-1">
+                                                <button wire:click="voteOnTestimonial({{ $testimonial->id }}, true)"
+                                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-green-600 hover:bg-green-50 transition-all">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+                                                    </svg>
+                                                    <span>{{ $testimonial->helpful_votes_count }}</span>
+                                                </button>
+                                                <button wire:click="voteOnTestimonial({{ $testimonial->id }}, false)"
+                                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-red-600 hover:bg-red-50 transition-all">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
+                                                    </svg>
+                                                    <span>{{ $testimonial->not_helpful_votes_count }}</span>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    </section>
+                    @endif
+
+                    {{-- Testimonial Submission Form --}}
+                    @if($this->canSubmitTestimonial && !$this->showTestimonialForm)
+                    <section class="border-t border-gray-100 pt-8 mb-8">
+                        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-[24px] p-8 border border-blue-100">
+                            <div class="flex items-start justify-between gap-4">
+                                <div>
+                                    <h3 class="font-bold text-gray-900 text-lg mb-1">Share Your Experience</h3>
+                                    <p class="text-gray-600 text-sm">Attended this event? Help others by leaving a review.</p>
+                                </div>
+                                <button wire:click="$set('showTestimonialForm', true)"
+                                        class="shrink-0 px-6 py-3 bg-gradient-to-r from-[#1A8DFF] to-[#0066CC] text-white rounded-xl text-sm font-bold hover:shadow-lg hover:scale-105 transition-all">
+                                    Write a Review
+                                </button>
+                            </div>
+                        </div>
+                    </section>
+                    @endif
+
+                    @if($this->showTestimonialForm)
+                    <section class="border-t border-gray-100 pt-12 mb-12">
+                        <div class="bg-white border border-gray-100 rounded-[24px] p-8 shadow-[0_10px_40px_rgba(0,0,0,0.04)]">
+                            <div class="flex items-center justify-between mb-8">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-1.5 h-8 bg-yellow-500 rounded-full"></div>
+                                    <h3 class="text-xl font-black text-gray-900 tracking-tight">Write Your Review</h3>
+                                </div>
+                                <button wire:click="$set('showTestimonialForm', false)"
+                                        class="text-gray-400 hover:text-gray-600 transition-colors">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <form wire:submit.prevent="submitTestimonial" class="space-y-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Your Rating</label>
+                                    <div class="flex items-center gap-2">
+                                        @for($i = 1; $i <= 5; $i++)
+                                            <button type="button"
+                                                    wire:click="$set('testimonialRating', {{ $i }})"
+                                                    class="w-10 h-10 transition-all {{ $testimonialRating >= $i ? 'text-yellow-400 scale-110' : 'text-gray-300 hover:text-gray-400' }}">
+                                                <svg class="w-full h-full" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                </svg>
+                                            </button>
+                                        @endfor
+                                    </div>
+                                    @error('testimonialRating')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Your Review</label>
+                                    <textarea wire:model="testimonialContent"
+                                              rows="4"
+                                              class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-[#1A8DFF] focus:ring-0 transition-colors resize-none"
+                                              placeholder="Share your experience at this event..."></textarea>
+                                    @error('testimonialContent')
+                                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                @session('testimonial_submitted')
+                                    <div class="p-4 bg-green-50 border border-green-200 rounded-xl">
+                                        <div class="flex items-center gap-2 text-green-700">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span class="font-medium">{{ session('testimonial_submitted') }}</span>
+                                        </div>
+                                    </div>
+                                @endsession
+
+                                <div class="flex items-center gap-3 pt-4">
+                                    <button type="submit"
+                                            class="px-8 py-3 bg-gradient-to-r from-[#1A8DFF] to-[#0066CC] text-white rounded-xl text-sm font-bold hover:shadow-lg hover:scale-105 transition-all">
+                                        Submit Review
+                                    </button>
+                                    <button type="button"
+                                            wire:click="$set('showTestimonialForm', false)"
+                                            class="px-8 py-3 bg-gray-100 text-gray-700 rounded-xl text-sm font-bold hover:bg-gray-200 transition-all">
+                                        Cancel
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+                    @endif
+
                     {{-- Recommendations Section --}}
                     @if($this->relatedEvents->isNotEmpty())
                     <section class="border-t border-gray-100 pt-16">
@@ -454,78 +627,5 @@
         </div>
     </div>
 
-    {{-- Footer --}}
-    <footer class="bg-white border-t border-gray-100 pt-16 pb-8 mt-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-                <!-- Column 1: Custom Logo & Contact -->
-                <div class="col-span-1 lg:col-span-1">
-                    <div class="mb-6">
-                        <a href="{{ route('dashboard') }}" class="flex items-center gap-2">
-                            <x-application-logo class="h-8 w-auto fill-current text-blue-600" />
-                            <span class="text-xl font-bold text-gray-900 tracking-tight">{{ config('app.name') }}</span>
-                        </a>
-                    </div>
-                    <ul class="space-y-4">
-                        <li class="flex items-start gap-3">
-                            <div class="bg-gray-100 p-2 rounded-full text-gray-600 mt-1">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                            </div>
-                            <div>
-                                <div class="text-xs text-gray-500 font-medium uppercase tracking-wide">WhatsApp</div>
-                                <div class="text-gray-900 font-medium">+62 858 1150 0888</div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Column 2: Company & Products -->
-                <div class="col-span-1 lg:col-span-1 grid grid-cols-2 gap-8">
-                    <div>
-                        <h3 class="font-bold text-gray-900 mb-4">Company</h3>
-                        <ul class="space-y-3 text-sm text-gray-600">
-                            <li><a href="#" class="hover:text-blue-600">Blog</a></li>
-                            <li><a href="#" class="hover:text-blue-600">Newsroom</a></li>
-                            <li><a href="#" class="hover:text-blue-600">Careers</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-gray-900 mb-4">Products</h3>
-                        <ul class="space-y-3 text-sm text-gray-600">
-                            <li><a href="#" class="hover:text-blue-600">Flights</a></li>
-                            <li><a href="#" class="hover:text-blue-600">Hotels</a></li>
-                            <li><a href="#" class="hover:text-blue-600">Events</a></li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Column 3: Support -->
-                <div class="col-span-1 lg:col-span-1">
-                    <h3 class="font-bold text-gray-900 mb-4">Support</h3>
-                    <ul class="space-y-3 text-sm text-gray-600">
-                        <li><a href="#" class="hover:text-blue-600">Help Center</a></li>
-                        <li><a href="#" class="hover:text-blue-600">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-blue-600">Terms & Conditions</a></li>
-                    </ul>
-                </div>
-
-                <!-- Column 4: App Download -->
-                <div class="col-span-1 lg:col-span-1">
-                        <h3 class="font-bold text-gray-900 mb-4">Cheaper on the app</h3>
-                    <div class="space-y-3">
-                        <a href="#" class="block bg-black text-white px-4 py-2 rounded-lg flex items-center gap-3 w-48 hover:opacity-90 transition">
-                            <div class="text-left">
-                                <div class="text-[0.6rem] leading-none uppercase">Download on the</div>
-                                <div class="text-lg font-bold leading-none">App Store</div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-t border-dashed border-gray-200 mt-12 pt-8 text-center sm:text-left text-xs text-gray-500">
-                &copy; 2011-{{ date('Y') }} PT. Global Tiket Network. All Rights Reserved.
-            </div>
-        </div>
-    </footer>
+    <x-footer />
 </div>

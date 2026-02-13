@@ -2,7 +2,22 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import fs from 'fs';
 
-const host = 'event-management.test';
+const host = 'bz-management.test';
+
+// attempt to load Valet TLS certs if available, otherwise fall back to HTTP
+const keyPath = `/Users/dwipurwanto/.config/valet/Certificates/${host}.key`;
+const certPath = `/Users/dwipurwanto/.config/valet/Certificates/${host}.crt`;
+let httpsOptions = false;
+try {
+    if (fs.existsSync(keyPath) && fs.existsSync(certPath)) {
+        httpsOptions = {
+            key: fs.readFileSync(keyPath),
+            cert: fs.readFileSync(certPath),
+        };
+    }
+} catch (e) {
+    // ignore and continue with httpsOptions = false
+}
 
 export default defineConfig({
     plugins: [
@@ -21,9 +36,6 @@ export default defineConfig({
     server: {
         host,
         hmr: { host },
-        https: {
-            key: fs.readFileSync(`/Users/dwipurwanto/.config/valet/Certificates/${host}.key`),
-            cert: fs.readFileSync(`/Users/dwipurwanto/.config/valet/Certificates/${host}.crt`),
-        },
+        https: httpsOptions || false,
     },
 });

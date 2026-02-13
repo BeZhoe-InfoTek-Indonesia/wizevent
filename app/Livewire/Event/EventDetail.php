@@ -4,6 +4,8 @@ namespace App\Livewire\Event;
 
 use App\Models\Event;
 use App\Models\Favorite;
+use App\Models\Testimonial;
+use App\Models\TestimonialVote;
 use App\Services\SocialShareService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -11,10 +13,16 @@ use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 
-#[Layout('layouts.visitor')]
+#[Layout('layouts.app-visitor')]
 class EventDetail extends Component
 {
     public Event $event;
+
+    public string $testimonialContent = '';
+
+    public int $testimonialRating = 5;
+
+    public bool $showTestimonialForm = false;
 
     public function mount(string $slug): void
     {
@@ -109,5 +117,72 @@ class EventDetail extends Component
             })
             ->limit(4)
             ->get();
+    }
+
+    public function getApprovedTestimonialsProperty()
+    {
+        return Testimonial::where('event_id', $this->event->id)
+            ->approved()
+            ->with(['user', 'votes'])
+            ->orderByDesc('created_at')
+            ->get();
+    }
+
+    public function getCanSubmitTestimonialProperty(): bool
+    {
+        if (! Auth::check()) {
+            return false;
+        }
+
+        $user = Auth::user();
+
+        return Testimonial::where('event_id', $this->event->id)
+            ->where('user_id', $user->id)
+            ->doesntExist()
+            && $this->event->hasPurchasedTicket($user);
+    }
+
+    public function submitTestimonial(): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+
+        $this->validate([
+            'testimonialContent' => 'required|min:10|max:1000',
+            'testimonialRating' => 'required|integer|min:1|max:5',
+        ]);
+
+        Testimonial::create([
+            'user_id' => Auth::id(),
+            'event_id' => $this->event->id,
+            'content' => $this->testimonialContent,
+            'rating' => $this->testimonialRating,
+            'status' => 'pending',
+        ]);
+
+        $this->testimonialContent = '';
+        $this->testimonialRating = 5;
+        $this->showTestimonialForm = false;
+
+        session()->flash('testimonial_submitted', 'Thank you! Your testimonial has been submitted and will be published after moderation.');
+    }
+
+    public function voteOnTestimonial(int $testimonialId, bool $isHelpful): void
+    {
+        if (! Auth::check()) {
+            return;
+        }
+
+        $testimonial = Testimonial::find($testimonialId);
+        if (! $testimonial || ! $testimonial->canBeVotedBy(Auth::user())) {
+            return;
+        }
+
+        TestimonialVote::create([
+            'testimonial_id' => $testimonialId,
+            'user_id' => Auth::id(),
+            'is_helpful' => $isHelpful,
+        ]);
     }
 }

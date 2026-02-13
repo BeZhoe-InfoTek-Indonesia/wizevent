@@ -33,7 +33,6 @@
     
     <div class="scanner-header">
         <div class="scanner-title-group">
-            <h2 class="scanner-main-title">{{ __('scanner.scanner_title') }}</h2>
             <p class="scanner-subtitle">{{ __('scanner.scanner_description') }}</p>
         </div>
         <div class="scanner-actions">
@@ -196,10 +195,10 @@
 
         .scanner-header {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            margin-bottom: 2.5rem;
             gap: 1.5rem;
+            margin-bottom: 2.5rem;
         }
 
         .scanner-main-title {

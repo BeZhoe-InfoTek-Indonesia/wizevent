@@ -10,7 +10,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 
-#[Layout('layouts.visitor')]
+#[Layout('layouts.app-visitor')]
 class Checkout extends Component
 {
     public Event $event;

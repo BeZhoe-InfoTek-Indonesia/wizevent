@@ -42,7 +42,7 @@ class PermissionMatrix extends Page
         }
 
         Notification::make()
-            ->title('Permission updated')
+            ->title(__('permission.notifications.permission_updated'))
             ->success()
             ->send();
     }
@@ -61,7 +61,7 @@ class PermissionMatrix extends Page
         }
 
         Notification::make()
-            ->title("Permissions sync'd for {$role->name}")
+            ->title(__('permission.notifications.permissions_synced', ['role' => $role->name]))
             ->success()
             ->send();
     }
@@ -90,7 +90,7 @@ class PermissionMatrix extends Page
         }
 
         Notification::make()
-            ->title("Group '{$groupName}' updated for all roles")
+            ->title(__('permission.notifications.group_updated', ['group' => $groupName]))
             ->success()
             ->send();
     }
