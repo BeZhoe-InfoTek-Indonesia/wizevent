@@ -33,9 +33,17 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    // server: {
+    //     host,
+    //     hmr: { host },
+    //     https: httpsOptions || false,
+    // },
     server: {
         host,
         hmr: { host },
         https: httpsOptions || false,
+        // Allow requests from tunnel domain
+        cors: true,
+        allowedHosts: ['.dwi-coding-aja.web.id']
     },
 });

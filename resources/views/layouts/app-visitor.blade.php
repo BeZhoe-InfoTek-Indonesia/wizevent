@@ -38,7 +38,7 @@
     @livewireStyles
 </head>
 <body class="font-sans antialiased bg-gray-50">
-    <div class="min-h-screen">
+    <div class="min-h-screen pt-28 pb-24 lg:pb-0">
         @livewire('layouts.navigation')
 
         <!-- Page Content -->

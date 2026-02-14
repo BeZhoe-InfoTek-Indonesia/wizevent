@@ -224,6 +224,11 @@ class Event extends Model
         return $this->hasMany(Testimonial::class);
     }
 
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
     public function getTotalFavoritesAttribute(): int
     {
         return $this->favorites()->count();
@@ -232,6 +237,14 @@ class Event extends Model
     public function isLovedBy(User $user): bool
     {
         return $this->favorites()->where('user_id', $user->id)->exists();
+    }
+
+    public function hasPurchasedTicket(User $user): bool
+    {
+        return $this->orders()
+            ->where('user_id', $user->id)
+            ->whereIn('status', ['pending_payment', 'pending_verification', 'completed'])
+            ->exists();
     }
 
     public function getAvailableTicketsAttribute(): int
