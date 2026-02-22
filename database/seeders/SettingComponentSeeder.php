@@ -42,6 +42,9 @@ class SettingComponentSeeder extends Seeder
         // Payment Instructions
         $this->seedPaymentInstructions();
 
+        // Contact Information
+        $this->seedContactInformation();
+
         $this->command->info('✓ Setting Components seeded successfully!');
     }
 
@@ -629,5 +632,56 @@ class SettingComponentSeeder extends Seeder
         }
 
         $this->command->info('  ✓ Payment Instructions seeded');
+    }
+
+    /**
+     * Seed contact information.
+     */
+    private function seedContactInformation(): void
+    {
+        $setting = Setting::firstOrCreate(
+            ['key' => 'contact_information'],
+            [
+                'name' => 'Contact Information',
+            ]
+        );
+
+        $contactInfo = [
+            [
+                'name' => 'Phone Number',
+                'value' => '+62 21 1234 5678',
+            ],
+            [
+                'name' => 'WhatsApp Number',
+                'value' => '+62 812 3456 7890',
+            ],
+            [
+                'name' => 'Email Address',
+                'value' => 'support@eventmanagement.com',
+            ],
+            [
+                'name' => 'Office Address',
+                'value' => 'Jl. Sudirman No. 123, Jakarta Pusat, DKI Jakarta 10220',
+            ],
+            [
+                'name' => 'Business Hours',
+                'value' => 'Monday - Friday: 09:00 - 17:00 WIB',
+            ],
+        ];
+
+        foreach ($contactInfo as $info) {
+            SettingComponent::firstOrCreate(
+                [
+                    'setting_id' => $setting->id,
+                    'name' => $info['name'],
+                ],
+                [
+                    'type' => 'string',
+                    'value' => $info['value'],
+                ]
+            );
+        }
+
+        $this->command->info('  ✓ Contact Information seeded');
     }
 }

@@ -1,5 +1,5 @@
 @props(['user'])
-<div class="glass-panel rounded-3xl shadow-float p-6 md:p-8 bg-white/80 dark:bg-gray-800/80">
+<div class="glass-panel rounded-3xl shadow-float p-6 md:p-8 bg-white dark:bg-gray-800/80">
     <div class="flex items-center justify-between mb-8 pl-1">
         <div class="flex items-center gap-3">
             <h3 class="text-xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{{ __('profile.profile_picture') }}</h3>

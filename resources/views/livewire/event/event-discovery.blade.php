@@ -322,22 +322,33 @@
             HOT DEALS SECTION
             Two distinctive cards: Early Bird (Red) & VIP Access (Dark).
         --}}
-        <div class="space-y-6 mt-12 mb-12">
+        <div class="space-y-6 mt-12 mb-12" x-data="{ slider: null }" x-init="slider = $refs.hotDealsSlider">
             <div class="flex items-center justify-between">
                 <h2 class="text-3xl font-black text-gray-800 tracking-tight">Hot Deals</h2>
                 <div class="flex gap-2">
-                    <button class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors">
+                    <button
+                        type="button"
+                        class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"
+                        x-on:click="slider && slider.scrollBy({ left: -(slider.clientWidth * 0.9), behavior: 'smooth' })"
+                    >
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
                     </button>
-                    <button class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors">
+                    <button
+                        type="button"
+                        class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors"
+                        x-on:click="slider && slider.scrollBy({ left: slider.clientWidth * 0.9, behavior: 'smooth' })"
+                    >
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                     </button>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div
+                x-ref="hotDealsSlider"
+                class="flex gap-6 overflow-x-auto pb-4 snap-x snap-mandatory scroll-smooth scrollbar-hide"
+            >
                 <!-- Card 1: Early Bird Special (Red Gradient) -->
-                <div class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#e64747] to-[#e66e47] p-8 md:p-10 text-white shadow-lg shadow-red-500/20 group">
+                <div class="relative w-full shrink-0 md:w-[48%] snap-start overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#e64747] to-[#e66e47] p-8 md:p-10 text-white shadow-lg shadow-red-500/20 group">
                     <!-- Ticket Icon Watermark -->
                     <div class="absolute top-8 right-8 text-white/10 rotate-12 transform group-hover:scale-110 transition-transform duration-700">
                         <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
@@ -372,7 +383,7 @@
                 </div>
 
                 <!-- Card 2: VIP Access (Dark) -->
-                <div class="relative overflow-hidden rounded-[2.5rem] bg-[#1e2330] p-8 md:p-10 text-white shadow-lg shadow-gray-900/10 group">
+                <div class="relative w-full shrink-0 md:w-[48%] snap-start overflow-hidden rounded-[2.5rem] bg-[#1e2330] p-8 md:p-10 text-white shadow-lg shadow-gray-900/10 group">
                     <span class="inline-block px-3 py-1 rounded bg-red-500/20 text-red-400 text-[10px] font-bold uppercase tracking-wider mb-4 border border-red-500/20">Flash Sale</span>
                     
                     <h3 class="text-3xl md:text-4xl font-black tracking-tighter mb-2">VIP ACCESS <br> UPGRADE</h3>
@@ -591,45 +602,31 @@
                 <h2 class="text-4xl font-extrabold text-white drop-shadow-lg">Trending Now</h2>
             </div>
             <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 md:grid md:grid-cols-3 md:gap-6 md:auto-rows-[280px] md:pb-0 md:mx-0 md:px-0 scrollbar-hide items-center">
-                <!-- Large Featured Card -->
-                <div class="min-w-[90%] md:min-w-0 shrink-0 snap-center md:col-span-2 md:row-span-2 relative h-[450px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-2xl">
-                    <img alt="Concert" class="w-full h-full object-cover transition duration-700 group-hover:scale-105 group-hover:rotate-1" src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop"/>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
-                    <div class="absolute top-6 right-6 bg-red-600 text-white text-[10px] font-black uppercase px-4 py-2 rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.6)] animate-pulse border border-red-400">
-                        Selling Fast 🔥
+                @forelse($bestSellerEvents ?? [] as $event)
+                    @php
+                        $bannerUrl = $event->banner?->url ?? ($event->banners->first()?->url ?? 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop');
+                        $categoryName = $event->categories?->first()?->name ?? __('Event');
+                    @endphp
+                    <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center md:col-span-1 md:row-span-1 relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-2xl flex flex-col justify-end" style="background: linear-gradient(0deg, rgba(0,0,0,0.7) 40%, transparent 100%), url('{{ $bannerUrl }}') center/cover no-repeat;">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
+                        <div class="absolute top-6 right-6 bg-red-600 text-white text-[10px] font-black uppercase px-4 py-2 rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.6)] animate-pulse border border-red-400">
+                            {{ __('Selling Fast') }} 🔥
+                        </div>
+                        <div class="absolute bottom-0 left-0 p-8 max-w-2xl">
+                            <div class="text-red-400 font-bold mb-3 uppercase tracking-widest text-sm drop-shadow-sm">{{ $categoryName }}</div>
+                            <h3 class="text-2xl md:text-4xl font-extrabold text-white mb-4 leading-tight">{{ $event->title }}</h3>
+                            <p class="text-gray-300 mb-6 text-lg line-clamp-2 leading-relaxed">{{ $event->short_description ?? Str::limit(strip_tags($event->description), 80) }}</p>
+                            <a href="{{ route('events.show', $event->slug) }}" class="bg-gradient-to-r from-red-500 to-red-600 text-white border border-white/20 inline-flex items-center px-8 py-4 rounded-2xl font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(220,38,38,0.5)]">
+                                {{ __('Get Tickets') }} <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            </a>
+                        </div>
                     </div>
-                    <div class="absolute bottom-0 left-0 p-10 max-w-2xl">
-                        <div class="text-red-400 font-bold mb-3 uppercase tracking-widest text-sm drop-shadow-sm">Music Festival</div>
-                        <h3 class="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">Electric Dreams 2026</h3>
-                        <p class="text-gray-300 mb-6 text-lg line-clamp-2 leading-relaxed">Experience the biggest electronic music festival of the year with top DJs from around the globe.</p>
-                        <button class="bg-gradient-to-r from-red-500 to-red-600 text-white border border-white/20 inline-flex items-center px-8 py-4 rounded-2xl font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(220,38,38,0.5)]">
-                            Get Tickets <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                        </button>
+                @empty
+                    <!-- Fallback: Show placeholder when no events -->
+                    <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center md:col-span-1 relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden bg-gray-700 border border-white/10 shadow-2xl flex items-center justify-center">
+                        <p class="text-white text-center">{{ __('No trending events yet') }}</p>
                     </div>
-                </div>
-                
-                <!-- Small Card 1 -->
-                <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-lg">
-                    <img alt="Comedy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1616781297371-332924dc5280?q=80&w=2070&auto=format&fit=crop"/>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
-                    <div class="absolute bottom-0 left-0 p-8">
-                        <div class="text-red-400 font-bold text-[10px] mb-2 uppercase tracking-wide">Stand-up Comedy</div>
-                        <h3 class="text-2xl font-bold text-white group-hover:text-red-400 transition-colors">Laugh Out Loud</h3>
-                    </div>
-                </div>
-                
-                <!-- Small Card 2 -->
-                <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-lg">
-                    <img alt="Workshop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2070&auto=format&fit=crop"/>
-                    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
-                    <div class="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase px-3 py-1.5 rounded-lg">
-                        Last Few Seats
-                    </div>
-                    <div class="absolute bottom-0 left-0 p-8">
-                        <div class="text-red-400 font-bold text-[10px] mb-2 uppercase tracking-wide">Workshop</div>
-                        <h3 class="text-2xl font-bold text-white group-hover:text-red-400 transition-colors">Creative Design Summit</h3>
-                    </div>
-                </div>
+                @endforelse
             </div>
             </div>
         </div>
@@ -638,79 +635,35 @@
         <div class="relative z-10 py-20 bg-gradient-to-br from-[#e0e7ff] to-[#f3f4f6] border-y border-white/50 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-extrabold text-gray-800 mb-16 text-center drop-shadow-sm">What Fans Are Saying</h2>
-            
             <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pt-6 pb-8 -mx-4 px-4 md:grid md:grid-cols-3 md:gap-12 md:pb-0 md:mx-0 md:px-0 scrollbar-hide items-stretch">
-                <!-- Card 1: Paper Note (Rotated Left) -->
-                <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-400 shadow-md border-2 border-white/50 z-20"></div>
-                    <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                        <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        </div>
-                        <p class="text-gray-600 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">"The booking process was incredibly smooth. I loved the 3D venue view, it really helped me pick the perfect seat!"</p>
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
-                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="User" class="w-full h-full object-cover">
+                @forelse($testimonials as $testimonial)
+                    <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-400 shadow-md border-2 border-white/50 z-20"></div>
+                        <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-2 hover:rotate-0 transition-transform duration-300">
+                            <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
+                                @for($i = 0; $i < ($testimonial->rating ?? 5); $i++)
+                                    <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                @endfor
                             </div>
-                            <div class="min-w-0">
-                                <p class="font-bold text-gray-800 text-xs md:text-sm truncate">Sarah Jenkins</p>
-                                <p class="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase truncate">New York, NY</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 2: Glass Panel (Straight) -->
-                <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gray-400 shadow-md border-2 border-white/50 z-20"></div>
-                    <div class="h-full bg-white/60 backdrop-blur-xl border border-white/70 p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-1px_rgba(0,0,0,0.03),inset_0_1px_2px_rgba(255,255,255,0.8)] transform -rotate-1 hover:rotate-0 transition-transform duration-300">
-                        <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        </div>
-                        <p class="text-gray-700 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">"{{ config('app.name') }} is my go-to for all concerts. The exclusive pre-sale access for members is totally worth it."</p>
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
-                                <img src="https://i.pravatar.cc/150?u=4" alt="User" class="w-full h-full object-cover">
-                            </div>
-                            <div class="min-w-0">
-                                <p class="font-bold text-gray-800 text-xs md:text-sm truncate">Michael Chen</p>
-                                <p class="text-[8px] md:text-[10px] text-gray-500 font-bold uppercase truncate">San Francisco, CA</p>
+                            <p class="text-gray-600 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">{{ $testimonial->content ?? __('No testimonial content') }}</p>
+                            <div class="flex items-center gap-2 md:gap-3">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
+                                    <img src="{{ $testimonial->avatar_url ?? 'https://i.pravatar.cc/150?u=' . ($testimonial->id ?? rand(1,1000)) }}" alt="User" class="w-full h-full object-cover">
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="font-bold text-gray-800 text-xs md:text-sm truncate">{{ $testimonial->name ?? __('Anonymous') }}</p>
+                                    <p class="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase truncate">{{ $testimonial->location ?? __('Unknown Location') }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Card 3: Paper Note (Rotated Right) -->
-                <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-400 shadow-md border-2 border-white/50 z-20"></div>
-                    <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                        <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                        </div>
-                        <p class="text-gray-600 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">"Got tickets for the whole family for the magic show. The QR code entry system was super fast and convenient."</p>
-                        <div class="flex items-center gap-2 md:gap-3">
-                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
-                                <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" class="w-full h-full object-cover">
-                            </div>
-                            <div class="min-w-0">
-                                <p class="font-bold text-gray-800 text-xs md:text-sm truncate">Emma Wilson</p>
-                                <p class="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase truncate">London, UK</p>
-                            </div>
+                @empty
+                    <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
+                        <div class="h-full bg-white p-4 md:p-8 rounded-2xl shadow border border-black/5 flex items-center justify-center">
+                            <span class="text-gray-400 text-sm">{{ __('No testimonials found.') }}</span>
                         </div>
                     </div>
-                </div>
+                @endforelse
             </div>
             </div>
         </div>

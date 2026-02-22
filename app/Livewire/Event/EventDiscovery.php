@@ -5,6 +5,7 @@ namespace App\Livewire\Event;
 use App\Models\Banner;
 use App\Models\Event;
 use App\Models\SettingComponent;
+use App\Models\Testimonial;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -176,72 +177,33 @@ class EventDiscovery extends Component
         return $groups;
     }
 
+    /**
+     * Get best seller events based on total tickets sold (OrderItem quantity)
+     * Returns top 5 events with highest sales
+     */
+    protected function getBestSellerEvents()
+    {
+        return Event::with(['banner', 'ticketTypes', 'categories', 'seoMetadata', 'banners'])
+            ->select('events.*')
+            ->distinct()
+            ->join('ticket_types', 'events.id', '=', 'ticket_types.event_id')
+            ->join('order_items', 'ticket_types.id', '=', 'order_items.ticket_type_id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('events.status', 'published')
+            ->where('events.published_at', '<=', now())
+            ->where('orders.status', 'completed')
+            ->whereNull('events.deleted_at')
+            ->groupBy('events.id')
+            ->orderByRaw('SUM(order_items.quantity) DESC')
+            ->limit(5)
+            ->get();
+    }
+
     public function render()
     {
         $query = Event::published()->with(['banner', 'ticketTypes', 'categories', 'seoMetadata']);
 
-        if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('title', 'like', '%' . $this->search . '%')
-                  ->orWhere('location', 'like', '%' . $this->search . '%');
-            });
-        }
-
-        if ($this->selectedLocation) {
-            $query->where('location', 'like', '%' . $this->selectedLocation . '%');
-        }
-
-        if (!empty($this->selectedCategories)) {
-            $query->whereHas('categories', function($q) {
-                $q->whereIn('setting_components.id', $this->selectedCategories);
-            });
-        }
-
-        if ($this->minPrice > 0 || $this->maxPrice < 10000000) {
-            $query->whereHas('ticketTypes', function($q) {
-                $q->where('price', '>=', $this->minPrice);
-                if ($this->maxPrice < 10000000) {
-                    $q->where('price', '<=', $this->maxPrice);
-                }
-            });
-        }
-
-        // Apply Date Filtering
-        if ($this->dateFilter === 'today') {
-            $query->whereDate('event_date', now()->toDateString());
-        } elseif ($this->dateFilter === 'tomorrow') {
-            $query->whereDate('event_date', now()->addDay()->toDateString());
-        } elseif ($this->dateFilter === 'this_weekend') {
-            $query->whereBetween('event_date', [
-                now()->endOfWeek()->subDays(1)->startOfDay(), // Saturday
-                now()->endOfWeek()->endOfDay() // Sunday
-            ]);
-        } elseif ($this->dateFilter === 'other' && ($this->startDate || $this->endDate)) {
-            if ($this->startDate) {
-                $query->whereDate('event_date', '>=', $this->startDate);
-            }
-            if ($this->endDate) {
-                $query->whereDate('event_date', '<=', $this->endDate);
-            }
-        }
-
-        switch ($this->sort) {
-            case 'lowest_price':
-                $query->withMin('ticketTypes as min_price', 'price')->orderBy('min_price', 'asc');
-                break;
-            case 'highest_price':
-                $query->withMin('ticketTypes as min_price', 'price')->orderBy('min_price', 'desc');
-                break;
-            case 'newly_added':
-                $query->latest();
-                break;
-            case 'most_popular':
-                // For now, let's just use ID desc or something as a proxy for popular
-                $query->orderByDesc('id');
-                break;
-            default:
-                $query->orderBy('event_date', 'asc');
-        }
+        // ...existing code...
 
         $events = $query->take(8)->get();
 
@@ -253,12 +215,17 @@ class EventDiscovery extends Component
         $sectionBanners = Banner::active()->scheduled()->byType('section')->with('fileBucket')->orderBy('position')->get();
         $mobileBanner   = Banner::active()->scheduled()->byType('mobile')->with('fileBucket')->orderBy('position')->first();
 
+        $bestSellerEvents = $this->getBestSellerEvents();
+        $testimonials = Testimonial::limit(10)->get();
+
         return view('livewire.event.event-discovery', [
-            'events'         => $events,
-            'categories'     => $categories,
-            'heroBanners'    => $heroBanners,
-            'sectionBanners' => $sectionBanners,
-            'mobileBanner'   => $mobileBanner,
+            'events'           => $events,
+            'categories'       => $categories,
+            'heroBanners'      => $heroBanners,
+            'sectionBanners'   => $sectionBanners,
+            'mobileBanner'     => $mobileBanner,
+            'bestSellerEvents' => $bestSellerEvents,
+            'testimonials'     => $testimonials,
         ]);
     }
 }
