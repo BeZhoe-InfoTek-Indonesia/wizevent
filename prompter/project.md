@@ -18,6 +18,7 @@ The goal is to eliminate manual processes, enhance attendee experience through d
     - `simplesoftwareio/simple-qrcode` (QR generation)
     - `dompdf` (Invoice generation)
     - `spatie/laravel-activitylog` (Audit logging)
+    - `livewire/flux` (UI Component Library)
 
 ## Project Conventions
 

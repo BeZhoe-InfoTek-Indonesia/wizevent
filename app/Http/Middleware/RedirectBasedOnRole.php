@@ -16,6 +16,12 @@ class RedirectBasedOnRole
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Safety: never redirect Filament/admin routes, otherwise a misapplied
+        // middleware could cause an infinite redirect back to the same page.
+        if ($request->is('admin') || $request->is('admin/*') || $request->routeIs('filament.*')) {
+            return $next($request);
+        }
+
         $user = Auth::user();
 
         if ($user && $user->hasRole(['Super Admin', 'Event Manager', 'Finance Admin', 'Check-in Staff'])) {

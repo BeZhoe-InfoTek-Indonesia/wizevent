@@ -25,7 +25,7 @@ class Checkout extends Component
     {
         $this->event = Event::where('slug', $slug)
             ->where('status', 'published')
-            ->with(['ticketTypes', 'banner'])
+            ->with(['ticketTypes', 'banner', 'seoMetadata'])
             ->firstOrFail();
 
         foreach ($this->event->ticketTypes as $ticketType) {
@@ -145,9 +145,16 @@ class Checkout extends Component
 
     public function render(): View
     {
+        $seo = $this->event->seoMetadata;
+
         return view('livewire.event.checkout', [
             'event' => $this->event,
             'selectedTickets' => $this->event->ticketTypes->filter(fn($t) => ($this->quantities[$t->id] ?? 0) > 0),
+            'pageTitle' => $seo->title ?? $this->event->title,
+            'metaDescription' => $seo->description ?? null,
+            'metaImage' => $seo->og_image ?? $this->event->banner?->url,
+            'metaKeywords' => $seo->keywords ?? null,
+            'canonicalUrl' => $seo->canonical_url ?? route('events.checkout', $this->event->slug),
         ]);
     }
 }

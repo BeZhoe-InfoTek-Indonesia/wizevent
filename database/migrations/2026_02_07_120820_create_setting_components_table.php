@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('setting_id')->constrained('settings')->cascadeOnDelete();
             $table->string('name');
-            $table->enum('type', ['string', 'integer', 'boolean']);
+            $table->enum('type', ['string', 'integer', 'boolean', 'html']);
             $table->text('value')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

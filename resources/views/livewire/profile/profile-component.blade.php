@@ -1,150 +1,266 @@
-<div class="min-h-screen bg-gray-50 dark:bg-gray-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex flex-col lg:flex-row gap-6">
-            <!-- Sidebar -->
-            <aside class="lg:w-64 flex-shrink-0">
-                <x-profile.user-info-card :user="$user" />
+@extends('layouts.profile-layout')
 
-                <!-- Navigation Menu -->
-                <nav class="bg-white dark:bg-gray-800 rounded-lg shadow-sm">
-                    <x-profile.nav-item tab="account">
-                        <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                            </svg>
-                        </x-slot>
-                        Account
-                    </x-profile.nav-item>
-                    <x-profile.nav-item tab="reviews" class="border-t border-gray-100 dark:border-gray-700">
-                        <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
-                            </svg>
-                        </x-slot>
-                        Your Reviews
-                    </x-profile.nav-item>
-                    <x-profile.nav-item tab="wishlist" class="border-t border-gray-100 dark:border-gray-700">
-                        <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-                            </svg>
-                        </x-slot>
-                        Wishlist
-                    </x-profile.nav-item>
-                    <x-profile.nav-item tab="orders" class="border-t border-gray-100 dark:border-gray-700">
-                        <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                        </x-slot>
-                        Your Orders
-                    </x-profile.nav-item>
-                    <x-profile.nav-item tab="help" class="border-t border-gray-100 dark:border-gray-700">
-                        <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </x-slot>
-                        Help Center <span class="ml-auto bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">New</span>
-                    </x-profile.nav-item>
-                    <x-profile.nav-item tab="settings" class="border-t border-gray-100 dark:border-gray-700">
-                        <x-slot name="icon">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                            </svg>
-                        </x-slot>
-                        Settings
-                    </x-profile.nav-item>
-                </nav>
-            </aside>
+@push('styles')
+    @filamentStyles
+@endpush
 
-            <!-- Main Content -->
-            <main class="flex-1">
-                <!-- Account Tab Content -->
-                <div x-show="activeTab === 'account'" x-transition>
-                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 mb-6">
-                        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Account</h2>
-                        <x-profile.section-card title="Account">
-                            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 mb-6">
-                                <h3 class="font-semibold text-gray-900 dark:text-gray-100 mb-2">Account Center</h3>
-                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                                    To access your profile details and these categories below, go to the 
-                                    <span class="font-semibold text-gray-900 dark:text-gray-100">Blibli Tiket Account Center</span>.
-                                </p>
+@push('scripts')
+    @filamentScripts(withCore: true)
+@endpush
 
-                                <div class="bg-white dark:bg-gray-800 rounded-lg p-4 mb-4">
-                                    <div class="flex items-center gap-4">
-                                        @if($user->avatar)
-                                            <img class="h-16 w-16 rounded-full object-cover" src="{{ Storage::url($user->avatar) }}" alt="{{ $user->name }}">
+@section('profile-content')
+    <!-- Dashboard Tab Content -->
+    <div x-show="activeTab === 'dashboard'" x-transition role="tabpanel" id="panel-dashboard" aria-labelledby="tab-dashboard" tabindex="0">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 mb-6 border border-gray-100 dark:border-gray-700">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2">
+                <div>
+                    <h1 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ __('profile.dashboard') }}</h1>
+                    <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">{{ __('profile.welcome_back', ['name' => explode(' ', $user->name)[0], 'count' => $upcomingEvents->count()]) }}</p>
+                </div>
+                <span class="text-xs sm:text-sm text-gray-500">{{ now()->format('M d, Y') }}</span>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <!-- My Tickets -->
+                <div @click="activeTab = 'orders'" class="cursor-pointer bg-red-50 dark:bg-red-900/20 p-4 rounded-xl flex flex-col items-center justify-center hover:shadow-md transition-shadow">
+                    <div class="w-10 h-10 bg-red-100 dark:bg-red-800 rounded-full flex items-center justify-center mb-2 text-red-600 dark:text-red-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-gray-900 dark:text-gray-100">{{ $ticketsCount }}</span>
+                    <span class="text-xs text-gray-600 dark:text-gray-400">{{ __('profile.my_tickets') }}</span>
+                </div>
+                <!-- Wishlist -->
+                <div @click="activeTab = 'wishlist'" class="cursor-pointer bg-blue-50 dark:bg-blue-900/20 p-4 rounded-xl flex flex-col items-center justify-center hover:shadow-md transition-shadow">
+                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center mb-2 text-blue-600 dark:text-blue-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-gray-900 dark:text-gray-100">{{ $wishlistCount }}</span>
+                    <span class="text-xs text-gray-600 dark:text-gray-400">{{ __('profile.wishlist') }}</span>
+                </div>
+                <!-- History -->
+                <div @click="activeTab = 'orders'" class="cursor-pointer bg-purple-50 dark:bg-purple-900/20 p-4 rounded-xl flex flex-col items-center justify-center hover:shadow-md transition-shadow">
+                    <div class="w-10 h-10 bg-purple-100 dark:bg-purple-800 rounded-full flex items-center justify-center mb-2 text-purple-600 dark:text-purple-200">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-gray-900 dark:text-gray-100">{{ $historyCount }}</span>
+                    <span class="text-xs text-gray-600 dark:text-gray-400">{{ __('profile.history') }}</span>
+                </div>
+            </div>
+
+            <!-- Upcoming Events -->
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-2">
+                    <h3 class="font-bold text-base md:text-lg text-gray-900 dark:text-gray-100">{{ __('profile.upcoming_events') }}</h3>
+                    <a href="{{ route('events.index') }}" class="text-xs sm:text-sm text-red-500 hover:text-red-600 font-medium">{{ __('profile.view_all') }}</a>
+                </div>
+                @if($upcomingEvents->count() > 0)
+                    @php $upcomingNeedsSlider = $upcomingEvents->count() > 2; @endphp
+                    <div class="relative" x-data="{}">
+                        <div x-ref="upcomingSlider" class="{{ $upcomingNeedsSlider ? 'flex flex-nowrap gap-3 md:gap-4 overflow-x-auto p-2 pb-4 -mx-2 scrollbar-hide snap-x snap-mandatory w-[calc(100%+1rem)]' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4' }}">
+                            @foreach($upcomingEvents as $event)
+                                <div class="{{ $upcomingNeedsSlider ? 'min-w-[85vw] md:min-w-[300px] snap-start shrink-0' : '' }} flex gap-3 md:gap-4 bg-white dark:bg-gray-700/50 rounded-xl p-3 border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all">
+                                    <img src="{{ $event->banner?->url ?? 'https://placehold.co/100x100' }}" alt="{{ $event->title }}" class="w-16 h-16 md:w-20 md:h-20 rounded-lg object-cover shrink-0">
+                                    <div class="flex flex-col justify-center min-w-0 flex-1">
+                                        <h4 class="font-bold text-sm md:text-base text-gray-900 dark:text-gray-100 line-clamp-1">{{ $event->title }}</h4>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            <span class="block mb-1">📅 {{ $event->event_date->format('M d • H:i') }}</span>
+                                            <span class="line-clamp-1">📍 {{ $event->venue_name ?? $event->location ?? 'TBA' }}</span>
+                                        </p>
+                                        @if($event->status === 'published')
+                                            <span class="inline-block mt-2 text-xs text-green-600 font-medium bg-green-50 dark:bg-green-900/20 dark:text-green-200 px-2 py-0.5 rounded-full w-fit">{{ __('profile.confirmed') }}</span>
                                         @else
-                                            <div class="h-16 w-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                                                <span class="text-xl text-white font-bold">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
-                                            </div>
+                                            <span class="inline-block mt-2 text-xs text-yellow-600 font-medium bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200 px-2 py-0.5 rounded-full w-fit">{{ __('profile.processing') }}</span>
                                         @endif
-                                        <div>
-                                            <h4 class="font-bold text-gray-900 dark:text-gray-100">{{ $user->name }}</h4>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $user->phone ?? '+62813284351' }}</p>
-                                            <p class="text-sm text-gray-600 dark:text-gray-400">{{ $user->email }}</p>
-                                        </div>
+                                    </div>
+                                    <div class="flex flex-col justify-between items-end shrink-0 ml-2">
+                                       <span class="font-bold text-sm md:text-base text-red-500">
+                                            @if(($event->from_price ?? 0) == 0)
+                                                {{ __('profile.free') }}
+                                            @else
+                                                {{ __('profile.from_price', ['price' => number_format($event->from_price, 2)]) }}
+                                            @endif
+                                       </span>
                                     </div>
                                 </div>
-
-                                <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-semibold text-sm">
-                                    To Account Center →
-                                </a>
+                            @endforeach
+                        </div>
+                        @if($upcomingNeedsSlider)
+                            <div class="hidden md:flex absolute inset-y-0 left-0 items-center z-10">
+                                <button type="button" class="ml-[-18px] w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center hover:scale-110 transition-transform" aria-label="{{ __('Previous slide') }}" @click="$refs.upcomingSlider.scrollBy({ left: -320, behavior: 'smooth' })">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                    </svg>
+                                </button>
                             </div>
-
-                            <x-profile.profile-form />
-                        </x-profile.section-card>
-
-                        <x-profile.section-card>
-                            <x-profile.avatar-section :user="$user" />
-                        </x-profile.section-card>
-
-                        <x-profile.section-card>
-                            <x-profile.password-section />
-                        </x-profile.section-card>
-
-                        <x-profile.section-card>
-                            <x-profile.account-info :user="$user" />
-                        </x-profile.section-card>
+                            <div class="hidden md:flex absolute inset-y-0 right-0 items-center z-10">
+                                <button type="button" class="mr-[-18px] w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center hover:scale-110 transition-transform" aria-label="{{ __('Next slide') }}" @click="$refs.upcomingSlider.scrollBy({ left: 320, behavior: 'smooth' })">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        @endif
                     </div>
-
-                    <!-- Placeholder content for other tabs -->
-                    <div x-show="activeTab !== 'account'" x-transition>
-                            <x-profile.placeholder />
+                @else
+                    <div class="text-center py-8 bg-gray-50 dark:bg-gray-900/50 rounded-xl border border-dashed border-gray-200 dark:border-gray-700">
+                        <p class="text-gray-500">{{ __('profile.no_upcoming_events') }}</p>
+                        <a href="{{ route('events.index') }}" class="text-red-500 hover:underline text-sm font-medium mt-2">{{ __('profile.browse_events') }}</a>
                     </div>
-            </main>
+                @endif
+            </div>
+
+            <!-- Featured For You -->
+            <div>
+                <h3 class="font-bold text-base md:text-lg text-gray-900 dark:text-gray-100 mb-4">{{ __('profile.featured_for_you') }}</h3>
+                @php $featuredNeedsSlider = $featuredEvents->count() > 2; @endphp
+                <div class="relative" x-data="{}">
+                    <div x-ref="featuredSlider" class="{{ $featuredNeedsSlider ? 'flex flex-nowrap gap-3 md:gap-4 overflow-x-auto p-2 pb-4 -mx-2 scrollbar-hide snap-x snap-mandatory w-[calc(100%+1rem)]' : 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4' }}">
+                        @foreach($featuredEvents as $event)
+                            <div class="{{ $featuredNeedsSlider ? 'min-w-[75vw] md:min-w-[280px] snap-start shrink-0' : '' }} bg-white dark:bg-gray-700/30 rounded-xl overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-md transition-all group">
+                                <div class="relative">
+                                    <img src="{{ $event->banner?->url ?? 'https://placehold.co/400x200' }}" alt="{{ $event->title }}" class="w-full h-28 md:h-32 object-cover group-hover:scale-105 transition-transform duration-300">
+                                    <button type="button" class="absolute top-2 right-2 w-8 h-8 bg-white/80 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
+                                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <div class="p-3">
+                                    <h4 class="font-bold text-sm md:text-base text-gray-900 dark:text-gray-100 line-clamp-1">{{ $event->title }}</h4>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">{{ $event->event_date->format('M d') }} • {{ $event->location ?? 'Online' }}</p>
+                                    <p class="text-red-500 font-bold text-sm">
+                                        @if(($event->from_price ?? 0) == 0)
+                                            {{ __('profile.free') }}
+                                        @else
+                                            {{ __('profile.from_price', ['price' => number_format($event->from_price, 2)]) }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                    @if($featuredNeedsSlider)
+                        <div class="hidden md:flex absolute inset-y-0 left-0 items-center z-10">
+                            <button type="button" class="ml-[-18px] w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center hover:scale-110 transition-transform" aria-label="{{ __('Previous slide') }}" @click="$refs.featuredSlider.scrollBy({ left: -320, behavior: 'smooth' })">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="hidden md:flex absolute inset-y-0 right-0 items-center z-10">
+                            <button type="button" class="mr-[-18px] w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm flex items-center justify-center hover:scale-110 transition-transform" aria-label="{{ __('Next slide') }}" @click="$refs.featuredSlider.scrollBy({ left: 320, behavior: 'smooth' })">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
         </div>
     </div>
-</div>
 
-<!-- Alpine.js initialization for tab switching -->
-<div x-data="{ activeTab: 'account' }" style="display: none;"></div>
+    <!-- Account Tab Content -->
+    <div x-show="activeTab === 'account'" x-transition role="tabpanel" id="panel-account" aria-labelledby="tab-account" tabindex="0">
+        <div class="mb-6">
+            <h2 class="text-xl md:text-2xl font-bold text-gray-900 dark:text-gray-100">{{ __('profile.account_settings') }}</h2>
+            <p class="text-sm md:text-base text-gray-600 dark:text-gray-400 mt-1">{{ __('profile.manage_profile_preferences') }}</p>
+        </div>
 
-<!-- Event Listeners for Success Messages -->
-<script>
-document.addEventListener('livewire:init', () => {
-    Livewire.on('profile-updated', (event) => {
-        // Show success message
-        alert(event.message);
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+            <!-- Left Column -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Profile Info -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
+                    <x-profile.profile-form />
+                </div>
+
+                <!-- Password -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
+                    <x-profile.password-section />
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="space-y-6">
+                <!-- Avatar -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
+                    <x-profile.avatar-section :user="$user" />
+                </div>
+
+                <!-- Member Since -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 border border-gray-100 dark:border-gray-700">
+                    <div class="flex items-center gap-3 md:gap-4">
+                        <div class="p-2 md:p-3 bg-red-50 dark:bg-red-900/20 text-red-500 rounded-xl">
+                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ __('profile.member_since') }}</p>
+                            <p class="text-lg md:text-xl font-bold text-gray-900 dark:text-gray-100">{{ $user->created_at->format('M Y') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reviews Tab Content -->
+    <div x-show="activeTab === 'reviews'" x-transition role="tabpanel" id="panel-reviews" aria-labelledby="tab-reviews" tabindex="0">
+        <livewire:profile.your-reviews />
+    </div>
+
+    <!-- Wishlist Tab Content -->
+    <div x-show="activeTab === 'wishlist'" x-transition role="tabpanel" id="panel-wishlist" aria-labelledby="tab-wishlist" tabindex="0">
+        <livewire:profile.wishlist />
+    </div>
+
+    <!-- Orders Tab Content -->
+    <div x-show="activeTab === 'orders'" x-transition role="tabpanel" id="panel-orders" aria-labelledby="tab-orders" tabindex="0">
+        <livewire:profile.your-orders />
+    </div>
+
+    <!-- Help Center Tab Content -->
+    <div x-show="activeTab === 'help'" x-transition role="tabpanel" id="panel-help" aria-labelledby="tab-help" tabindex="0">
+        <livewire:profile.help-center />
+    </div>
+
+    <!-- Settings Tab Content -->
+    <div x-show="activeTab === 'settings'" x-transition role="tabpanel" id="panel-settings" aria-labelledby="tab-settings" tabindex="0">
+        <livewire:profile.settings />
+    </div>
+
+    <script>
+    document.addEventListener('livewire:init', () => {
+        Livewire.on('profile-updated', (event) => {
+            // Show success message
+            alert(event.message);
+        });
+
+        Livewire.on('password-updated', (event) => {
+            alert(event.message);
+        });
+
+        Livewire.on('avatar-updated', (event) => {
+            alert(event.message);
+            // Refresh the page to show the new avatar
+            window.location.reload();
+        });
+
+        Livewire.on('avatar-deleted', (event) => {
+            alert(event.message);
+            // Refresh the page to remove the avatar
+            window.location.reload();
+        });
     });
-
-    Livewire.on('password-updated', (event) => {
-        alert(event.message);
-    });
-
-    Livewire.on('avatar-updated', (event) => {
-        alert(event.message);
-        // Refresh the page to show the new avatar
-        window.location.reload();
-    });
-
-    Livewire.on('avatar-deleted', (event) => {
-        alert(event.message);
-        // Refresh the page to remove the avatar
-        window.location.reload();
-    });
-});
-</script>
+    </script>
+@endsection

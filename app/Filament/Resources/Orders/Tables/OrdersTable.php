@@ -2,15 +2,17 @@
 
 namespace App\Filament\Resources\Orders\Tables;
 
-use App\Filament\Resources\Orders\Pages\ViewOrder;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\ViewAction as TableViewAction;
+
+use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class OrdersTable
 {
@@ -77,100 +79,45 @@ class OrdersTable
                         'expired' => __('order.status.expired'),
                     ])
                     ->default('pending_verification'),
+                Filter::make('created_at')
+                    ->form([
+                        DatePicker::make('created_from')
+                            ->label(__('order.filter.created_from')),
+                        DatePicker::make('created_until')
+                            ->label(__('order.filter.created_until')),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    }),
             ])
             ->recordActions([
                 ActionGroup::make([
                     \Filament\Actions\EditAction::make(),
+                    Action::make('review_payment')
+                        ->label(__('payment_proof.review'))
+                        ->visible(fn ($record): bool => $record->status === 'pending_verification')
+                        ->icon('heroicon-o-shield-check')
+                        ->color('warning')
+                        ->url(fn ($record) => \App\Filament\Resources\Orders\OrderResource::getUrl('review', ['record' => $record])),
                     Action::make('view_payment_proof')
                         ->label(__('payment_proof.view'))
-                        ->visible(fn ($record): bool => $record->paymentProof && $record->paymentProof->fileBucket)
+                        ->visible(fn ($record): bool => $record->paymentProof && $record->paymentProof->fileBucket && $record->status !== 'pending_verification')
                         ->icon('heroicon-o-document')
-                        ->modalContent(fn ($record) => view('filament.orders.payment-proof-view', [
-                            'paymentProof' => $record->paymentProof,
-                            'fileBucket' => $record->paymentProof->fileBucket,
-                        ]))
+                        ->modalContent(fn ($record) => new \Illuminate\Support\HtmlString(
+                            '<img src="' . $record->paymentProof->fileBucket->url . '" class="w-full rounded-lg shadow-md" alt="Payment Proof">'
+                        ))
                         ->modalHeading(__('payment_proof.view'))
-                        ->modalWidth('lg'),
-                    Action::make('approve_payment')
-                        ->label(__('payment_proof.approve'))
-                        ->visible(fn ($record): bool => $record->paymentProof && $record->paymentProof->status === 'pending' && $record->status === 'pending_verification')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->form([
-                            \Filament\Forms\Components\Textarea::make('notes')
-                                ->label(__('payment_proof.approval_notes'))
-                                ->placeholder(__('payment_proof.approval_notes_placeholder'))
-                                ->rows(3),
-                        ])
-                        ->action(function ($record, array $data) {
-                            app(\App\Services\OrderService::class)->approvePayment($record->paymentProof, auth()->user());
-
-                            \Filament\Notifications\Notification::make()
-                                ->title(__('payment_proof.approved_successfully'))
-                                ->success()
-                                ->send();
-                        }),
-                    Action::make('reject_payment')
-                        ->label(__('payment_proof.reject'))
-                        ->visible(fn ($record): bool => $record->paymentProof && $record->paymentProof->status === 'pending' && $record->status === 'pending_verification')
-                        ->icon('heroicon-o-x-circle')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->form([
-                            \Filament\Forms\Components\Textarea::make('rejection_reason')
-                                ->label(__('payment_proof.rejection_reason'))
-                                ->placeholder(__('payment_proof.rejection_reason_placeholder'))
-                                ->required()
-                                ->rows(3),
-                        ])
-                        ->action(function ($record, array $data) {
-                            app(\App\Services\OrderService::class)->rejectPayment(
-                                $record->paymentProof,
-                                auth()->user(),
-                                $data['rejection_reason']
-                            );
-
-                            \Filament\Notifications\Notification::make()
-                                ->title(__('payment_proof.rejected_successfully'))
-                                ->warning()
-                                ->send();
-                        }),
-                    Action::make('approve_manual')
-                        ->label(__('payment_proof.approve_manual'))
-                        ->visible(fn ($record): bool => !$record->paymentProof && $record->status === 'pending_verification')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->action(function ($record) {
-                            app(\App\Services\OrderService::class)->approveManualOrder($record);
-
-                            \Filament\Notifications\Notification::make()
-                                ->title(__('payment_proof.approved_successfully'))
-                                ->success()
-                                ->send();
-                        }),
-                    Action::make('reject_manual')
-                        ->label(__('payment_proof.reject_manual'))
-                        ->visible(fn ($record): bool => !$record->paymentProof && $record->status === 'pending_verification')
-                        ->icon('heroicon-o-x-circle')
-                        ->color('danger')
-                        ->requiresConfirmation()
-                        ->form([
-                            \Filament\Forms\Components\Textarea::make('rejection_reason')
-                                ->label(__('payment_proof.rejection_reason'))
-                                ->placeholder(__('payment_proof.rejection_reason_placeholder'))
-                                ->required()
-                                ->rows(3),
-                        ])
-                        ->action(function ($record, array $data) {
-                            app(\App\Services\OrderService::class)->cancelOrder($record, $data['rejection_reason']);
-
-                            \Filament\Notifications\Notification::make()
-                                ->title(__('payment_proof.rejected_successfully'))
-                                ->warning()
-                                ->send();
-                        }),
+                        ->modalWidth('lg')
+                        ->modalSubmitAction(false)
+                        ->modalCancelAction(false),
                 ]),
             ])
             ->toolbarActions([

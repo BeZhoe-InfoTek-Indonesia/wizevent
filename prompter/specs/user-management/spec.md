@@ -15,10 +15,10 @@ The system SHALL provide comprehensive user profile management capabilities for 
 
 #### Scenario: Avatar management and processing
 - **WHEN** a user uploads a profile picture
-- **THEN** the image is validated for file type (JPG, PNG, WebP) and size (≤5MB)
-- **AND** the image is automatically cropped and resized to standard dimensions
+- **THEN** image is validated for file type (JPG, PNG, WebP) and size (≤5MB)
+- **AND** image is automatically cropped and resized to standard dimensions
 - **AND** both Google OAuth avatars and manual uploads are supported
-- **AND** the avatar is displayed consistently across the platform
+- **AND** avatar is displayed consistently across the platform
 
 #### Scenario: Account security and deletion
 - **WHEN** a user wants to delete their account
@@ -42,4 +42,19 @@ The system SHALL provide users with visibility into their own account activity a
 - **THEN** all profile modifications are logged with timestamps
 - **AND** users can view their recent profile change history
 - **AND** email notifications are sent for sensitive changes (email, password)
+
+### Requirement: Profile Notification Preferences
+The system SHALL allow users to manage their notification preferences from their profile.
+
+#### Scenario: User accesses notification preferences from profile
+- **WHEN** a user navigates to their profile page
+- **THEN** they see a "Notification Preferences" section or link
+- **AND** clicking it takes them to the notification preferences page
+- **AND** the notification preferences page displays their current settings
+
+#### Scenario: Notification preferences link in profile menu
+- **WHEN** a user is on any page with the user menu in navigation
+- **THEN** they can access "Notification Preferences" from the dropdown menu
+- **AND** clicking it takes them to the notification preferences page
+- **AND** the link is clearly labeled and discoverable
 

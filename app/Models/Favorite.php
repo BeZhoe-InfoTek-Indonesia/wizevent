@@ -7,17 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * @mixin IdeHelperFavorite
- *
  * @property int $id
  * @property int $user_id
  * @property int $event_id
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\User $user
  * @property-read \App\Models\Event $event
- *
- * @method static \Database\Factories\FavoriteFactory factory($count = null, $state = [])
+ * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Favorite newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Favorite newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Favorite query()
@@ -26,7 +22,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Favorite whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Favorite whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Favorite whereUserId($value)
- *
  * @mixin \Eloquent
  */
 class Favorite extends Model

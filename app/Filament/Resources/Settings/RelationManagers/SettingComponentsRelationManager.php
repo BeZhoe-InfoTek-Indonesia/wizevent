@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\Settings\RelationManagers;
 
 use App\Filament\Resources\Settings\Schemas\SettingComponentForm;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -21,7 +25,7 @@ class SettingComponentsRelationManager extends RelationManager
 
     public function form(Schema $schema): Schema
     {
-        return SettingComponentForm::configure($schema);
+        return SettingComponentForm::configure($schema, $this->getOwnerRecord());
     }
 
     public function table(Table $table): Table
@@ -40,6 +44,7 @@ class SettingComponentsRelationManager extends RelationManager
                         'string' => 'gray',
                         'integer' => 'blue',
                         'boolean' => 'green',
+                        'html' => 'yellow',
                     }),
                 TextColumn::make('value')
                     ->label(__('setting.component_value'))
@@ -47,12 +52,42 @@ class SettingComponentsRelationManager extends RelationManager
                     ->limit(50),
             ])
             ->recordActions([
+                ViewAction::make(),
                 EditAction::make()
+                    ->visible(true)
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['value'] = match ($data['type']) {
+                            'boolean' => $data['value_boolean'] ? 'true' : 'false',
+                            'html' => $data['value_html'],
+                            default => $data['value_text'] ?? null,
+                        };
+                        
+                        unset($data['value_boolean'], $data['value_html'], $data['value_text']);
+                        
+                        return $data;
+                    })  
+                    ->modal(),
+                DeleteAction::make(),
+            ])
+            ->headerActions([
+                CreateAction::make()
+                    ->mutateFormDataUsing(function (array $data): array {
+                        $data['value'] = match ($data['type']) {
+                            'boolean' => $data['value_boolean'] ? 'true' : 'false',
+                            'html' => $data['value_html'],
+                            default => $data['value_text'] ?? null,
+                        };
+                        
+                        unset($data['value_boolean'], $data['value_html'], $data['value_text']);
+                        
+                        return $data;
+                    })
                     ->modal(),
             ])
-            ->toolbarActions([
-                CreateAction::make()
-                    ->modal(),
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
             ]);
     }
 }

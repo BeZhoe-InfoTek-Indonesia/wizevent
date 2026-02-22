@@ -39,6 +39,27 @@ class RolePermissionSeeder extends Seeder
             'tickets.view',
             'tickets.check-in',
             'users.view',
+            'organizers.view',
+            'organizers.create',
+            'organizers.edit',
+            'performers.view',
+            'performers.create',
+            'performers.edit',
+            'testimonials.view',
+            'testimonials.moderate',
+            'testimonials.publish',
+            'banners.view',
+            'banners.create',
+            'banners.edit',
+            'banners.delete',
+            'faqs.view',
+            'faqs.create',
+            'faqs.edit',
+            'faqs.delete',
+            'email-templates.view',
+            'email-templates.create',
+            'email-templates.edit',
+            'email-templates.delete',
         ]);
 
         // Finance Admin permissions - can manage financial aspects
@@ -48,6 +69,11 @@ class RolePermissionSeeder extends Seeder
             'finance.process-refunds',
             'events.view',
             'tickets.view',
+            'orders.view',
+            'payment-proofs.view',
+            'payment-proofs.verify',
+            'payment-proofs.approve',
+            'payment-proofs.reject',
         ]);
 
         // Check-in Staff permissions - can check in tickets and view events

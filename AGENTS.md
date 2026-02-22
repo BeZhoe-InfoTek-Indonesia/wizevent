@@ -54,6 +54,13 @@ SaaS Event Management & Digital Ticketing Platform
   - Automatically updates when models change to maintain accurate autocomplete
   - Provides full type safety and IDE support for Eloquent models
 
+- **Currency Field Standardization (IDR - Indonesian Rupiah)**:
+  - **Form Input**: Always use `->money('IDR', locale: 'id')` with `->numeric()` for all money input fields
+  - **Display/Output**: Use `->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))`  for displaying money values in tables
+  - **Locale**: All currency fields use `locale: 'id'` for Indonesian number formatting (dots for thousands, commas for decimals)
+  - **Examples**: EventPlan budget_target, revenue_target, OrderItem total_price fields
+  - **Widget Currency Display**: Chart widgets and stats display currency values using `number_format($value, 0, ',', '.')` for consistency
+
 **Current Implementation Status:**
 🟢 **Completed (Core Ecosystem):**
 - ✅ Authentication system (Laravel Breeze + Livewire)
@@ -64,19 +71,48 @@ SaaS Event Management & Digital Ticketing Platform
 - ✅ Admin interfaces for user/role/permission management (Filament)
 - ✅ Activity logging (Spatie Activity Log)
 - ✅ Multi-language support (English, Indonesian)
-- ✅ Event Management Module (Core CRUD, Ticket Types, Banners)
 - ✅ **EPIC-006: Payment Verification Workflow**
   - ✅ Order & OrderItem management
   - ✅ Visitor-facing Checkout & Payment Proof upload (Livewire)
   - ✅ Finance Admin verification queue with lightbox review (Filament)
   - ✅ Inventory reservation vs deduction logic
+  - ✅ Async reservation workflow
 - ✅ **EPIC-007: Digital Ticket Issuance & QR Generation**
   - ✅ Modern/Premium PDF generation (Invoice & Tickets) using DomPDF
   - ✅ Secure QR Code generation and scannability optimization
-  - ✅ Async processing workflow (Queue Jobs) for post-payment actions
-  - ✅ Secure download routes for authenticated users
+  - ✅ Async processing workflow (Queue Jobs)
+- ✅ **EPIC-008: Event Management Enhancement (Wizard Flow)**
+  - ✅ Refactored Event form to 5-step Wizard (Basic, Location, Media, Sales, Organizer)
+  - ✅ Integrated SEO metadata and promotional images
+  - ✅ Added Organizer and Performer management via pivot tables
+- ✅ **EPIC-009: Revenue Simulation & Financial Analytics**
+  - ✅ Real-time Revenue Calculator modal in Event List
+  - ✅ Pessimistic/Optimistic scenario planning
+  - ✅ Automated tax, platform fees, and merch conversion projections
+- ✅ **EPIC-011: AI-Powered Event Planner**
+  - ✅ `EventPlan` / `EventPlanLineItem` models with soft deletes and activity logging
+  - ✅ Filament `EventPlanResource` (List, Create, Edit, View pages) — first item in "Event Management" nav group
+  - ✅ Budget line items management via `EventPlanLineItemsRelationManager`
+  - ✅ AI Concept Builder (`AiService::generateConcept`) with apply-to-event action
+  - ✅ AI Budget Forecaster (`AiService::generateBudgetForecast`) with line-item population
+  - ✅ AI Pricing Strategy (`AiService::suggestPricingStrategy`) with apply-to-event-tickets action
+   - ✅ AI Risk Assessment (`AiService::assessRisks`) with severity scoring
+   - ✅ Planning vs Realization dashboard: KPI stats, revenue comparison chart, expense-by-category chart
+   - ✅ Super Admin-only permissions (`ViewAny:EventPlan`, `Create:EventPlan`, etc.)
+- ✅ **Visitor PWA Capabilities**
+   - ✅ PWA Web Manifest for home screen installation
+   - ✅ Service Worker with asset caching strategy (Cache First for static, Network First for dynamic)
+   - ✅ Offline detection and notification banner
+   - ✅ PWA icons (192x192, 512x512) and manifest configuration
+   - ✅ Mobile optimization meta tags (theme-color, apple-mobile-web-app-capable)
 
 🟡 **Planned (Next Priorities):**
+- ⏳ **EPIC-010: CMS Content Management System** (In Development)
+  - ⏳ Banner Management & Scheduling
+  - ⏳ FAQ & Information System
+  - ⏳ Payment Instruction Builder
+  - ⏳ Promo Countdown Timers
+  - ⏳ Email/WA Template Management
 - ⏳ Check-in Management System (Scanner Interface)
 - ⏳ Visitor Dashboard & Digital Wallet
 - ⏳ Finance Dashboard & Reporting (Advanced Charts)
@@ -99,6 +135,9 @@ SaaS Event Management & Digital Ticketing Platform
 **Financial Permissions:**
 - `finance.view-reports`, `finance.verify-payments`, `finance.process-refunds`
 
+**Event Planner Permissions (Super Admin only):**
+- `event-plans.view`, `event-plans.create`, `event-plans.edit`, `event-plans.delete`
+
 **System Permissions:**
 - `system.view-logs`, `system.manage-settings`
 
@@ -119,7 +158,7 @@ SaaS Event Management & Digital Ticketing Platform
   - `filament/filament`: ^4.7
   - `bezhansalleh/filament-shield`: ^4.1
 - **State Management**: Livewire reactive components, Alpine.js for micro-interactions
-- **Styling**: Tailwind CSS 3.x with custom design system
+- **Styling**: Tailwind CSS 3.x
 - **UI Components**: Blade UI Kit, Livewire UI, custom component library
 - **Rich Text**: TinyMCE or CKEditor for event descriptions
 - **PDF & Assets**:
@@ -154,7 +193,9 @@ SaaS Event Management & Digital Ticketing Platform
 - **Storage**: Local filesystem or S3-compatible for file uploads
 
 **AI/ML:**
-- Not applicable in MVP 1.0
+- **Primary Engine**: Google Gemini API (via `google-gemini-php/laravel`)
+- **Secondary Engine**: OpenAI API (GPT-4o/GPT-4o-mini)
+- **Architecture**: Specialized `AiService` with strategy-based provider selection and robust mocking for local development.
 
 ---
 
@@ -167,7 +208,7 @@ SaaS Event Management & Digital Ticketing Platform
 │                            CLIENT LAYER                                   │
 ├──────────────────────┬────────────────────────────────────────────────────┤
 │  ADMIN INTERFACE     │           VISITOR INTERFACE                        │
-│  (Filament v4.7)    │           (Livewire Components)                    │
+│  (Filament v4.7)    │           (Livewire)                              │
 │  - Livewire-based    │           - Reactive SPA-like                      │
 │  - SEO-friendly      │           - Real-time updates                      │
 │  - Form-heavy CRUD   │           - Progressive enhancement                │
@@ -193,6 +234,10 @@ SaaS Event Management & Digital Ticketing Platform
 │  NotificationService  │  AnalyticsService     │  CheckInService           │
 │  - Email queuing      │  - Real-time metrics  │  - Scanner interface      │
 │  - Template rendering │  - Report generation  │  - Manual override        │
+│                       │                       │                           │
+│  CmsService           │                       │                           │
+│  - Content fetching   │                       │                           │
+│  - Cache management   │                       │                           │
 └───────────────────────────────────────────────────────────────────────────┘
                                     ↓
 ┌───────────────────────────────────────────────────────────────────────────┐
@@ -218,7 +263,8 @@ SaaS Event Management & Digital Ticketing Platform
 - **Order Domain**: Purchase flow, payment verification, refund processing
 - **Access Control Domain**: User management, roles, permissions, authentication
 - **Check-in Domain**: QR validation, manual check-in, attendance tracking
-- **Analytics Domain**: Metrics aggregation, report generation, export
+- **Analytics Domain**: Metrics aggregation, report generation, export, financial simulation
+- **CMS Domain**: Banner management, FAQs, static pages, templates, payment instructions
 
 **Data Flow Patterns:**
 1. **Event Publication**: Draft → Validation → Published (with email notifications queued)
@@ -292,6 +338,8 @@ project-root/
 │   │   ├── Event.php
 │   │   ├── Order.php
 │   │   ├── OrderItem.php
+│   │   ├── EventPlan.php
+│   │   ├── EventPlanLineItem.php
 │   │   ├── PaymentProof.php
 │   │   ├── Ticket.php
 │   │   ├── TicketType.php
@@ -301,9 +349,13 @@ project-root/
 │   │   └── RouteServiceProvider.php
 │   ├── Services/
 │   │   ├── ActivityLogger.php
+│   │   ├── AiService.php              # AI provider (Gemini → OpenAI → mock)
+│   │   ├── BudgetForecastService.php  # AI budget forecasting + line item population
 │   │   ├── InvoiceService.php
 │   │   ├── OrderService.php
 │   │   ├── PermissionHelper.php
+│   │   ├── PricingStrategyService.php # AI pricing suggestions + TicketType creation
+│   │   ├── RiskAssessmentService.php  # AI risk evaluation + severity scoring
 │   │   ├── SecurityMonitor.php
 │   │   ├── TicketService.php
 │   │   └── UserService.php
@@ -597,9 +649,20 @@ Created → PendingVerification → (Admin Review) → Paid → Completed
 - **Attributes**: `id`, `log_name`, `description`, `subject_type`, `subject_id`, `causer_type`, `causer_id`, `properties`, `event`, `batch_uuid`, `created_at`, `updated_at`
 - **Purpose**: Comprehensive audit trail for all system actions
 
+**Organizer** (Fully Implemented)
+- **Attributes**: `id`, `name`, `description`, `email`, `phone`, `website`, `social_media` (JSON), `address`, `logo_file_bucket_id`, `created_by`, `updated_by`, `deleted_at`, `created_at`, `updated_at`
+- **Relationships**:
+  - `belongsTo FileBucket` (logo)
+  - `belongsToMany Event` (events organized)
+  - `belongsTo User` (createdBy)
+  - `belongsTo User` (updatedBy)
+- **Traits**: `HasFactory`, `SoftDeletes`
+- **Purpose**: Manage event organizers with full profile information (contact info, social media, logos)
+- **Filament Resource**: OrganizerResource in "Master Data" navigation group with modal create/edit
+
 **Event** (Fully Implemented)
 - **Attributes**: `id`, `title`, `slug`, `description`, `event_date`, `location`, `venue_name`, `status`, `seating_enabled`
-- **Relationships**: `belongsTo User` (creator), `hasMany TicketType`, `morphMany FileBucket` (banners), `belongsToMany SettingComponent` (categories/tags)
+- **Relationships**: `belongsTo User` (creator), `hasMany TicketType`, `morphMany FileBucket` (banners), `belongsToMany SettingComponent` (categories/tags), `belongsToMany Organizer` (organizers)
 
 **TicketType** (Fully Implemented)
 - **Attributes**: `id`, `event_id`, `name`, `price`, `quantity`, `min_purchase`, `max_purchase`, `sales_start_at`, `sales_end_at`
@@ -617,6 +680,16 @@ Created → PendingVerification → (Admin Review) → Paid → Completed
 - **Attributes**: `id`, `setting_id`, `name`, `type`, `value`
 - **Purpose**: Dynamic master data for event categories, tags, and ticket types
 
+**Organizer** (Fully Implemented)
+- **Attributes**: `id`, `name`, `description`, `email`, `phone`, `website`, `social_media` (JSON), `address`, `logo_file_bucket_id`, `created_by`, `updated_by`, `deleted_at`, `created_at`, `updated_at`
+- **Relationships**:
+  - `belongsTo FileBucket` (logo)
+  - `belongsToMany Event` (events organized)
+  - `belongsTo User` (createdBy)
+  - `belongsTo User` (updatedBy)
+- **Traits**: `HasFactory`, `SoftDeletes`
+- **Purpose**: Manage event organizers with full profile information (contact info, social media, logos)
+- **Filament Resource**: OrganizerResource in "Master Data" navigation group with modal create/edit
 
 **Order** (Implemented)
 - **Attributes**: `id`, `order_number`, `user_id`, `event_id`, `status`, `subtotal`, `discount_amount`, `tax_amount`, `total_amount`, `notes`, `expires_at`, `completed_at`, `created_at`, `updated_at`
@@ -635,14 +708,88 @@ Created → PendingVerification → (Admin Review) → Paid → Completed
 - **Attributes**: `id`, `order_item_id`, `ticket_type_id`, `ticket_number`, `holder_name`, `status` (active/used/cancelled), `qr_code_content`, `checked_in_at`
 - **Relationships**: `belongsTo OrderItem`, `belongsTo TicketType`
 
-**Planned Models (Not Yet Implemented)**
-- **CheckInLog**: Detailed tracking of scan attempts and locations.
-- **SeatLayout**: Definitions for venue seating grids.
-- **SeatReservation**: Junction between Seats and Orders.
+**EventPlan** (Implemented - Event Planner)
+- **Attributes**: `id`, `event_id` (nullable FK), `title`, `description`, `event_category`, `target_audience_size`, `target_audience_description`, `budget_target`, `revenue_target`, `event_date`, `location`, `status` (draft/active/completed/archived), `ai_concept_result`, `ai_budget_result` (JSON), `ai_pricing_result` (JSON), `ai_risk_result` (JSON), `notes`, `created_by`, `updated_by`, `deleted_at`, `created_at`, `updated_at`
+- **Relationships**: `belongsTo Event` (optional), `belongsTo User` (creator/updater), `hasMany EventPlanLineItem`
+- **Traits**: `HasFactory`, `SoftDeletes`, `LogsActivity`
+- **Computed**: `total_planned_expenses`, `total_planned_revenue`, `total_actual_expenses`, `total_actual_revenue`, `planned_net_profit`, `actual_net_profit`
+- **Filament Resource**: `EventPlanResource` — navigation sort `-1` in "Event Management" group, Super Admin only
+- **Purpose**: Persistent AI-assisted planning workspace before event publication
+
+**EventPlanLineItem** (Implemented - Event Planner)
+- **Attributes**: `id`, `event_plan_id` (FK), `category`, `description`, `type` (expense/revenue), `planned_amount` (decimal 15,2), `actual_amount` (decimal 15,2 nullable), `notes`, `sort_order`, `deleted_at`, `created_at`, `updated_at`
+- **Relationships**: `belongsTo EventPlan`
+- **Traits**: `HasFactory`, `SoftDeletes`, `LogsActivity`
+- **Computed**: `variance` (planned - actual)
+- **Purpose**: Granular budget line items enabling planning vs realization comparison
+
+**Banner** (Implemented - CMS)
+- **Attributes**: `id`, `title`, `type` (hero/section/mobile), `image_path`, `link_url`, `is_active`, `start_date`, `end_date`
+- **Purpose**: Manage promotional banners with scheduling
+
+**Faq** (Implemented - CMS)
+- **Attributes**: `id`, `category_id`, `question`, `answer`, `order`, `is_active`
+- **Relationships**: `belongsTo FaqCategory`
+
+**PaymentBank** (Implemented - CMS)
+- **Attributes**: `id`, `bank_name`, `account_number`, `account_holder`, `qr_code_path`, `is_active`
+
+**EmailTemplate** (Implemented - CMS)
+- **Attributes**: `id`, `key`, `name`, `subject`, `html_content`, `variables` (JSON)
+
+**CmsPage** (Implemented - CMS)
+- **Attributes**: `id`, `title`, `slug`, `content` (JSON blocks), `status`, `seo_title`, `seo_description`
+
+**Performer** (Implemented)
+- **Attributes**: `id`, `name`, `type`, `description`, `photo_path`
+- **Relationships**: `belongsToMany Event`
+
+**TicketType** (Fully Implemented)
+- **Attributes**: `id`, `event_id`, `name`, `price`, `quantity`, `min_purchase`, `max_purchase`, `sales_start_at`, `sales_end_at`
+- **Relationships**: `belongsTo Event`
 
 ---
 
-## 7. 🧠 Domain Vocabulary / Glossary
+## 7. 🤖 AI Integration Ecosystem
+
+The platform leverages AI to empower event organizers through the `AiService`, which provides strategic intelligence across the event lifecycle.
+
+### Core AI Capabilities
+1. **AI Concept Builder**:
+   - **Input**: Rough notes, title, category, audience, budget.
+   - **Output**: Polished HTML-formatted event concept with highlights and CTA.
+   - **Usage**: `EventPlan` draft refinement.
+
+2. **AI Budget Forecaster**:
+   - **Input**: Category, audience size, location, date, budget target.
+   - **Output**: JSON-structured budget breakdown (Venue, Talent, Security, etc.) with contingency analysis.
+   - **Usage**: Population of `EventPlanLineItem` records.
+
+3. **AI Pricing Strategy**:
+   - **Input**: Audience size, revenue target, location, event type.
+   - **Output**: Tiered pricing suggestions (Early Bird, VIP, etc.) with projected revenue.
+   - **Usage**: Suggestions for `TicketType` configuration.
+
+4. **AI Risk Assessment**:
+   - **Input**: Full event plan details.
+   - **Output**: Severity scoring across 5 dimensions (Weather, Compliance, Budget, etc.) with mitigation tips.
+   - **Usage**: Strategic planning and contingency management.
+
+5. **AI SEO Metadata**:
+   - **Input**: Event title, description, categories.
+   - **Output**: Character-limited SEO title (60 chars) and meta description (160 chars).
+   - **Usage**: Automated optimization for search engines.
+
+### Integration Principles
+- **JSON-First**: Data-driven AI features MUST return JSON for reliable application logic parsing.
+- **HTML-Sanitized**: Content-driven AI features (descriptions/concepts) return safe HTML fragments.
+- **Fail-Safe Ready**: Every AI method MUST have a `getMocked...` equivalent to ensure the app stays functional without API keys.
+- **Translatable Aware**: Always cast translatable fields (arrays) to strings before sending to prompt builders.
+- **Prompt Engineering**: Use **Heredoc** (`<<<PROMPT`) for complex prompt templates in `AiService` to maintain readability.
+
+---
+
+## 8. 🧠 Domain Vocabulary / Glossary
 
 **Authentication & Authorization:**
 - **Guard**: Laravel authentication mechanism (currently using `web` guard for all users)
@@ -682,7 +829,7 @@ Created → PendingVerification → (Admin Review) → Paid → Completed
 
 ---
 
-## 8. 👥 Target Users & Personas
+## 9. 👥 Target Users & Personas
 
 ### Super Admin
 **Description:** System owner with unrestricted access to all modules and data
@@ -727,7 +874,7 @@ Created → PendingVerification → (Admin Review) → Paid → Completed
 
 ---
 
-## 9. ✨ UI/UX Principles
+## 10. ✨ UI/UX Principles
 
 ### Current Implementation (Admin & Auth Interfaces)
 
@@ -758,6 +905,8 @@ Created → PendingVerification → (Admin Review) → Paid → Completed
         ->label(__('setting.key'))
         ->placeholder(__('setting.key_placeholder'))
     ```
+- **Wizard Pattern**: For complex, multi-step entities (like Events), use the `Wizard` component to reduce cognitive load. Group fields into logical stages with clear progress indicators.
+- **Real-time Simulation**: Use modally-launched Livewire components for calculators or simulators (like Revenue Simulator) to provide instant feedback without page reloads.
 - **Authentication**: Filament's built-in login/register pages are DISABLED (`->login(false)`). All authentication flows through Laravel Breeze at `/login` and `/register`. Unauthenticated users accessing `/admin` are redirected to Breeze login.
 
 **Admin Interface (Blade) - Deprecated:**
@@ -800,7 +949,7 @@ Created → PendingVerification → (Admin Review) → Paid → Completed
 
 ---
 
-## 9. 🌐 Internationalization (i18n)
+## 11. 🌐 Internationalization (i18n)
 
 ### Supported Languages
 
@@ -981,7 +1130,7 @@ APP_FALLBACK_LOCALE=en     # Fallback locale
 
 ---
 
-## 10. 🔒 Security & Privacy Rules
+## 12. 🔒 Security & Privacy Rules
 
 ### Authentication Model
 - **Multi-guard authentication**: 
@@ -1008,7 +1157,7 @@ APP_FALLBACK_LOCALE=en     # Fallback locale
 
 ---
 
-## 10. 🏛️ Service Layer Pattern
+## 13. 🏛️ Service Layer Pattern
 
 ### Purpose & Philosophy
 The Service Layer encapsulates all business logic, keeping controllers thin and promoting code reusability across different interfaces (Web, API, Console, Livewire).
@@ -1126,6 +1275,10 @@ class EventPurchase extends Component
 - `AnalyticsService`: Metrics calculation, report generation
 - `SearchService`: Event search, filtering, indexing
 - `SeatService`: Seat selection, locking, mapping
+- `AiService`: AI provider hub (Gemini → OpenAI → mock fallback) — Handles `generateDescription()`, `generateConcept()`, `generateBudgetForecast()`, `suggestPricingStrategy()`, `assessRisks()`, and `generateSeoMetadata()`. Features robust array-to-string conversion for translatable/complex form state.
+- `BudgetForecastService`: Validates inputs, calls `AiService`, populates `EventPlanLineItem` expense records.
+- `PricingStrategyService`: Validates inputs, calls `AiService`, creates `TicketType` records on linked event.
+- `RiskAssessmentService`: Calls `AiService`, stores risk JSON, provides `ratingColor()` and `severityColor()` helpers.
 
 ### Service Testing Strategy
 
@@ -1193,7 +1346,7 @@ class EventService
 
 ---
 
-## 11. 🤖 Coding Conventions & Standards
+## 14. 🤖 Coding Conventions & Standards
 
 ### Development Rules for AI Agents
 
@@ -1220,6 +1373,7 @@ class EventService
 
 4.  **Filament & UI Standards**
     -   **Modals over Pages**: Use Modals/Slideovers for Create/Edit actions in Resources.
+    -   **Unified Action Class**: ALWAYS use `Filament\Actions\Action` for all action types (Header actions, Table actions, Form suffix/prefix actions). Avoid `Filament\Forms\Components\Actions\Action`.
     -   **Internationalization**: All labels/placeholders MUST use `__()`. English (`en`) is PRIMARY language - always create/update `lang/en/*.php` files FIRST before translating to other languages.
 
 5.  **Never Invent Endpoints, Fields, or Models**
@@ -1246,7 +1400,7 @@ class EventService
 
 ---
 
-## 11. 🔄 Integration Map
+## 15. 🔄 Integration Map
 
 ### External Service Integrations
 
@@ -1277,7 +1431,7 @@ class EventService
 
 ---
 
-## 12. ⚠️ Known Issues & Limitations
+## 16. ⚠️ Known Issues & Limitations
 
 ### Architectural Constraints
 
@@ -1301,7 +1455,7 @@ class EventService
 
 ---
 
-## 14. 🗺️ Roadmap & Future Plans
+## 19. 🗺️ Roadmap & Future Plans
 
 ### Completed (MVP 0.5 - Authentication & Authorization)
 - ✅ Laravel 11 project setup with Livewire and Tailwind CSS
@@ -1317,22 +1471,17 @@ class EventService
 - ✅ Permission Matrix custom page
 - ✅ Multi-language support (English, Indonesian) with session-based language switching
 
-### Next Phase (MVP 1.0 - Event Management Core)
+### Next Phase (MVP 1.5 - Ticketing & Payment)
 **Priority: High | Timeline: TBD**
-- ⏳ Event CRUD operations
-- ⏳ Ticket type configuration
-- ⏳ Event publishing workflow
-- ⏳ Basic event listing (visitor interface)
-- ⏳ Event search and filtering
+- ✅ Ticket purchase flow
+- ✅ Payment proof upload
+- ✅ Payment verification workflow
+- ✅ QR code generation
+- ✅ Digital ticket delivery
+- ✅ **EPIC-011: AI-Powered Event Planner** (Completed Feb 2026)
+- ⏳ **EPIC-010: CMS Content Management System** (In Progress)
 
 ### Future Phases
-
-**MVP 1.5 - Ticketing & Payment**
-- ⏳ Ticket purchase flow
-- ⏳ Payment proof upload
-- ⏳ Payment verification workflow
-- ⏳ QR code generation
-- ⏳ Digital ticket delivery
 
 **MVP 2.0 - Check-in & Validation**
 - ⏳ QR code scanning interface
@@ -1398,7 +1547,7 @@ class EventService
 
 ---
 
-## 16. 🧪 Testing Strategy
+## 17. 🧪 Testing Strategy
 
 ### Current Test Coverage
 
@@ -1501,7 +1650,7 @@ composer phpstan
 
 ---
 
-## 17. 🧯 Troubleshooting Guide
+## 18. 🧯 Troubleshooting Guide
 
 ### Common Issues & Solutions
 
@@ -1601,7 +1750,7 @@ php artisan tinker >>> Permission::all()->pluck('name')
 
 ---
 
-## 18. 📞 Ownership / Responsibility Map
+## 20. 📞 Ownership / Responsibility Map
 
 ### Module Ownership
 
@@ -1624,21 +1773,29 @@ php artisan tinker >>> Permission::all()->pluck('name')
   - Avatar upload
   - Password management
 
-**Event Management (Planned)**
+**Event Management (EPIC-008)**
 - **Owner**: TBD
-- **Status**: ⏳ Not Started
+- **Status**: ✅ Completed
 - **Components**:
-  - Event CRUD
-  - Ticket configuration
-  - Publishing workflow
+  - Wizard-based Event CRUD
+  - SEO & Media management
+  - Organizer/Performer integration
+  - **AI Assistant Integration**: `ai_seo`, `ai_enhance`, and `ai_configure` actions for automated content and metadata generation.
 
-**Payment & Ticketing (Planned)**
+**Payment & Ticketing (EPIC-006/007)**
 - **Owner**: TBD
-- **Status**: ⏳ Not Started
+- **Status**: ✅ Completed
 - **Components**:
   - Payment verification
   - QR code generation
   - Ticket delivery
+
+**CMS System (EPIC-010)**
+- **Owner**: TBD
+- **Status**: ⏳ In Progress
+- **Components**:
+  - Banner/FAQ Management
+  - Template & Instruction Builder
 
 ### Technical Responsibilities
 
@@ -1680,7 +1837,7 @@ php artisan tinker >>> Permission::all()->pluck('name')
 
 ---
 
-## 13. 📜 Change Log / Implementation History
+## 21. 📜 Change Log / Implementation History
 
 | Date | Change | Description | Reference |
 |------|--------|-------------|-----------|
@@ -1689,6 +1846,8 @@ php artisan tinker >>> Permission::all()->pluck('name')
 | 2026-02-07 | Implement EPIC-002 Auth | Comprehensive authorization system with granular permissions, admin interfaces, and security enhancements. | [Details](../prompter/changes/archive/2026-02-07-implement-epic-002-remaining-auth) |
 | 2026-02-07 | Integrate Filament Admin Panel | Migrated admin interface to Filament v4.7 with Shield integration, dashboard widgets, and advanced resource management. | [Details](../prompter/changes/archive/2026-02-07-integrate-filament-admin-panel) |
 | 2026-02-09 | Implement Event Management | Implemented Event CRUD, Ticket Types with dynamic settings, and FileBucket for polymorphic media storage. | N/A |
+| 2026-02-19 | Add Event Planner (EPIC-011) | AI-powered planning module: `EventPlan`/`EventPlanLineItem` models, `EventPlanResource` Filament pages, `AiService` extensions (concept/budget/pricing/risk), `BudgetForecastService`, `PricingStrategyService`, `RiskAssessmentService`, Planning vs Realization dashboard widgets. Super Admin only. | [Details](prompter/changes/add-event-planner) |
+| 2026-02-20 | AI & Filament v4 Refinement | Optimized `AiService` for robust translatable field handling. Unified all actions to `Filament\Actions\Action` per v4 standards. Added AI Assistant action group to `EventResource` (SEO/Enhance). | N/A |
 
 ---
 
@@ -1696,13 +1855,13 @@ php artisan tinker >>> Permission::all()->pluck('name')
 
 *This AGENTS.md file is the authoritative knowledge base for all AI agents working on the Event Ticket Management System project. It must be consulted before any code generation, documentation modification, or architectural decision.*
 
-**Last Updated:** February 11, 2026
-**Version:** 2.2 (English Language Priority Emphasized)
+**Last Updated:** February 20, 2026
+**Version:** 2.5 (AI Assistant Integration & Robust Type Handling)
 **Maintained By:** AI Agent (Antigravity) + Technical Lead
 **Next Review:** March 7, 2026
 
 **Document Status:**
-- ✅ Reflects current implementation (EPIC-002 complete)
+- ✅ Reflects current implementation (EPIC-011 complete)
 - ✅ Clearly distinguishes implemented vs planned features
 - ✅ Includes all required sections per specification
 - ✅ Development rules for AI agents documented

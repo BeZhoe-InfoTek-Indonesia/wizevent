@@ -1,0 +1,368 @@
+/* Executive Dashboard Styles */
+body.dashboard-executive-theme,
+body.dashboard-executive-theme .fi-main-ctn,
+body.dashboard-executive-theme .fi-page,
+body.dashboard-executive-theme .fi-section {
+    background-color: #050505 !important;
+}
+
+body.dashboard-executive-theme .fi-header {
+    display: none !important;
+}
+
+body.dashboard-executive-theme .fi-wi-widget {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+body.dashboard-executive-theme .fi-wi-stats-overview-stat {
+    background: #0f1115 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 1.5rem !important;
+}
+
+/* Force dark mode for chart */
+canvas {
+    filter: brightness(1.2);
+}
+
+body.dashboard-executive-theme .fi-sidebar {
+    background-color: #0a0a0a !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+body.dashboard-executive-theme .fi-topbar {
+    background-color: #0a0a0a !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Widget Specific Fixes */
+.executive-overview-widget svg,
+.dashboard-executive-theme svg {
+    width: 1em;
+    height: 1em;
+    display: inline-block;
+    max-width: 100%;
+}
+
+/* Common Utilities Fixes */
+.dashboard-executive-theme .rounded-3xl {
+    border-radius: 1.5rem !important;
+}
+
+.dashboard-executive-theme .rounded-2xl {
+    border-radius: 1rem !important;
+}
+
+.dashboard-executive-theme .rounded-xl {
+    border-radius: 0.75rem !important;
+}
+
+.dashboard-executive-theme .rounded-full {
+    border-radius: 9999px !important;
+}
+
+.dashboard-executive-theme .p-6 {
+    padding: 1.5rem !important;
+}
+
+.dashboard-executive-theme .p-4 {
+    padding: 1rem !important;
+}
+
+.dashboard-executive-theme .p-3 {
+    padding: 0.75rem !important;
+}
+
+.dashboard-executive-theme .px-2 {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+}
+
+.dashboard-executive-theme .py-1 {
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+}
+
+.dashboard-executive-theme .shadow-2xl {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Colors - Backgrounds */
+.dashboard-executive-theme .bg-\[\#0f1115\],
+.dashboard-executive-theme .bg-[#0f1115] {
+    background-color: #0f1115 !important;
+}
+
+.dashboard-executive-theme .bg-white\/5 {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dashboard-executive-theme .bg-white\/10 {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dashboard-executive-theme .bg-emerald-500 {
+    background-color: #10b981 !important;
+}
+
+.dashboard-executive-theme .bg-emerald-500\/10 {
+    background-color: rgba(16, 185, 129, 0.1) !important;
+}
+
+.dashboard-executive-theme .bg-emerald-500\/20 {
+    background-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.dashboard-executive-theme .bg-rose-500\/10 {
+    background-color: rgba(244, 63, 94, 0.1) !important;
+}
+
+.dashboard-executive-theme .bg-rose-500\/20 {
+    background-color: rgba(244, 63, 94, 0.2) !important;
+}
+
+.dashboard-executive-theme .bg-teal-500 {
+    background-color: #14b8a6 !important;
+}
+
+.dashboard-executive-theme .bg-gradient-to-br {
+    background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)) !important;
+}
+
+/* Colors - Text */
+.dashboard-executive-theme .text-white {
+    color: #ffffff !important;
+}
+
+.dashboard-executive-theme .text-white\/5 {
+    color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.dashboard-executive-theme .text-gray-400 {
+    color: #9ca3af !important;
+}
+
+.dashboard-executive-theme .text-gray-500 {
+    color: #6b7280 !important;
+}
+
+.dashboard-executive-theme .text-emerald-400 {
+    color: #34d399 !important;
+}
+
+.dashboard-executive-theme .text-emerald-500 {
+    color: #10b981 !important;
+}
+
+.dashboard-executive-theme .text-rose-400 {
+    color: #fb7185 !important;
+}
+
+.dashboard-executive-theme .text-rose-500 {
+    color: #f43f5e !important;
+}
+
+.dashboard-executive-theme .text-teal-400 {
+    color: #2dd4bf !important;
+}
+
+.dashboard-executive-theme .text-purple-400 {
+    color: #c084fc !important;
+}
+
+.dashboard-executive-theme .text-blue-400 {
+    color: #60a5fa !important;
+}
+
+/* Borders */
+.dashboard-executive-theme .border-white\/10 {
+    border-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.dashboard-executive-theme .border-emerald-500\/20 {
+    border-color: rgba(16, 185, 129, 0.2) !important;
+}
+
+.dashboard-executive-theme .border-rose-500\/20 {
+    border-color: rgba(244, 63, 94, 0.2) !important;
+}
+
+/* Typography */
+.dashboard-executive-theme .font-black {
+    font-weight: 900 !important;
+}
+
+.dashboard-executive-theme .font-bold {
+    font-weight: 700 !important;
+}
+
+.dashboard-executive-theme .uppercase {
+    text-transform: uppercase !important;
+}
+
+.dashboard-executive-theme .tracking-widest {
+    letter-spacing: 0.1em !important;
+}
+
+.dashboard-executive-theme .text-xs {
+    font-size: 0.75rem !important;
+    line-height: 1rem !important;
+}
+
+.dashboard-executive-theme .text-3xl {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+}
+
+.dashboard-executive-theme .text-\[10px\] {
+    font-size: 10px !important;
+}
+
+.dashboard-executive-theme .text-\[8px\] {
+    font-size: 8px !important;
+}
+
+/* Sizing */
+.dashboard-executive-theme .h-full {
+    height: 100% !important;
+}
+
+.dashboard-executive-theme .w-full {
+    width: 100% !important;
+}
+
+.dashboard-executive-theme .h-4 {
+    height: 1rem !important;
+}
+
+.dashboard-executive-theme .w-4 {
+    width: 1rem !important;
+}
+
+.dashboard-executive-theme .h-5 {
+    height: 1.25rem !important;
+}
+
+.dashboard-executive-theme .w-5 {
+    width: 1.25rem !important;
+}
+
+.dashboard-executive-theme .h-6 {
+    height: 1.5rem !important;
+}
+
+.dashboard-executive-theme .w-6 {
+    width: 1.5rem !important;
+}
+
+.dashboard-executive-theme .h-10 {
+    height: 2.5rem !important;
+}
+
+.dashboard-executive-theme .w-10 {
+    width: 2.5rem !important;
+}
+
+.dashboard-executive-theme .h-24 {
+    height: 6rem !important;
+}
+
+.dashboard-executive-theme .w-24 {
+    width: 6rem !important;
+}
+
+.dashboard-executive-theme .h-32 {
+    height: 8rem !important;
+}
+
+.dashboard-executive-theme .w-32 {
+    width: 8rem !important;
+}
+
+.dashboard-executive-theme .h-40 {
+    height: 10rem !important;
+}
+
+.dashboard-executive-theme .w-40 {
+    width: 10rem !important;
+}
+
+/* Layout */
+.dashboard-executive-theme .flex {
+    display: flex !important;
+}
+
+.dashboard-executive-theme .flex-col {
+    flex-direction: column !important;
+}
+
+.dashboard-executive-theme .items-center {
+    align-items: center !important;
+}
+
+.dashboard-executive-theme .justify-between {
+    justify-content: space-between !important;
+}
+
+.dashboard-executive-theme .justify-center {
+    justify-content: center !important;
+}
+
+.dashboard-executive-theme .gap-4 {
+    gap: 1rem !important;
+}
+
+.dashboard-executive-theme .gap-6 {
+    gap: 1.5rem !important;
+}
+
+.dashboard-executive-theme .grid {
+    display: grid !important;
+}
+
+.dashboard-executive-theme .grid-cols-1 {
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+}
+
+.dashboard-executive-theme .absolute {
+    position: absolute !important;
+}
+
+.dashboard-executive-theme .relative {
+    position: relative !important;
+}
+
+.dashboard-executive-theme .overflow-hidden {
+    overflow: hidden !important;
+}
+
+@media (min-width: 768px) {
+    .dashboard-executive-theme .md\:grid-cols-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .dashboard-executive-theme .md\:flex-row {
+        flex-direction: row !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .dashboard-executive-theme .lg\:grid-cols-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    }
+}
+
+/* Specific Widget Fixes */
+.dashboard-executive-theme .fi-wi-stats-overview-stat,
+.dashboard-executive-theme .filament-stats-overview-widget-card {
+    background-color: #0f1115 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.dashboard-executive-theme .fi-wi-widget {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}

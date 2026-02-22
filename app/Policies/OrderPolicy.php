@@ -1,70 +1,70 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
+use Illuminate\Foundation\Auth\User as AuthUser;
 use App\Models\Order;
-use App\Models\User;
-use Illuminate\Auth\Access\Response;
+use Illuminate\Auth\Access\HandlesAuthorization;
 
 class OrderPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
-    public function viewAny(User $user): bool
+    use HandlesAuthorization;
+    
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->hasAnyRole(['Super Admin', 'Event Manager', 'Finance Admin']);
+        return $authUser->can('ViewAny:Order');
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
-    public function view(User $user, Order $order): bool
+    public function view(AuthUser $authUser, Order $order): bool
     {
-        if ($user->hasAnyRole(['Super Admin', 'Event Manager', 'Finance Admin'])) {
-            return true;
-        }
-
-        return $user->id === $order->user_id;
+        return $authUser->can('orders.view') || $authUser->id === $order->user_id;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
-    public function create(User $user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return true;
+        return $authUser->can('Create:Order');
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
-    public function update(User $user, Order $order): bool
+    public function update(AuthUser $authUser, Order $order): bool
     {
-        return $user->hasAnyRole(['Super Admin', 'Event Manager', 'Finance Admin']);
+        return $authUser->can('orders.edit') || $authUser->id === $order->user_id;
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
-    public function delete(User $user, Order $order): bool
+    public function delete(AuthUser $authUser, Order $order): bool
     {
-        return $user->hasAnyRole(['Super Admin']);
+        return $authUser->can('orders.delete') || $authUser->id === $order->user_id;
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
-    public function restore(User $user, Order $order): bool
+    public function restore(AuthUser $authUser, Order $order): bool
     {
-        return $user->hasAnyRole(['Super Admin']);
+        return $authUser->can('orders.delete') || $authUser->id === $order->user_id;
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
-    public function forceDelete(User $user, Order $order): bool
+    public function forceDelete(AuthUser $authUser, Order $order): bool
     {
-        return $user->hasAnyRole(['Super Admin']);
+        return $authUser->can('orders.delete') || $authUser->id === $order->user_id;
     }
+
+    public function forceDeleteAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('orders.delete');
+    }
+
+    public function restoreAny(AuthUser $authUser): bool
+    {
+        return $authUser->can('orders.delete');
+    }
+
+    public function replicate(AuthUser $authUser, Order $order): bool
+    {
+        return $authUser->can('orders.create') || $authUser->id === $order->user_id;
+    }
+
+    public function reorder(AuthUser $authUser): bool
+    {
+        return $authUser->can('orders.edit');
+    }
+
 }

@@ -1,9 +1,25 @@
 @php
     use Carbon\Carbon;
+    use Illuminate\Support\Facades\Storage;
+
+    $heroSlides = (isset($heroBanners) && $heroBanners->isNotEmpty())
+        ? $heroBanners->map(fn ($b) => [
+            'id'          => $b->id,
+            'image'       => $b->fileBucket?->url
+                ?? (str_starts_with($b->image_path ?? '', 'http') ? $b->image_path : Storage::url($b->image_path ?? '')),
+            'title'       => $b->title,
+            'description' => '',
+            'link'        => $b->link_url ?? route('events.index'),
+            'link_target' => $b->link_target ?? '_self',
+        ])->values()->toArray()
+        : [
+            ['id' => 0, 'image' => 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop', 'title' => 'Music Festival 2026',      'description' => 'Three days of non-stop entertainment, world-class artists, and unforgettable memories. Get your tickets before they sell out!', 'link' => route('events.index'), 'link_target' => '_self'],
+            ['id' => 0, 'image' => 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=2074&auto=format&fit=crop', 'title' => 'Summer Rock Concert',     'description' => 'Experience the biggest rock bands live in an electrifying outdoor festival. Limited tickets available!',                                 'link' => route('events.index'), 'link_target' => '_self'],
+            ['id' => 0, 'image' => 'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?q=80&w=2070&auto=format&fit=crop', 'title' => 'Electronic Dance Night', 'description' => 'Dance the night away with top DJs spinning the hottest tracks. VIP packages now on sale!',                                        'link' => route('events.index'), 'link_target' => '_self'],
+        ];
 @endphp
 
 <div class="bg-[#eef2f6] min-h-screen font-sans text-gray-800 selection:bg-red-500 selection:text-white">
-    
     {{-- 
         SKEUOMORPHISM 2.0: Ambient Light Source 
         We use a global gradient overlay to simulate a soft light source from the top-left.
@@ -13,239 +29,292 @@
     <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
         
         {{-- 
-            HERO CAROUSEL: 3D Kinetic Stage
-            A floating, interactive stage that cycles through featured content.
+            HERO CAROUSEL - Clean & Modern Design
+            Matching reference image: Full-width background, simple overlay, clean typography
         --}}
-        {{-- 
-            HERO CAROUSEL: The Kinetic Stage (Refined & Asymmetrical)
-            Concept: A split-screen composition where text and image are treated as separate physical layers.
-            The image is a "floating card" that responds to mouse movement (parallax).
-        --}}
-        <div 
-            x-data="{ 
-                activeSlide: 0, 
-                slides: [
-                    { 
-                        id: 1, 
-                        image: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop', 
-                        subtitle: 'Trending Now', 
-                        title_line1: 'World',
-                        title_line2: 'Tour 2026',
-                        description: 'Experience the electric atmosphere of the year\'s biggest global musical phenomenon.',
-                        color: 'from-orange-400 to-red-600',
-                        date: 'Oct 24',
-                        location: 'Jakarta Arena'
-                    },
-                    { 
-                        id: 2, 
-                        image: 'https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?q=80&w=2074&auto=format&fit=crop', 
-                        subtitle: 'Featured Event', 
-                        title_line1: 'Sound',
-                        title_line2: 'Of Joy',
-                        description: 'A three-day immersive festival celebrating music, art, and community connection.',
-                        color: 'from-blue-400 to-purple-600',
-                        date: 'Nov 12',
-                        location: 'Bali Convention'
-                    },
-                    { 
-                        id: 3, 
-                        image: 'https://images.unsplash.com/photo-1459749411177-042180ce673c?q=80&w=2070&auto=format&fit=crop', 
-                        subtitle: 'Workshop', 
-                        title_line1: 'Master',
-                        title_line2: 'Class',
-                        description: 'Unlock your creative potential with industry leaders in design and technology.',
-                        color: 'from-emerald-400 to-teal-600',
-                        date: 'Dec 05',
-                        location: 'Bandung Hub'
-                    }
-                ],
-                next() { this.activeSlide = (this.activeSlide + 1) % this.slides.length },
-                prev() { this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length },
-                init() { setInterval(() => this.next(), 8000) }
-            }"
-            class="relative h-[750px] w-full bg-[#eef2f6] rounded-[3rem] shadow-[20px_20px_60px_#caced6,-20px_-20px_60px_#ffffff] overflow-hidden border border-white/40 group perspective-1000"
-        >
-            <!-- Global Ambient Glow (Dynamic) -->
-            <div class="absolute inset-0 opacity-30 transition-colors duration-1000"
-                 :class="'bg-gradient-to-br ' + slides[activeSlide].color">
-            </div>
+        <script>
+            document.addEventListener('alpine:init', function () {
+                if (typeof Alpine !== 'undefined' && !Alpine.stores?.heroCarouselRegistered) {
+                    Alpine.data('heroCarousel', function () {
+                        return {
+                            activeSlide: 0,
+                            slides: @json($heroSlides),
+                            trackImpression: function () {
+                                var slide = this.slides[this.activeSlide];
+                                if (slide && slide.id > 0) {
+                                    window.dispatchEvent(new CustomEvent('banner-impression', { detail: { id: slide.id } }));
+                                }
+                            },
+                            next: function () {
+                                this.activeSlide = (this.activeSlide + 1) % this.slides.length;
+                                this.trackImpression();
+                            },
+                            prev: function () {
+                                this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length;
+                                this.trackImpression();
+                            },
+                            init: function () {
+                                var self = this;
+                                this.trackImpression();
+                                setInterval(function () { self.next(); }, 5000);
+                            }
+                        };
+                    });
+                }
+                
+                if (typeof Alpine !== 'undefined' && !Alpine.stores?.searchManagerRegistered) {
+                    Alpine.data('searchManager', () => ({
+                        recentSearches: [],
+                        init() {
+                            const saved = localStorage.getItem('recent_searches');
+                            this.recentSearches = saved ? JSON.parse(saved) : [];
+                        },
+                        saveSearch(query) {
+                            if (!query || query.trim().length < 2) return;
+                            query = query.trim();
+                            
+                            // Prevent saving if the query is too similar to the last one (simple check)
+                            if (this.recentSearches.length > 0 && this.recentSearches[0].toLowerCase() === query.toLowerCase()) return;
 
+                            this.recentSearches = [
+                                query,
+                                ...this.recentSearches.filter(s => s.toLowerCase() !== query.toLowerCase())
+                            ].slice(0, 5);
+                            localStorage.setItem('recent_searches', JSON.stringify(this.recentSearches));
+                        },
+                        performSearch(query) {
+                            this.$wire.set('search', query);
+                            this.saveSearch(query);
+                        },
+                        clearSearches() {
+                            this.recentSearches = [];
+                            localStorage.removeItem('recent_searches');
+                        }
+                    }));
+                }
+            });
+
+            // Also register immediately in case alpine:init already fired
+            if (typeof Alpine !== 'undefined') {
+                try {
+                    Alpine.data('heroCarousel', function () {
+                        return {
+                            activeSlide: 0,
+                            slides: @json($heroSlides),
+                            trackImpression: function () {
+                                var slide = this.slides[this.activeSlide];
+                                if (slide && slide.id > 0) {
+                                    window.dispatchEvent(new CustomEvent('banner-impression', { detail: { id: slide.id } }));
+                                }
+                            },
+                            next: function () {
+                                this.activeSlide = (this.activeSlide + 1) % this.slides.length;
+                                this.trackImpression();
+                            },
+                            prev: function () {
+                                this.activeSlide = (this.activeSlide - 1 + this.slides.length) % this.slides.length;
+                                this.trackImpression();
+                            },
+                            init: function () {
+                                var self = this;
+                                this.trackImpression();
+                                setInterval(function () { self.next(); }, 5000);
+                            }
+                        };
+                    });
+
+                    Alpine.data('searchManager', () => ({
+                        recentSearches: [],
+                        init() {
+                            const saved = localStorage.getItem('recent_searches');
+                            this.recentSearches = saved ? JSON.parse(saved) : ['Rock Concerts', 'Jazz Night', 'Food Festival NYC', 'Stand-up Comedy'];
+                        },
+                        saveSearch(query) {
+                            if (!query || query.trim().length < 2) return;
+                            query = query.trim();
+                            
+                            if (this.recentSearches.length > 0 && this.recentSearches[0].toLowerCase() === query.toLowerCase()) return;
+
+                            this.recentSearches = [
+                                query,
+                                ...this.recentSearches.filter(s => s.toLowerCase() !== query.toLowerCase())
+                            ].slice(0, 5);
+                            localStorage.setItem('recent_searches', JSON.stringify(this.recentSearches));
+                        },
+                        performSearch(query) {
+                            this.$wire.set('search', query);
+                            this.saveSearch(query);
+                        },
+                        clearSearches() {
+                            this.recentSearches = [];
+                            localStorage.removeItem('recent_searches');
+                        }
+                    }));
+                } catch (e) { /* already registered */ }
+            }
+        </script>
+        <div x-data="heroCarousel()"
+            @banner-impression.window="$wire.call('trackBannerImpression', $event.detail.id)"
+            class="relative w-full h-[500px] rounded-3xl overflow-hidden"
+        >
+            <!-- Slides -->
             <template x-for="(slide, index) in slides" :key="slide.id">
                 <div 
                     x-show="activeSlide === index"
-                    x-transition:enter="transition ease-out duration-1000"
-                    x-transition:enter-start="opacity-0 lg:translate-x-12"
-                    x-transition:enter-end="opacity-100 lg:translate-x-0"
-                    x-transition:leave="transition ease-in duration-700"
-                    x-transition:leave-start="opacity-100 scale-100"
-                    x-transition:leave-end="opacity-0 scale-95"
-                    class="absolute inset-0 flex flex-col lg:flex-row items-center justify-between p-8 lg:p-16"
+                    x-transition:enter="transition ease-out duration-700"
+                    x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-500"
+                    x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0"
+                    class="absolute inset-0"
                 >
-                    <!-- Left: Typography & Info -->
-                    <div class="z-20 w-full lg:w-1/2 flex flex-col justify-center items-start space-y-8 pl-4 lg:pl-8">
+                    <!-- Background Image -->
+                    <img :src="slide.image" 
+                         class="absolute inset-0 w-full h-full object-cover"
+                         :alt="slide.title">
+                    
+                    <!-- Dark Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent"></div>
+                    
+                    <!-- Content -->
+                    <div class="relative z-10 h-full flex flex-col justify-center px-6 md:px-16 lg:px-20 max-w-3xl">
+                        <!-- Featured Badge -->
+                        <div class="mb-6">
+                            <span class="inline-block bg-[#EE2E24] text-white text-xs font-bold uppercase tracking-wider px-4 py-2 rounded">
+                                FEATURED EVENT
+                            </span>
+                        </div>
                         
-                        <!-- Badge -->
-                        <span 
-                            x-text="slide.subtitle" 
-                            class="inline-block px-5 py-2 rounded-full text-xs font-black uppercase tracking-widest text-white shadow-lg bg-black/10 backdrop-blur-md border border-white/10"
-                        ></span>
-
-                        <!-- Main Title (Broken & Massive) -->
-                        <div class="relative">
-                            <h1 class="text-6xl lg:text-8xl font-black text-gray-800 leading-[0.85] tracking-tighter drop-shadow-sm mix-blend-multiply opacity-90">
-                                <span class="block" x-text="slide.title_line1"></span>
-                                <span class="block text-transparent bg-clip-text bg-gradient-to-r" :class="slide.color" x-text="slide.title_line2"></span>
-                            </h1>
-                            <!-- Decorative Circle behind text -->
-                            <div class="absolute -top-10 -left-10 w-32 h-32 rounded-full bg-white/40 blur-3xl -z-10"></div>
-                        </div>
-
+                        <!-- Title -->
+                        <h1 class="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight" x-text="slide.title"></h1>
+                        
                         <!-- Description -->
-                        <p x-text="slide.description" class="text-lg text-gray-600 font-medium max-w-md leading-relaxed border-l-4 border-red-500/50 pl-6"></p>
-
-                        <!-- Meta Data Pills -->
-                        <div class="flex items-center gap-4 pt-4">
-                            <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Date</span>
-                                <span x-text="slide.date" class="text-xl font-black text-gray-800"></span>
-                            </div>
-                            <div class="w-px h-10 bg-gray-300"></div>
-                            <div class="flex flex-col">
-                                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Location</span>
-                                <span x-text="slide.location" class="text-xl font-black text-gray-800"></span>
-                            </div>
+                        <p class="text-white text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed max-w-xl md:max-w-2xl line-clamp-3 md:line-clamp-none" x-text="slide.description"></p>
+                        
+                        <!-- Buttons -->
+                        <div class="flex flex-wrap gap-4">
+                            <a :href="slide.link"
+                               :target="slide.link_target"
+                               @click="slide.id > 0 && $wire.call('trackBannerClick', slide.id)"
+                               class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg transition-colors">
+                                Discover Events
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                                </svg>
+                            </a>
                         </div>
-
-                        <!-- Call to Action -->
-                        <button class="mt-8 group/btn relative overflow-hidden rounded-2xl bg-gray-900 px-10 py-5 text-white shadow-[10px_10px_20px_rgba(0,0,0,0.2)] transition-all hover:-translate-y-1 hover:shadow-[15px_15px_30px_rgba(0,0,0,0.3)] active:translate-y-0">
-                            <div class="relative z-10 flex items-center gap-3 font-bold tracking-wide">
-                                <span>GET TICKETS</span>
-                                <svg class="w-5 h-5 transition-transform group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                            </div>
-                            <div class="absolute inset-0 -z-0 translate-y-[100%] bg-gradient-to-r from-red-600 to-orange-600 transition-transform duration-300 group-hover/btn:translate-y-0"></div>
-                        </button>
-                    </div>
-
-                    <!-- Right: Visual 3D Card (Floating) -->
-                    <div class="w-full lg:w-1/2 h-full relative flex items-center justify-center pointer-events-none lg:pointer-events-auto">
-                        <!-- The Card Itself -->
-                        <div class="relative w-[320px] h-[450px] lg:w-[400px] lg:h-[550px] rounded-[3rem] shadow-[30px_30px_60px_rgba(0,0,0,0.25)] border-[8px] border-white bg-gray-200 overflow-hidden transform transition-all duration-700 hover:scale-[1.02] hover:rotate-1 rotate-[-3deg]"
-                             style="filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2))">
-                             
-                            <!-- Image -->
-                            <img :src="slide.image" class="absolute inset-0 w-full h-full object-cover">
-                            
-                            <!-- Gloss Overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-tr from-white/30 via-transparent to-black/20 mix-blend-overlay"></div>
-                            
-                            <!-- Floating Badge on Image -->
-                            <div class="absolute bottom-8 right-8 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl">
-                                <svg class="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" /></svg>
-                            </div>
-                        </div>
-
-                        <!-- Backing Elements (Decorations) -->
-                        <div class="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[120%] bg-white/20 blur-3xl rounded-full mix-blend-overlay"></div>
                     </div>
                 </div>
             </template>
 
-            <!-- Controls (Physical Knobs) -->
-            <div class="absolute bottom-8 lg:bottom-12 right-12 lg:right-16 flex gap-4 z-30">
-                <button 
-                    @click="prev()" 
-                    class="w-16 h-16 rounded-full bg-[#eef2f6] shadow-[6px_6px_12px_#caced6,-6px_-6px_12px_#ffffff] flex items-center justify-center text-gray-500 hover:text-red-500 active:shadow-[inset_3px_3px_6px_#caced6,inset_-3px_-3px_6px_#ffffff] active:scale-95 transition-all text-xl"
-                >
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" /></svg>
-                </button>
-                <button 
-                    @click="next()" 
-                    class="w-16 h-16 rounded-full bg-[#eef2f6] shadow-[6px_6px_12px_#caced6,-6px_-6px_12px_#ffffff] flex items-center justify-center text-gray-500 hover:text-red-500 active:shadow-[inset_3px_3px_6px_#caced6,inset_-3px_-3px_6px_#ffffff] active:scale-95 transition-all text-xl"
-                >
-                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" /></svg>
-                </button>
-            </div>
-            
-            <!-- Progress Bar -->
-            <div class="absolute bottom-0 left-0 h-2 bg-red-500/20 w-full">
-                <div class="h-full bg-red-500 transition-all duration-300 ease-out shadow-[0_0_10px_rgba(239,68,68,0.5)]" 
-                     :style="'width: ' + ((activeSlide + 1) / slides.length * 100) + '%'"></div>
-            </div>
-        </div>
-
-        {{-- 
-            CONTROL DECK: Search & Filter 
-            Modeled as a floating pill with unified controls to match reference.
-        --}}
-        {{-- 
-            CONTROL DECK: Search & Filter 
-            Modeled as a floating pill with unified controls to match reference.
-        --}}
-        {{-- 
-            HYPER-REALISTIC 3D CONTROL DECK
-            Matching the reference: Soft gradient background, floating search bar with recessed inputs.
-        --}}
-        {{-- 
-            CONTROL DECK: Search & Filter 
-            Modeled as a floating pill with unified controls to match reference.
-        --}}
-            <!-- Search Input -->
-            <div class="relative z-20 -mt-16 mx-4 md:mx-12 space-y-6">
-                <div class="bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-[20px] border border-white/80 p-2 md:p-3 rounded-[2.5rem] shadow-[0_20px_40px_-10px_rgba(0,0,0,0.15)] flex flex-col md:flex-row gap-2 md:gap-3 items-center transform transition-transform md:hover:-translate-y-1 duration-300">
-                    <div class="flex-grow relative w-full group">
-                        <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-focus-within:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-                        </div>
-                        <input 
-                            wire:model.live.debounce.300ms="search"
-                            class="w-full pl-12 md:pl-14 pr-6 py-3 md:py-4 text-sm md:text-base bg-gray-50/50 border border-gray-200 rounded-full focus:ring-0 focus:border-red-400 focus:bg-white transition-all shadow-inner text-gray-700 placeholder-gray-400 font-medium" 
-                            placeholder="Search events..." 
-                            type="text"
-                        />
-                    </div>
-                    <div class="flex w-full md:w-auto gap-2 md:gap-3">
-                        <div class="relative flex-1 md:w-56 group">
-                            <div class="absolute inset-y-0 left-0 pl-4 md:pl-6 flex items-center pointer-events-none">
-                                <svg class="w-5 h-5 md:w-6 md:h-6 text-gray-400 group-focus-within:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                            </div>
-                            <button 
-                                wire:click="toggleLocationModal"
-                                class="w-full pl-10 md:pl-14 pr-8 md:pr-10 py-3 md:py-4 text-sm md:text-base bg-gray-50/50 border border-gray-200 rounded-full focus:ring-0 focus:border-red-400 focus:bg-white transition-all shadow-inner text-gray-700 font-medium text-left truncate flex items-center justify-between"
-                            >
-                                <span class="truncate">{{ $selectedLocation ?? 'Everywhere' }}</span>
-                            </button>
-                            <div class="absolute inset-y-0 right-0 pr-4 md:pr-6 flex items-center pointer-events-none">
-                                <svg class="w-4 h-4 md:w-5 md:h-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
-                            </div>
-                        </div>
+            <!-- Slider Controls (Dots + Arrows) -->
+            <div class="absolute bottom-4 right-4 md:bottom-6 md:right-8 z-30 flex items-center gap-4 md:gap-6">
+                <!-- Dots -->
+                <div class="hidden sm:flex gap-2">
+                    <template x-for="(slide, index) in slides" :key="'dot-' + slide.id">
                         <button 
-                            wire:click="toggleFilterModal"
-                            class="bg-gradient-to-br from-red-500 to-red-600 border border-white/20 text-white shadow-[0_10px_20px_-5px_rgba(220,38,38,0.2)] md:shadow-[0_10px_15px_-3px_rgba(220,38,38,0.3),0_4px_6px_-2px_rgba(220,38,38,0.1),inset_0_2px_4px_rgba(255,255,255,0.3)] hover:from-red-400 hover:to-red-500 hover:-translate-y-0.5 transition-all px-6 py-3 md:px-8 md:py-4 rounded-full font-bold flex items-center gap-2 whitespace-nowrap text-sm md:text-base"
-                        >
-                            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" /></svg>
-                            <span>Filters</span>
-                        </button>
-                    </div>
+                            @click="activeSlide = index"
+                            class="w-2 h-2 rounded-full transition-all duration-300"
+                            :class="activeSlide === index ? 'bg-[#EE2E24] w-8' : 'bg-white/50 hover:bg-white'"
+                        ></button>
+                    </template>
+                </div>
+
+                <!-- Arrows -->
+                <div class="flex items-center gap-2 sm:border-l sm:border-white/20 sm:pl-6">
+                    <button 
+                        @click="prev()" 
+                        class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white transition-all active:scale-95"
+                        aria-label="Previous slide"
+                    >
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                    </button>
+                    <button 
+                        @click="next()" 
+                        class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/10 flex items-center justify-center text-white transition-all active:scale-95"
+                        aria-label="Next slide"
+                    >
+                        <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                    </button>
                 </div>
             </div>
+
+
+        </div>
 
         {{-- 
             RECENTLY SEARCHED: Clean White Pills
             Matching the user's reference image exactly: "RECENTLY SEARCHED" label, white pills with red icons.
         --}}
-        <div class="px-2 max-w-screen-xl mx-auto">
-            <h2 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 ml-1">Recently Searched</h2>
-            
-            <div class="flex flex-wrap gap-3">
-                @foreach(['Rock Concerts', 'Jazz Night', 'Food Festival NYC', 'Stand-up Comedy'] as $search)
-                    <button 
-                        wire:click="$set('search', '{{ $search }}')"
-                        class="group px-6 py-3 rounded-full bg-white text-[13px] font-bold text-gray-700 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all outline-none border border-transparent flex items-center gap-2.5"
-                    >
-                        <svg class="w-4 h-4 text-[#EE2E24]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                        <span>{{ $search }}</span>
+        <div x-data="searchManager()" class="px-2 max-w-screen-xl mx-auto space-y-8">
+            <!-- Search Bar (Part of Search Manager) -->
+            <div class="relative !-mt-28 z-30 max-w-5xl mx-auto px-2">
+                <div class="bg-white rounded-xl shadow-xl p-2 flex flex-col md:flex-row items-stretch md:items-center gap-2">
+                    <!-- Search Input -->
+                    <div class="flex-1 flex items-center gap-3 bg-gray-50/80 rounded-lg px-4 py-3 w-full">
+                        <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input 
+                            wire:model.live.debounce.300ms="search"
+                            @input.debounce.2000ms="saveSearch($event.target.value)"
+                            @keydown.enter="saveSearch($event.target.value)"
+                            class="flex-1 text-sm text-gray-700 placeholder-gray-400 bg-transparent border-none focus:outline-none focus:ring-0 p-0" 
+                            placeholder="Search events, concerts, and more..." 
+                            type="text"
+                        />
+                    </div>
+
+                    <div class="flex flex-row items-stretch gap-2 w-full md:w-auto">
+                        <!-- Location Dropdown -->
+                        <button 
+                            wire:click="toggleLocationModal"
+                            class="flex-1 flex items-center justify-between gap-2 bg-gray-50/80 rounded-lg px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors">
+                            <div class="flex items-center gap-2 overflow-hidden">
+                                <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="font-medium whitespace-nowrap truncate">{{ $selectedLocation ?? 'Everywhere' }}</span>
+                            </div>
+                            <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+        
+                        <!-- Filter Button -->
+                        <button 
+                            wire:click="toggleFilterModal"
+                            class="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-md whitespace-nowrap">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                            </svg>
+                            <span>Filter</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4" x-show="recentSearches.length > 0">
+                <div class="flex items-center justify-between mb-4 ml-1">
+                    <h2 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Recently Searched</h2>
+                    <button @click="clearSearches()" class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-600 transition-colors flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        Clear
                     </button>
-                @endforeach
+                </div>
+                <div class="flex flex-wrap gap-3">
+                    <template x-for="search in recentSearches" :key="search">
+                        <button 
+                            @click="performSearch(search)"
+                            class="group px-6 py-3 rounded-full bg-white text-[13px] font-bold text-gray-700 shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.08)] hover:-translate-y-0.5 transition-all outline-none border border-transparent flex items-center gap-2.5"
+                        >
+                            <svg class="w-4 h-4 text-[#EE2E24]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            <span x-text="search"></span>
+                        </button>
+                    </template>
+                </div>
             </div>
         </div>
 
@@ -254,7 +323,7 @@
             Two distinctive cards: Early Bird (Red) & VIP Access (Dark).
         --}}
         <div class="space-y-6 mt-12 mb-12">
-            <div class="flex items-center justify-between px-2">
+            <div class="flex items-center justify-between">
                 <h2 class="text-3xl font-black text-gray-800 tracking-tight">Hot Deals</h2>
                 <div class="flex gap-2">
                     <button class="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-gray-400 hover:text-gray-900 transition-colors">
@@ -365,30 +434,22 @@
             @endforeach
         </div>
 
-        {{-- 
-            EVENT CARDS: Physical Objects
-            "Floating" cards with thick borders and realistic physics.
-        --}}
-        {{-- 
-            EVENT CARDS: Modern Ticket Style
-            Matching the user's "Upcoming Events" reference image.
-        --}}
         <div class="space-y-8">
             <!-- Header -->
             <div class="flex items-center justify-between px-2">
-                <h2 class="text-3xl font-black text-gray-900 tracking-tight">Upcoming Events</h2>
+                <h4 class="text-3xl font-black text-gray-900 tracking-tight">Upcoming Events</h2>
                 <a href="{{ route('events.index') }}" class="text-red-500 font-bold hover:text-red-600 transition flex items-center gap-1 text-sm">
                     View all <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>
             </div>
 
-            <!-- Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Grid/Slider -->
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 -mx-4 px-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:pb-0 sm:overflow-visible sm:mx-0 sm:px-0 scrollbar-hide items-stretch">
                 @forelse($events as $event)
-                    <div class="group relative bg-white rounded-[2.5rem] p-3 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 cursor-pointer border border-gray-100">
+                    <div class="min-w-[85%] sm:min-w-0 snap-center group relative bg-white rounded-[2.5rem] p-3 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 cursor-pointer border border-gray-100 flex flex-col justify-between h-full">
                         
                         <!-- Image Container -->
-                        <div class="relative aspect-[4/3] rounded-[2rem] overflow-hidden mb-5">
+                        <div class="relative h-48 w-full rounded-[2rem] overflow-hidden mb-5 shrink-0">
                             @if($event->banner)
                                 <img src="{{ Storage::url($event->banner->file_path) }}" alt="{{ $event->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                             @else
@@ -413,7 +474,7 @@
                         </div>
 
                         <!-- Content -->
-                        <div class="px-2 pb-2">
+                        <div class="px-2 pb-2 flex flex-col flex-1">
                             <!-- Date -->
                             <div class="flex items-center gap-2 text-red-500 font-bold text-[10px] uppercase tracking-wider mb-3">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -421,22 +482,22 @@
                             </div>
 
                             <!-- Title -->
-                            <h3 class="text-lg font-black text-gray-900 leading-tight mb-3 line-clamp-2 min-h-[3rem]">
+                            <h3 class="text-lg font-black text-gray-900 leading-tight mb-3 line-clamp-2 h-14 overflow-hidden">
                                 <a href="{{ route('events.show', $event->slug) }}">
                                     {{ $event->title }}
                                 </a>
                             </h3>
 
                             <!-- Location -->
-                            <div class="flex items-center gap-2 mb-6">
-                                <div class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+                            <div class="flex items-center gap-2 mb-6 h-5 overflow-hidden">
+                                <div class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
                                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                                 </div>
                                 <span class="text-xs font-bold text-gray-400 truncate">{{ $event->location }}</span>
                             </div>
 
                             <!-- Ticket Notch Divider -->
-                            <div class="relative pt-4 border-t border-dashed border-gray-200">
+                            <div class="mt-auto relative pt-4 border-t border-dashed border-gray-200">
                                 <!-- Notches -->
                                 <div class="absolute -left-[1.35rem] -top-3 w-6 h-6 rounded-full bg-[#eef2f6]"></div>
                                 <div class="absolute -right-[1.35rem] -top-3 w-6 h-6 rounded-full bg-[#eef2f6]"></div>
@@ -447,7 +508,7 @@
                                         <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Starting from</p>
                                         @php $minPrice = $event->ticketTypes->min('price'); @endphp
                                         <p class="text-xl font-black text-gray-900">
-                                            {{ $minPrice ? '$' . number_format($minPrice, 2) : 'FREE' }}
+                                            {{ $minPrice ? 'Rp' . number_format($minPrice, 0, ',', '.') : 'FREE' }}
                                         </p>
                                     </div>
                                     <a href="{{ route('events.show', $event->slug) }}" class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white hover:scale-110 hover:-rotate-12 transition-all duration-300 shadow-sm">
@@ -478,7 +539,47 @@
                 </div>
             @endif
         </div>
-    </div>
+
+        {{-- Section Banners (type = 'section') --}}
+        @if(isset($sectionBanners) && $sectionBanners->isNotEmpty())
+            @php
+                $cols = match(true) {
+                    $sectionBanners->count() === 1 => 'grid-cols-1',
+                    $sectionBanners->count() === 2 => 'grid-cols-1 md:grid-cols-2',
+                    default                        => 'grid-cols-1 md:grid-cols-3',
+                };
+            @endphp
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4" x-data="{}">
+                <div class="grid {{ $cols }} gap-6">
+                @foreach($sectionBanners as $banner)
+                    @php
+                        $sectionImgUrl = $banner->fileBucket?->url
+                            ?? (str_starts_with($banner->image_path ?? '', 'http')
+                                ? $banner->image_path
+                                : Storage::url($banner->image_path ?? ''));
+                    @endphp
+                    <a href="{{ $banner->link_url ?? '#' }}"
+                       target="{{ $banner->link_target }}"
+                       x-on:click="$wire.call('trackBannerClick', {{ $banner->id }})"
+                       class="relative block overflow-hidden rounded-3xl h-52 group cursor-pointer shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <img src="{{ $sectionImgUrl }}"
+                             alt="{{ $banner->title }}"
+                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent"></div>
+                        <div class="absolute bottom-0 left-0 p-6">
+                            <h3 class="text-white text-xl font-black leading-tight drop-shadow">{{ $banner->title }}</h3>
+                            @if($banner->link_url)
+                                <span class="inline-flex items-center gap-1 mt-2 text-white/80 text-xs font-semibold">
+                                    Learn more
+                                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                </span>
+                            @endif
+                        </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
+    @endif
 
     <!-- Trending Now Section -->
     <div class="bg-gray-900 text-white w-full py-20 relative overflow-hidden">
@@ -489,9 +590,9 @@
                 <div class="w-2 h-10 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.8)]"></div>
                 <h2 class="text-4xl font-extrabold text-white drop-shadow-lg">Trending Now</h2>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 md:grid md:grid-cols-3 md:gap-6 md:auto-rows-[280px] md:pb-0 md:mx-0 md:px-0 scrollbar-hide items-center">
                 <!-- Large Featured Card -->
-                <div class="md:col-span-2 md:row-span-2 relative rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-2xl">
+                <div class="min-w-[90%] md:min-w-0 shrink-0 snap-center md:col-span-2 md:row-span-2 relative h-[450px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-2xl">
                     <img alt="Concert" class="w-full h-full object-cover transition duration-700 group-hover:scale-105 group-hover:rotate-1" src="https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop"/>
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
                     <div class="absolute top-6 right-6 bg-red-600 text-white text-[10px] font-black uppercase px-4 py-2 rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.6)] animate-pulse border border-red-400">
@@ -508,7 +609,7 @@
                 </div>
                 
                 <!-- Small Card 1 -->
-                <div class="relative rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-lg">
+                <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-lg">
                     <img alt="Comedy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1616781297371-332924dc5280?q=80&w=2070&auto=format&fit=crop"/>
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
                     <div class="absolute bottom-0 left-0 p-8">
@@ -518,7 +619,7 @@
                 </div>
                 
                 <!-- Small Card 2 -->
-                <div class="relative rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-lg">
+                <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-lg">
                     <img alt="Workshop" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" src="https://images.unsplash.com/photo-1531403009284-440f080d1e12?q=80&w=2070&auto=format&fit=crop"/>
                     <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-90"></div>
                     <div class="absolute top-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase px-3 py-1.5 rounded-lg">
@@ -530,94 +631,94 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Testimonials Section -->
-    <div class="relative z-10 py-20 bg-gradient-to-br from-[#e0e7ff] to-[#f3f4f6] border-y border-white/50 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Testimonials Section -->
+        <div class="relative z-10 py-20 bg-gradient-to-br from-[#e0e7ff] to-[#f3f4f6] border-y border-white/50 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 class="text-3xl font-extrabold text-gray-800 mb-16 text-center drop-shadow-sm">What Fans Are Saying</h2>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pt-6 pb-8 -mx-4 px-4 md:grid md:grid-cols-3 md:gap-12 md:pb-0 md:mx-0 md:px-0 scrollbar-hide items-stretch">
                 <!-- Card 1: Paper Note (Rotated Left) -->
-                <div class="relative group">
+                <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-red-400 shadow-md border-2 border-white/50 z-20"></div>
-                    <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                        <div class="flex items-center gap-1 mb-4 text-yellow-400">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-2 hover:rotate-0 transition-transform duration-300">
+                        <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         </div>
-                        <p class="text-gray-600 italic mb-6 leading-relaxed text-sm font-serif">"The booking process was incredibly smooth. I loved the 3D venue view, it really helped me pick the perfect seat!"</p>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden">
+                        <p class="text-gray-600 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">"The booking process was incredibly smooth. I loved the 3D venue view, it really helped me pick the perfect seat!"</p>
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
                                 <img src="https://i.pravatar.cc/150?u=a042581f4e29026024d" alt="User" class="w-full h-full object-cover">
                             </div>
-                            <div>
-                                <p class="font-bold text-gray-800 text-sm">Sarah Jenkins</p>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">New York, NY</p>
+                            <div class="min-w-0">
+                                <p class="font-bold text-gray-800 text-xs md:text-sm truncate">Sarah Jenkins</p>
+                                <p class="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase truncate">New York, NY</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card 2: Glass Panel (Straight) -->
-                <div class="relative group">
+                <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-gray-400 shadow-md border-2 border-white/50 z-20"></div>
-                    <div class="h-full bg-white/60 backdrop-blur-xl border border-white/70 p-8 rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-1px_rgba(0,0,0,0.03),inset_0_1px_2px_rgba(255,255,255,0.8)] transform -rotate-1 hover:rotate-0 transition-transform duration-300">
-                        <div class="flex items-center gap-1 mb-4 text-yellow-400">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <div class="h-full bg-white/60 backdrop-blur-xl border border-white/70 p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_-1px_rgba(0,0,0,0.05),0_2px_4px_-1px_rgba(0,0,0,0.03),inset_0_1px_2px_rgba(255,255,255,0.8)] transform -rotate-1 hover:rotate-0 transition-transform duration-300">
+                        <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         </div>
-                        <p class="text-gray-700 italic mb-6 leading-relaxed text-sm font-serif">"TicketRed is my go-to for all concerts. The exclusive pre-sale access for members is totally worth it."</p>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden">
+                        <p class="text-gray-700 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">"{{ config('app.name') }} is my go-to for all concerts. The exclusive pre-sale access for members is totally worth it."</p>
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
                                 <img src="https://i.pravatar.cc/150?u=4" alt="User" class="w-full h-full object-cover">
                             </div>
-                            <div>
-                                <p class="font-bold text-gray-800 text-sm">Michael Chen</p>
-                                <p class="text-[10px] text-gray-500 font-bold uppercase">San Francisco, CA</p>
+                            <div class="min-w-0">
+                                <p class="font-bold text-gray-800 text-xs md:text-sm truncate">Michael Chen</p>
+                                <p class="text-[8px] md:text-[10px] text-gray-500 font-bold uppercase truncate">San Francisco, CA</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Card 3: Paper Note (Rotated Right) -->
-                <div class="relative group">
+                <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-400 shadow-md border-2 border-white/50 z-20"></div>
-                    <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-3 hover:rotate-0 transition-transform duration-300">
-                        <div class="flex items-center gap-1 mb-4 text-yellow-400">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-3 hover:rotate-0 transition-transform duration-300">
+                        <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                            <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         </div>
-                        <p class="text-gray-600 italic mb-6 leading-relaxed text-sm font-serif">"Got tickets for the whole family for the magic show. The QR code entry system was super fast and convenient."</p>
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden">
+                        <p class="text-gray-600 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">"Got tickets for the whole family for the magic show. The QR code entry system was super fast and convenient."</p>
+                        <div class="flex items-center gap-2 md:gap-3">
+                            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
                                 <img src="https://i.pravatar.cc/150?u=a042581f4e29026704d" alt="User" class="w-full h-full object-cover">
                             </div>
-                            <div>
-                                <p class="font-bold text-gray-800 text-sm">Emma Wilson</p>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">London, UK</p>
+                            <div class="min-w-0">
+                                <p class="font-bold text-gray-800 text-xs md:text-sm truncate">Emma Wilson</p>
+                                <p class="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase truncate">London, UK</p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            </div>
         </div>
-    </div>
 
-    <!-- Organizers Section -->
-    <div class="relative z-10 py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-         <h2 class="text-2xl font-bold text-gray-700 mb-12 text-center opacity-80">Trusted by Top Organizers</h2>
-         <div class="relative w-full" 
+        <!-- Organizers Section -->
+        <div class="relative z-10 py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             <h2 class="text-2xl font-bold text-gray-700 mb-12 text-center opacity-80">Trusted by Top Organizers</h2>
+             <div class="relative w-full" 
               x-data="{ 
                   interval: null,
                   startAutoScroll() { 
@@ -704,19 +805,65 @@
                     </div>
                 </div>
             </div>
+            </div>
         </div>
+    </div>
+
+    {{-- Mobile Banner --}}
+        @if(isset($mobileBanner) && $mobileBanner)
+            @php
+                $mobileImgUrl = $mobileBanner->fileBucket?->url
+                    ?? (str_starts_with($mobileBanner->image_path ?? '', 'http')
+                        ? $mobileBanner->image_path
+                        : Storage::url($mobileBanner->image_path ?? ''));
+            @endphp
+            <div
+                x-data="{ dismissed: localStorage.getItem('mobile_banner_{{ $mobileBanner->id }}') === '1' }"
+                x-show="!dismissed"
+                x-transition:leave="transition ease-in duration-200"
+                x-transition:leave-start="opacity-100 translate-y-0"
+                x-transition:leave-end="opacity-0 translate-y-full"
+                class="fixed bottom-0 inset-x-0 z-50 md:hidden"
+                x-cloak
+            >
+                <div class="relative overflow-hidden shadow-[0_-4px_20px_rgba(0,0,0,0.25)]">
+                <img src="{{ $mobileImgUrl }}" alt="{{ $mobileBanner->title }}" class="absolute inset-0 w-full h-full object-cover">
+                <div class="absolute inset-0 bg-black/65"></div>
+                <div class="relative z-10 flex items-center gap-3 px-4 py-3">
+                    <p class="flex-1 text-white font-bold text-sm truncate">{{ $mobileBanner->title }}</p>
+                    @if($mobileBanner->link_url)
+                        <a href="{{ $mobileBanner->link_url }}"
+                           target="{{ $mobileBanner->link_target }}"
+                           x-on:click="$wire.call('trackBannerClick', {{ $mobileBanner->id }})"
+                           class="flex-shrink-0 bg-[#EE2E24] hover:bg-red-700 text-white text-xs font-bold px-4 py-2 rounded-lg transition-colors whitespace-nowrap">
+                            View Now
+                        </a>
+                    @endif
+                    <button
+                        @click="dismissed = true; localStorage.setItem('mobile_banner_{{ $mobileBanner->id }}', '1')"
+                        class="flex-shrink-0 w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white transition-colors"
+                        aria-label="Dismiss banner"
+                    >
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <x-footer />
 
     <!-- Modals -->
-    <x-event.filter-modal 
-        :categories="$categories" 
-        :active-tab="$activeTab" 
-        :sort="$sort" 
-        :date-filter="$dateFilter" 
-        :min-price="$minPrice" 
-        :max-price="$maxPrice" 
-        :selected-categories="$selectedCategories" 
+    <x-event.filter-modal
+        :categories="$categories"
+        :active-tab="$activeTab"
+        :sort="$sort"
+        :date-filter="$dateFilter"
+        :min-price="$minPrice"
+        :max-price="$maxPrice"
+        :selected-categories="$selectedCategories"
         :grouped-categories="$this->groupedCategories"
     />
     <x-event.location-modal :locations="$this->locations" />

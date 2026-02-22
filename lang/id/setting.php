@@ -15,12 +15,14 @@ return [
     'component_value' => 'Nilai',
     'component_value_placeholder_integer' => 'contoh: 100, 500, 1000',
     'component_value_placeholder_string' => 'contoh: Teks nilai default',
+    'component_value_placeholder_html' => 'contoh: <p>Masukkan konten HTML di sini</p>',
     'component_value_placeholder_default' => 'Masukkan nilai',
-    
+
     // Component types
     'type_string' => 'String',
     'type_integer' => 'Integer',
     'type_boolean' => 'Boolean',
+    'type_html' => 'HTML',
     
     // Table columns
     'components_count' => 'Komponen',

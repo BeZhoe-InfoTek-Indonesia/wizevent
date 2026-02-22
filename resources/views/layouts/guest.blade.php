@@ -5,6 +5,16 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        {{-- PWA Meta Tags --}}
+        <meta name="theme-color" content="#4f46e5">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+        <meta name="apple-mobile-web-app-title" content="EventMgmt">
+        <meta name="mobile-web-app-capable" content="yes">
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
+        <link rel="icon" type="image/svg+xml" href="{{ asset('icons/icon-192.svg') }}">
+
+
         <title>{{ config('app.name', 'Laravel') }}</title>
 
         <!-- Fonts -->
@@ -26,5 +36,21 @@
                 {{ $slot }}
             </div>
         </div>
+
+        {{-- Service Worker Registration --}}
+        <script>
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('{{ asset('service-worker.js') }}')
+                        .then((registration) => {
+                            console.log('Service Worker registered:', registration.scope);
+                        })
+                        .catch((error) => {
+                            console.log('Service Worker registration failed:', error);
+                        });
+                });
+            }
+        </script>
     </body>
+
 </html>

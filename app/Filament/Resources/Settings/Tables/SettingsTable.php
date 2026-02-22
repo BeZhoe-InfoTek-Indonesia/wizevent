@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Settings\Tables;
 
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -45,7 +44,9 @@ class SettingsTable
             ->recordActions([
                 EditAction::make()
                     ->modal(),
+                \Filament\Actions\ViewAction::make(),
             ])
+
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),

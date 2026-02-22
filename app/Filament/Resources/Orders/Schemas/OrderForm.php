@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Orders\Schemas;
 
 use App\Models\TicketType;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Forms\Components\Repeater;
@@ -11,8 +10,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Hidden;
 use Filament\Schemas\Schema;
 
 class OrderForm
@@ -97,69 +94,13 @@ class OrderForm
                                     ])
                                     ->columns(12)
                                     ->required()
-                                    ->createItemButtonLabel(__('order.add_item'))
+                                    ->addable(false)
+                                    ->deletable(false)
+                                    ->disabled()
                                     ->live()
                                     ->afterStateUpdated(function (callable $get, callable $set) {
                                         self::updateTotals($get, $set);
                                     }),
-                            ]),
-                        Section::make(__('order.payment_proofs'))
-                            ->schema([
-                                Repeater::make('files')
-                                    ->relationship('files')
-                                    ->label(__('order.payment_proofs'))
-                                    ->schema([
-                                        FileUpload::make('file_path')
-                                            ->label(__('order.proof_file'))
-                                            ->disk('public')
-                                            ->directory('payment-proofs')
-                                            ->image()
-                                            ->required()
-                                            ->storeFileNamesIn('original_filename')
-                                            ->columnSpanFull(),
-                                        Hidden::make('bucket_type')
-                                            ->default('payment_proof'),
-                                    ])
-                                    ->grid(3)
-                                    ->collapsible()
-                                    ->itemLabel(fn (array $state): ?string => $state['original_filename'] ?? null),
-                            ])
-                            ->collapsible(),
-                        Section::make()
-                            ->schema([
-                                Select::make('status')
-                                    ->label(__('order.status_label'))
-                                    ->options([
-                                        'pending_payment' => __('order.status.pending_payment'),
-                                        'pending_verification' => __('order.status.pending_verification'),
-                                        'completed' => __('order.status.completed'),
-                                        'cancelled' => __('order.status.cancelled'),
-                                        'expired' => __('order.status.expired'),
-                                    ])
-                                    ->default('pending_payment')
-                                    ->live()
-                                    ->required()
-                                    ->rules([
-                                        function (callable $get) {
-                                            return function (string $attribute, $value, \Closure $fail) use ($get) {
-                                                if ($value === 'completed' && blank($get('files'))) {
-                                                    $fail(__('order.validation.payment_proof_required'));
-                                                }
-                                            };
-                                        },
-                                    ]),
-                                Textarea::make('cancellation_reason')
-                                    ->label(__('order.cancellation_notes'))
-                                    ->placeholder(__('order.cancellation_notes_placeholder'))
-                                    ->visible(fn (callable $get) => $get('status') === 'cancelled')
-                                    ->required()
-                                    ->validationAttribute(__('order.cancellation_notes'))
-                                    ->rows(3),
-                                DateTimePicker::make('expires_at')
-                                    ->label(__('order.expires_at'))
-                                    ->default(now()->addHours(24)),
-                                DateTimePicker::make('completed_at')
-                                    ->label(__('order.completed_at')),
                             ]),
                     ])
                     ->columnSpan(['xl' => 2]),

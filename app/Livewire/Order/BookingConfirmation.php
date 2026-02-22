@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Order;
 
+use App\Jobs\NotifyPaymentForReview;
 use App\Models\Order;
 use App\Services\FileBucketService;
 use App\Services\OrderService;
@@ -37,6 +38,15 @@ class BookingConfirmation extends Component
     public function updatedSameAsContact($value): void
     {
         if ($value) {
+            $user = Auth::user();
+            if ($user && (empty($user->identity_number) || empty($user->mobile_phone_number))) {
+                $this->sameAsContact = false;
+                $this->dispatch('show-notification', [
+                    'message' => 'Your profile is incomplete. Please fill in your identity number and mobile phone number in your profile first.',
+                    'type' => 'warning'
+                ]);
+                return;
+            }
             $this->syncContactDetails();
         }
     }
@@ -47,8 +57,17 @@ class BookingConfirmation extends Component
         if ($user) {
             $this->visitorName = $user->name;
             $this->visitorEmail = $user->email;
-            // You might want to prefill phone if available in your User model
-            // $this->visitorPhone = $user->phone; 
+            
+            if ($user->mobile_phone_number) {
+                // Remove any existing formatting and re-apply it
+                $cleaned = preg_replace('/[^0-9]/', '', $user->mobile_phone_number);
+                $cleaned = substr($cleaned, 0, 13);
+                $this->visitorPhone = trim(chunk_split($cleaned, 4, '-'), '-');
+            }
+            
+            if ($user->identity_number) {
+                $this->visitorIdentityCard = $user->identity_number;
+            }
         }
     }
 
@@ -90,19 +109,26 @@ class BookingConfirmation extends Component
     {
         $this->order = Order::where('order_number', $orderNumber)
             ->where('user_id', Auth::id())
-            ->with(['event', 'orderItems.ticketType'])
+            ->with(['event.seoMetadata', 'orderItems.ticketType'])
             ->firstOrFail();
 
         if ($this->order->status !== 'pending_payment') {
             return redirect()->route('orders.status', $this->order->order_number);
         }
 
-        // Prefill visitor details from user or order notes if available (parsing notes is complex, easier to prefill from User)
-        // For this iteration, we prefill from Auth User as a starting point if no notes exist
+        // Prefill visitor details from user
         $user = Auth::user();
         if ($user) {
-            $this->syncContactDetails();
-            $this->sameAsContact = true;
+            // Only auto-enable sameAsContact if profile is complete
+            if (!empty($user->identity_number) && !empty($user->mobile_phone_number)) {
+                $this->syncContactDetails();
+                $this->sameAsContact = true;
+            } else {
+                $this->sameAsContact = false;
+                // Still fill name and email if possible
+                $this->visitorName = $user->name;
+                $this->visitorEmail = $user->email;
+            }
         }
     }
 
@@ -112,7 +138,7 @@ class BookingConfirmation extends Component
             'paymentProof' => [
                 'nullable', // Changed from required to nullable
                 'file',
-                'mimes:jpg,jpeg,png,pdf',
+                'mimes:jpg,jpeg,png,webp',
                 'max:5120',
             ],
             'visitorName' => 'required|string|max:255',
@@ -160,18 +186,37 @@ class BookingConfirmation extends Component
         // We use uploadPaymentProof method to save visitor details even if file is null
         // The service should handle nullable file_bucket_id if configured, 
         // or we might need to update the service.
-        $orderService->uploadPaymentProof($this->order, $fileBucketId, $notes);
+        $paymentProof = $orderService->uploadPaymentProof($this->order, $fileBucketId, $notes);
+
+        // Keep order in pending_verification. Dispatch a queued job to notify finance/admins for review.
+        try {
+            NotifyPaymentForReview::dispatch($this->order->refresh());
+        } catch (\Throwable $e) {
+            logger()->error('Failed to dispatch NotifyPaymentForReview job', ['order_id' => $this->order->id, 'error' => $e->getMessage()]);
+        }
 
         $this->paymentProof = null;
         $this->statusMessage = __('payment_proof.uploaded_successfully');
 
-        return redirect()->route('orders.status', $this->order->order_number);
+        // Show success notification and redirect to event list
+        $this->dispatch('show-success-notification', [
+            'message' => 'Order confirmed successfully. Please check your email for payment instructions.'
+        ]);
+
+        return redirect()->route('events.index');
     }
 
     public function render(): View
     {
+        $seo = $this->order->event->seoMetadata ?? null;
+
         return view('livewire.order.booking-confirmation', [
             'order' => $this->order,
+            'pageTitle' => $seo->title ?? $this->order->event->title,
+            'metaDescription' => $seo->description ?? null,
+            'metaImage' => $seo->og_image ?? $this->order->event->banner?->url,
+            'metaKeywords' => $seo->keywords ?? null,
+            'canonicalUrl' => $seo->canonical_url ?? route('orders.confirmation', $this->order->order_number),
         ]);
     }
 }

@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\DB;
 
 /**
- * @mixin IdeHelperTicketType
- *
  * @property int $id
  * @property int $event_id
  * @property string|null $name
@@ -28,18 +26,17 @@ use Illuminate\Support\Facades\DB;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Event $event
  * @property-read int $available_count
- * @property-read int $real_available_count
  * @property-read bool $is_available_for_sale
  * @property-read bool $is_sold_out
- *
+ * @property-read int $real_available_count
  * @method static \Database\Factories\TicketTypeFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType query()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereDescription($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereEventId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereHeldCount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereIsActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereMaxPurchase($value)
@@ -52,9 +49,6 @@ use Illuminate\Support\Facades\DB;
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereSoldCount($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereSortOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType withTrashed(bool $withTrashed = true)
- * @method static \Illuminate\Database\Eloquent\Builder<static>|TicketType withoutTrashed()
- *
  * @mixin \Eloquent
  */
 class TicketType extends Model

@@ -12,6 +12,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withSchedule(function ($schedule) {
         $schedule->command('activity:cleanup --days=30 --force')->daily();
+        $schedule->command('app:send-testimonial-reminders')->daily();
     })
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([

@@ -16,10 +16,30 @@ Before starting any task, you MUST check `AGENTS.md` for:
 - **Code Style**: Follow PSR-12. camelCase methods, snake_case vars, PascalCase classes. NO inline namespaces (use imports).
 - **Documentation**: Add `@param`/`@return` tags and `laravel-ide-helper` blocks.
 - **Filament Standards**: Use Filament Resources with Modals/Slideovers (not separate pages) for create/edit.
+- **Filament v4 Unified Actions**: ALWAYS use `Filament\Actions\Action` for actions (including `suffixActions` and `prefixActions` in form components). Legacy namespaces like `Filament\Forms\Components\Actions\Action` are DEPRECATED and will cause "Class not found" errors.
 - **Premium Aesthetics**: Maintain the high-quality, modern design standard established for Invoices (PDF), Tickets (PDF), and Email notifications. Use consistent branding, curated typography (Helvetica/Inter), and visual elements like watermarks or status badges.
+- **AI Integration Standards**:
+    - **Centralized Service**: Use `App\Services\AiService` for all AI-powered features (Gemini/OpenAI). specialized services (e.g., `BudgetForecastService`) should wrap `AiService` calls.
+    - **Robust Input Handling**: AI methods MUST handle translatable or complex state inputs. ALWAYS cast/implode array inputs to string before passing to prompt builders using the `convertToString()` helper.
+    - **Prompt Engineering**: Use **Heredoc** (`<<<PROMPT`) for complex templates. Prompts should be detailed, persona-driven, and specify strict output formats (JSON or specific HTML tags).
+    - **JSON-First for Data**: Features populating database records (budget items, pricing tiers) MUST request and validate JSON responses from the AI.
+    - **Mocking Persistence**: Every AI feature MUST have a matching `getMocked...` method in `AiService` to allow development/testing without active API keys.
+    - **UI/UX for AI**: Displays for AI-generated results MUST use `RichEditor` or `ViewField` with glassmorphism/premium styles. Use suffix actions (sparkles icon) for inline generation.
 - **Async Workflows**: Post-payment actions (PDF generation, Email delivery) MUST be handled asynchronously via Jobs (e.g., `ProcessOrderCompletion`) to ensure a smooth user experience.
+
+# Queue & Batch Rules (recent additions)
+- **Reservation Job**: Use `ProcessOrderReservation` to perform ticket reservations under DB locks. Do NOT reserve tickets inline in controller/services that are concurrently reachable.
+- **Batch Reservations**: Prefer `OrderService::createOrdersBatch()` for bulk order creation — it creates orders, then dispatches a `Bus::batch` of `ProcessOrderReservation` jobs. Use `then`/`catch`/`finally` callbacks for auditing and failure handling.
+- **Tests & Local Queues**: Tests may run with `QUEUE_CONNECTION=sync` to execute jobs inline, or run a worker during tests:
+	- Start worker: `php artisan queue:work --tries=3 --stop-when-empty`
+	- Or run tests inline: `QUEUE_CONNECTION=sync php artisan test --filter Tests\\Feature\\OrderServiceTest`
+- **Database Queue Driver**: Project uses `database` queue driver in `.env`. Ensure queue tables exist (`php artisan queue:table` + `php artisan migrate`) when running workers locally.
 - **Internationalization**: ALWAYS use `->placeholder()` and `__()` translations for ALL user-facing text and form fields.
-- **English Language Priority**: English (`en`) is the PRIMARY language reference. When adding translations, always create/update `lang/en/*.php` files FIRST, then translate to other languages (`lang/id/*.php`). All translation keys must exist in English before adding to other languages.
+- **English Language Priority**: English (`en`) is the PRIMARY language reference. All translation keys must exist in `lang/en/*.php` FIRST before adding to other languages (`lang/id/*.php`).
+- **Filament Wizard Pattern**: Complex forms (e.g., Event Creation) MUST use `Filament\Forms\Components\Wizard`. Ensure steps are logically grouped (e.g., Basic, Location, Media, Sales, Organizer).
+- **Real-time Analytics**: Interactive calculators (e.g., Revenue Simulator) should be implemented as Livewire components launched via modal actions. Use reactive properties for instant calculation updates.
+- **CMS Management**: CMS content (Banners, FAQs, etc.) should be manageable via Filament Resources and displayed via Livewire. Use aggressive caching (5-30 mins) with automatic invalidation on CRUD operations.
+- **Content Sanitization**: ALL CMS-managed rich text or user-generated content MUST be sanitized to prevent XSS. Use Blade's `{{ }}` by default, and only `{!! !!}` for sanitized HTML content.
 - **No Data Deletion**: Never clear data suggestions/seeders in the database.
 - **Testing Data Preservation**: NEVER use `RefreshDatabase` trait or delete old data in tables during tests. Use in-memory SQLite with factories for test isolation.
 - **Ask Before Breaking**: Migrations, auth logic changes, or destructive actions require user approval.

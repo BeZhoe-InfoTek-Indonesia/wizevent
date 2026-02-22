@@ -2,269 +2,329 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Ticket \#{{ $ticket->ticket_number }}</title>
+    <title>Ticket #{{ $ticket->ticket_number }}</title>
     <style>
         @page {
             margin: 0;
+            padding: 0;
         }
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
             margin: 0;
-            padding: 40px;
-            background-color: #f6f9fc;
+            padding: 40px 20px;
+            background-color: #f4f5f7;
+            -webkit-font-smoothing: antialiased;
         }
-        .ticket-wrapper {
+        .ticket-card {
             width: 100%;
+            max-width: 480px;
+            margin: 0 auto;
             background-color: #ffffff;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
             position: relative;
         }
-        .ticket-header {
-            position: relative;
-            height: 250px;
+        
+        /* BANNER SECTION */
+        .banner-section {
             width: 100%;
+            height: 220px;
+            background-color: #fdf6e9; /* Light cream fallback */
+            position: relative;
             overflow: hidden;
         }
-        .hero-image {
+        .banner-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .hero-overlay {
+        .banner-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(0deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.2) 100%);
+            background: linear-gradient(90deg, rgba(253, 246, 233, 0.9) 0%, rgba(253, 246, 233, 0.2) 60%, rgba(253, 246, 233, 0) 100%);
+        }
+        .banner-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 30px;
+            z-index: 10;
+        }
+        .banner-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #ffffff;
+            color: #d35400;
+            padding: 6px 16px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            letter-spacing: 0.5px;
+        }
+        .banner-badge span {
+            margin-right: 4px;
+            color: #e67e22;
+        }
+        .banner-text-artistic {
+            max-width: 70%;
+            margin-top: 10px;
+        }
+        /* Using safe fonts for PDF */
+        .banner-title-serif {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 28px;
+            color: #2c3e50;
+            margin: 0;
+            line-height: 1.2;
+        }
+        .banner-subtitle-serif {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-style: italic;
+            font-size: 20px;
+            color: #34495e;
+            margin: 5px 0 10px 0;
+        }
+        .banner-desc-small {
+            font-size: 9px;
+            color: #7f8c8d;
+            line-height: 1.4;
+            max-width: 220px;
+        }
+
+        /* MAIN CONTENT SECTION */
+        .content-section {
+            padding: 35px 35px 10px 35px;
+            position: relative;
+        }
+        .label-live {
+            color: #e67e22;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
             display: block;
         }
-        .hero-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            width: 90%;
-            color: #ffffff;
-        }
         .event-title {
-            font-size: 32px;
-            font-weight: 900;
-            margin: 0 0 15px 0;
-            text-transform: uppercase;
-            letter-spacing: -0.5px;
+            font-size: 34px;
+            font-weight: 800;
+            color: #0d1b2a;
+            margin: 0 0 6px 0;
             line-height: 1.1;
         }
-        .event-title span {
-            color: #ff4d4d;
-        }
-        .ticket-badge {
-            display: inline-block;
-            background-color: #ff4d4d;
-            color: #ffffff;
-            font-size: 14px;
-            font-weight: 800;
-            padding: 8px 30px;
-            border-radius: 25px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        /* Perforation Styling */
-        .perforation {
-            position: relative;
-            height: 2px;
-            width: 100%;
+        .event-subtitle {
+            font-size: 15px;
+            color: #5d6d7e;
             margin: 0;
+            font-weight: 500;
         }
-        .perforation-line {
+
+        /* GRID DATA */
+        .info-grid {
             width: 100%;
-            border-top: 2px dashed #e2e8f0;
+            margin-top: 35px;
+            border-collapse: collapse;
         }
-        .cutout-left, .cutout-right {
+        .info-grid td {
+            padding-bottom: 30px;
+            vertical-align: top;
+        }
+        .info-label {
+            font-size: 10px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 1.2px;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .info-value {
+            font-size: 18px;
+            color: #0d1b2a;
+            font-weight: 700;
+        }
+        .info-subvalue {
+            font-size: 12px;
+            color: #64748b;
+            margin-top: 4px;
+            display: block;
+        }
+
+        /* CUTOUTS - Ticket aesthetic */
+        .cutout-wrapper {
+            position: relative;
+            margin: 15px 0;
+            height: 2px;
+        }
+        .dot-line {
+            border-top: 2px dashed #f1f5f9;
+            width: 100%;
+            margin-top: 1px;
+        }
+        .cutout {
             position: absolute;
-            top: -15px;
             width: 30px;
             height: 30px;
-            background-color: #f6f9fc;
+            background-color: #f4f5f7; /* Match body background */
             border-radius: 50%;
+            top: -15px;
+            z-index: 20;
         }
         .cutout-left { left: -15px; }
         .cutout-right { right: -15px; }
 
-        .ticket-body {
-            padding: 40px;
+        /* FOOTER DETAILS */
+        .footer-details {
+            padding: 20px 35px 40px 35px;
         }
-        .info-table {
+        .user-info-table {
             width: 100%;
+            border-collapse: collapse;
         }
-        .info-column {
-            vertical-align: top;
-            padding-right: 20px;
-        }
-        .qr-column {
-            width: 200px;
-            vertical-align: top;
-            text-align: center;
-        }
-        .info-group {
-            margin-bottom: 25px;
-        }
-        .group-label {
-            font-size: 11px;
-            font-weight: 800;
-            color: #a0aec0;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 8px;
-        }
-        .group-value {
-            font-size: 18px;
+        .user-name {
+            font-size: 16px;
             font-weight: 700;
-            color: #1a1f36;
-            margin: 0;
-            line-height: 1.3;
+            color: #0d1b2a;
         }
-        .group-value-sub {
-            font-size: 14px;
-            color: #718096;
-            margin-top: 4px;
-        }
-        .ticket-number-value {
-            font-size: 24px;
-            font-weight: 900;
-            color: #1a1f36;
-            letter-spacing: 1px;
-        }
-        
-        .qr-frame {
-            background-color: #f8fafc;
-            padding: 20px;
-            border-radius: 15px;
-            display: inline-block;
-            margin-bottom: 15px;
-        }
-        .scan-label {
-            font-size: 12px;
-            font-weight: 800;
-            color: #1a1f36;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-top: 10px;
-        }
-        .scan-sublabel {
-            font-size: 9px;
-            color: #a0aec0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 5px;
+        .order-id {
+            font-size: 16px;
+            font-weight: 700;
+            color: #94a3b8;
         }
 
-        .ticket-footer {
-            padding: 30px 40px;
-            background-color: #ffffff;
-            border-top: 2px dashed #f1f4f8;
+        /* QR SECTION */
+        .qr-section {
             text-align: center;
+            padding: 30px 0 50px 0;
+            background-color: #ffffff;
         }
-        .footer-disclaimer {
-            font-size: 11px;
-            color: #718096;
-            font-style: italic;
-            line-height: 1.6;
+        .qr-image {
+            display: inline-block;
             margin-bottom: 20px;
         }
-        .order-ref-label {
+        .qr-security {
             font-size: 10px;
-            color: #a0aec0;
+            color: #cbd5e1;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 5px;
+            letter-spacing: 3px;
+            font-family: monospace;
+            font-weight: bold;
         }
-        .order-ref-badge {
-            display: inline-block;
-            background-color: #f1f4f8;
-            color: #4a5568;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 15px;
-            border-radius: 12px;
-        }
-        .clear { clear: both; }
+
+        /* Utility */
+        .w-half { width: 50%; }
+        
     </style>
 </head>
 <body>
 
-<div class="ticket-wrapper">
-    <!-- Header Hero Section -->
-    <div class="ticket-header">
-        @if($ticket->ticketType->event->banner && $ticket->ticketType->event->banner->url)
-            <img src="{{ $ticket->ticketType->event->banner->url }}" alt="Event Banner" class="hero-image">
+<div class="ticket-card">
+    
+    <!-- Top Image Area -->
+    <div class="banner-section">
+        @if(isset($bannerBase64) && $bannerBase64)
+            <img src="{{ $bannerBase64 }}" class="banner-image">
+            <div class="banner-overlay"></div>
+        @elseif($ticket->ticketType->event->banner && $ticket->ticketType->event->banner->url)
+            <img src="{{ $ticket->ticketType->event->banner->url }}" class="banner-image">
+            <div class="banner-overlay"></div>
         @else
-            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-OYyPDtX0yy-3iUHuCdgkU62XxS7udOnfhIsGCMTqtIJitHif0WbBfqpRVzTRqe4fVXdBIGlycsnclr5bMrzNAIRKYne9vUnLAnp54jN6XkskJ0_4DhYjpOWwkzeaVZ7yOP5wC0MoET49iZFVovQyyf73t16m1NRz735NODG-sfcASlVOp0RdQfuJu15NySohbC7CcH-vHB12QcZwnMmkXG6gposLZq7IErrVZXgY-RF7229ODQLJMWCtzoYkf8h0wg5oNMoXYlnA" alt="Event Banner" class="hero-image">
+            <!-- Placeholder design elements -->
+            <div class="banner-content">
+                <div class="banner-text-artistic">
+                    <h2 class="banner-title-serif">Mimal Ipsade</h2>
+                    <h3 class="banner-subtitle-serif">L'artre wore</h3>
+                    <p class="banner-desc-small">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+                        Vivamus lacinia odio vitae vestibulum vestibulum.
+                    </p>
+                </div>
+            </div>
         @endif
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-            <h1 class="event-title">
-                {{ $ticket->ticketType->event->title }}
-            </h1>
-            <div class="ticket-badge">{{ $ticket->ticketType->name }}</div>
+        
+        <!-- Badge -->
+        <div class="banner-badge">
+            <span>★</span> {{ strtoupper($ticket->ticketType->name) }}
         </div>
     </div>
 
-    <!-- Perforation Line -->
-    <div class="perforation">
-        <div class="cutout-left"></div>
-        <div class="perforation-line"></div>
-        <div class="cutout-right"></div>
-    </div>
+    <!-- Main Content -->
+    <div class="content-section">
+        <span class="label-live">LIVE EVENT</span>
+        <h1 class="event-title">{{ $ticket->ticketType->event->title }}</h1>
+        @if($ticket->ticketType->event->description_short && $ticket->ticketType->event->description_short !== $ticket->ticketType->event->title)
+            <p class="event-subtitle">{{ $ticket->ticketType->event->description_short }}</p>
+        @endif
 
-    <!-- Ticket Details Body -->
-    <div class="ticket-body">
-        <table class="info-table">
+        <table class="info-grid">
             <tr>
-                <td class="info-column">
-                    <div class="info-group">
-                        <div class="group-label">DATE & TIME</div>
-                        <div class="group-value">{{ $ticket->ticketType->event->event_date->format('l, d F Y') }}</div>
-                        <div class="group-value-sub">{{ $ticket->ticketType->event->event_date->format('H:i') }} Local Time</div>
-                    </div>
-
-                    <div class="info-group">
-                        <div class="group-label">VENUE</div>
-                        <div class="group-value">{{ $ticket->ticketType->event->venue_name }}</div>
-                        <div class="group-value-sub">{{ $ticket->ticketType->event->location }}</div>
-                    </div>
-
-                    <div class="info-group" style="margin-bottom: 0;">
-                        <div class="group-label">TICKET NUMBER</div>
-                        <div class="ticket-number-value">{{ $ticket->ticket_number }}</div>
-                    </div>
+                <td class="w-half">
+                    <span class="info-label">DATE</span>
+                    <div class="info-value">{{ $ticket->ticketType->event->event_date->format('M d, Y') }}</div>
                 </td>
-                <td class="qr-column">
-                    <div class="qr-frame">
-                        <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" width="140" height="140"/>
-                    </div>
-                    <div class="scan-label">
-                        <span style="color: #ff4d4d; vertical-align: middle;">▣</span> SCAN FOR ENTRY
-                    </div>
-                    <div class="scan-sublabel">Fast-track scanning optimized</div>
+                <td class="w-half">
+                    <span class="info-label">TIME</span>
+                    <div class="info-value">{{ $ticket->ticketType->event->event_date->format('h:i A') }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <span class="info-label">VENUE</span>
+                    <div class="info-value">{{ $ticket->ticketType->event->venue_name }}</div>
+                    <div class="info-subvalue">{{ $ticket->ticketType->event->location }}</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="w-half">
+                    <span class="info-label">SECTION</span>
+                    <div class="info-value">{{ $ticket->section_name ?? 'Floor A' }}</div>
                 </td>
             </tr>
         </table>
     </div>
 
-    <!-- Footer Section -->
-    <div class="ticket-footer">
-        <p class="footer-disclaimer">
-            This ticket is valid for one person only. Please present this ticket at the entrance.<br>
-            Duplication or unauthorized resale is prohibited.
-        </p>
-        <div class="order-ref-label">Order Reference</div>
-        <div class="order-ref-badge">{{ $ticket->orderItem->order->order_number }}</div>
+    <!-- Cutout Separator -->
+    <div class="cutout-wrapper">
+        <div class="cutout cutout-left"></div>
+        <div class="cutout cutout-right"></div>
+        <div class="dot-line"></div>
     </div>
+
+    <!-- Footer Identity -->
+    <div class="footer-details">
+        <table class="user-info-table">
+            <tr>
+                <td>
+                    <span class="info-label">TICKET HOLDER</span>
+                    <div class="user-name">{{ $ticket->orderItem->order->user->name ?? 'John Visitor' }}</div>
+                </td>
+                <td style="text-align: right;">
+                    <span class="info-label">ORDER ID</span>
+                    <div class="order-id">#{{ $ticket->orderItem->order->order_number ?? '8901' }}</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- QR Code Section -->
+    <div class="qr-section">
+        <div class="qr-image">
+            <img src="data:image/svg+xml;base64,{{ $qrCode }}" alt="QR Code" width="160" height="160"/>
+        </div>
+        <div class="qr-security">
+            SEC:{{ implode('-', str_split($ticket->ticket_number, 4)) }}
+        </div>
+    </div>
+
 </div>
 
 </body>

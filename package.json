@@ -5,25 +5,18 @@
         "build": "vite build",
         "dev": "vite",
         "watch": "vite",
-        "prepare": "husky",
         "lint": "composer phpstan"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
+        "@vitejs/plugin-basic-ssl": "^1.0.0",
         "autoprefixer": "^10.4.2",
         "axios": "^1.7.4",
-        "concurrently": "^9.0.1",
-        "husky": "^9.0.11",
-        "laravel-vite-plugin": "^1.2.0",
-        "lint-staged": "^15.2.0",
+        "concurrently": "^7.6.0",
+        "laravel-vite-plugin": "^0.8.0",
         "postcss": "^8.4.31",
+        "puppeteer": "^24.37.3",
         "tailwindcss": "^3.1.0",
-        "vite": "^6.0.11"
-    },
-    "lint-staged": {
-        "*.php": [
-            "vendor/bin/pint",
-            "vendor/bin/phpstan analyse --memory-limit=2G"
-        ]
+        "vite": "^4.5.0"
     }
 }

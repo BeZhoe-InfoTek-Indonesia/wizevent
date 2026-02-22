@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Settings;
 
 use App\Filament\Resources\Settings\Pages\ListSettings;
+use App\Filament\Resources\Settings\Pages\ViewSetting;
 use App\Filament\Resources\Settings\RelationManagers\SettingComponentsRelationManager;
 use App\Filament\Resources\Settings\Schemas\SettingForm;
 use App\Filament\Resources\Settings\Tables\SettingsTable;
@@ -54,6 +55,7 @@ class SettingResource extends Resource
     {
         return [
             'index' => ListSettings::route('/'),
+            'view' => ViewSetting::route('/{record}'),
         ];
     }
 

@@ -3,6 +3,7 @@
 return [
     'details' => 'Detail Bukti Pembayaran',
     'view' => 'Lihat Bukti Pembayaran',
+    'review' => 'Tinjau Pembayaran',
     'approve' => 'Setujui Pembayaran',
     'approve_manual' => 'Setujui Manual',
     'reject' => 'Tolak Pembayaran',
@@ -20,4 +21,8 @@ return [
     'status.pending' => 'Menunggu',
     'status.approved' => 'Disetujui',
     'status.rejected' => 'Ditolak',
+    'uploaded_successfully' => 'Bukti pembayaran berhasil diunggah.',
+    'no_file_selected' => 'Tidak ada file yang dipilih.',
+    'label' => 'Bukti Pembayaran',
+    'no_file_uploaded_manual_check' => 'Tidak ada bukti pembayaran yang diunggah. Pesanan ini memerlukan pemeriksaan manual.',
 ];

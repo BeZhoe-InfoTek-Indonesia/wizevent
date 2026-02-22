@@ -46,7 +46,7 @@
                 <div>
                     @if($event->from_price !== null)
                         <span class="text-sm text-gray-500">From</span>
-                        <span class="text-lg font-bold text-primary-600">${{ number_format($event->from_price, 2) }}</span>
+                        <span class="text-lg font-bold text-primary-600">Rp{{ number_format($event->from_price, 0, ',', '.') }}</span>
                     @else
                         <span class="text-sm text-gray-500">Free</span>
                     @endif

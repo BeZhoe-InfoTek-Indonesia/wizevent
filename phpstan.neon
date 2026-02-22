@@ -9,13 +9,12 @@ parameters:
         - database
         - routes
     
+    # Bootstrap Laravel for proper reflection
+    bootstrapFiles:
+        - phpstan-bootstrap.php
+    
     # Exclude paths
     excludePaths:
         - database/migrations/*
-    
-    # Additional configuration
-    ignoreErrors:
-        - '#Call to an undefined method.*hasRole.*#'
-        - '#Undefined method.*hasRole.*#'
     
     

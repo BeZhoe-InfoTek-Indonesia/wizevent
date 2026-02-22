@@ -23,7 +23,7 @@ class OrderCreated extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: __('email.order_created_subject'),
+            subject: __('email.order_created_subject', ['event' => $this->order->event->title]),
         );
     }
 

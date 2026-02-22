@@ -1,4 +1,4 @@
-<div class="bg-[#F8FAFC] min-h-screen font-sans pb-20 md:pb-32">
+<div class="bg-[#f0f2f5] min-h-screen font-sans pb-20 md:pb-32">
     <style>
         @keyframes shimmer {
             100% { transform: translateX(100%); }
@@ -12,15 +12,15 @@
             <div class="w-full bg-white rounded-2xl shadow-2xl overflow-hidden relative">
                 {{-- Top Progress Bar --}}
                 <div class="absolute top-0 left-0 w-full h-1.5 bg-gray-100">
-                    <div class="h-full bg-[#1A8DFF] animate-[loading_2s_ease-in-out_infinite] w-1/3 rounded-r-full"></div>
+                    <div class="h-full bg-[#DC2626] animate-[loading_2s_ease-in-out_infinite] w-1/3 rounded-r-full shadow-[0_0_8px_rgba(220,38,38,0.5)]"></div>
                 </div>
 
                 <div class="p-8 md:p-10 flex flex-col items-center text-center">
                     {{-- Spinner with Icon --}}
                     <div class="relative w-24 h-24 mb-6">
                         <div class="absolute inset-0 border-4 border-[#F1F5F9] rounded-full"></div>
-                        <div class="absolute inset-0 border-4 border-[#1A8DFF] rounded-full border-t-transparent animate-spin"></div>
-                        <div class="absolute inset-0 flex items-center justify-center text-[#1A8DFF]">
+                        <div class="absolute inset-0 border-4 border-[#DC2626] rounded-full border-t-transparent animate-spin"></div>
+                        <div class="absolute inset-0 flex items-center justify-center text-[#DC2626]">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                         </div>
                     </div>
@@ -41,7 +41,7 @@
                         {{-- Step 2 --}}
                         <div class="flex items-center gap-4">
                             <div class="w-6 h-6 flex items-center justify-center">
-                                <div class="w-2 h-2 bg-[#1A8DFF] rounded-full animate-ping"></div>
+                                <div class="w-2 h-2 bg-[#DC2626] rounded-full animate-ping"></div>
                             </div>
                             <div class="flex items-center gap-1">
                                 <span class="text-[14px] font-bold text-[#1E293B]">Securing your selection</span>
@@ -70,7 +70,7 @@
             {{-- Support Link --}}
             <div class="mt-6 text-center">
                 <p class="text-[#64748B] text-[14px] font-medium">
-                    Having trouble? <a href="#" class="text-[#1A8DFF] font-bold hover:underline">Contact support</a>
+                    Having trouble? <a href="#" class="text-[#DC2626] font-bold hover:underline">Contact support</a>
                 </p>
             </div>
         </div>
@@ -83,29 +83,29 @@
                 <div class="flex items-center justify-center max-w-3xl mx-auto">
                     {{-- Step 1: Select --}}
                     <div class="flex flex-col items-center gap-4 group">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#1A8DFF] shadow-lg shadow-blue-500/20 flex items-center justify-center text-white ring-4 ring-blue-50 transition-all">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#DC2626] shadow-lg shadow-red-500/20 flex items-center justify-center text-white ring-4 ring-red-50 transition-all">
                             <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
-                        <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#1A8DFF] uppercase">1. Select</span>
+                        <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#DC2626] uppercase">1. Select</span>
                     </div>
 
                     {{-- Progress Line 1 --}}
-                    <div class="flex-1 h-0.5 bg-gradient-to-r from-[#1A8DFF] to-[#1A8DFF] mx-4 md:mx-8 -mt-9 md:-mt-11"></div>
+                    <div class="flex-1 h-0.5 bg-gradient-to-r from-[#DC2626] to-[#DC2626] mx-4 md:mx-8 -mt-9 md:-mt-11"></div>
 
                     {{-- Step 2: Review --}}
                     <div class="flex flex-col items-center gap-4 group">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#1A8DFF] shadow-lg shadow-blue-500/20 flex items-center justify-center text-white ring-4 ring-blue-50 transition-all">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#DC2626] shadow-lg shadow-red-500/20 flex items-center justify-center text-white ring-4 ring-red-50 transition-all">
                             <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                         </div>
-                        <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#1A8DFF] uppercase">2. Review</span>
+                        <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#DC2626] uppercase">2. Review</span>
                     </div>
 
                     {{-- Progress Line 2 --}}
-                    <div class="flex-1 h-0.5 bg-gradient-to-r from-[#1A8DFF] to-[#1A8DFF] mx-4 md:mx-8 -mt-9 md:-mt-11"></div>
+                    <div class="flex-1 h-0.5 bg-gradient-to-r from-[#DC2626] to-[#DC2626] mx-4 md:mx-8 -mt-9 md:-mt-11"></div>
 
                     {{-- Step 3: Payment (Current) --}}
                     <div class="flex flex-col items-center gap-4 group">
-                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#1A8DFF] shadow-lg shadow-blue-500/20 flex items-center justify-center text-white font-black text-[15px] md:text-[16px] ring-4 ring-blue-50">
+                        <div class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#DC2626] shadow-lg shadow-red-500/20 flex items-center justify-center text-white font-black text-[15px] md:text-[16px] ring-4 ring-red-50">
                             3
                         </div>
                         <span class="text-[10px] md:text-[11px] font-black tracking-[0.15em] text-[#1E293B] uppercase">3. Payment</span>
@@ -118,9 +118,9 @@
         <div class="bg-[#F8FAFC] border-t border-[#F1F5F9] py-4">
             <div class="container mx-auto px-4 max-w-6xl">
                 <nav class="flex items-center gap-3 text-[10px] md:text-[11px] font-black tracking-[0.2em] text-[#94A3B8] uppercase">
-                    <a href="/" class="hover:text-[#1A8DFF] transition-colors">Home</a>
+                    <a href="/" class="hover:text-[#DC2626] transition-colors">Home</a>
                     <span class="text-gray-300">/</span>
-                    <a href="#" class="hover:text-[#1A8DFF] transition-colors">Concerts</a>
+                    <a href="#" class="hover:text-[#DC2626] transition-colors">Concerts</a>
                     <span class="text-gray-300">/</span>
                     <span class="text-[#1E293B]">Tickets</span>
                 </nav>
@@ -139,15 +139,15 @@
             {{-- Left Column (8 cols) --}}
             <div class="lg:col-span-8 space-y-6">
                 {{-- Ticket Details Card --}}
-                <div class="bg-white rounded-[20px] md:rounded-[24px] border border-[#E2E8F0] shadow-sm overflow-hidden">
-                    <div class="p-4 md:p-6 border-b border-[#F1F5F9] border-dashed flex items-center justify-between bg-white">
+                <div class="bg-white/80 backdrop-blur-xl rounded-[24px] md:rounded-[32px] border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.05)] overflow-hidden">
+                    <div class="p-4 md:p-6 border-b border-[#F1F5F9] border-dashed flex items-center justify-between bg-white/40">
                         <h3 class="text-[15px] md:text-[16px] font-black text-[#1E293B]">Ticket 1 (Pax)</h3>
                         <div class="flex items-center gap-2 md:gap-4">
                             <div class="flex items-center gap-2">
                                 <span class="text-[11px] md:text-[13px] font-bold text-[#64748B] text-right leading-tight max-w-[80px] md:max-w-none">Same as contact details</span>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" wire:model.live="sameAsContact" id="sameAsContact" class="sr-only peer">
-                                    <div class="w-9 h-5 md:w-11 md:h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 after:transition-all peer-checked:bg-[#1A8DFF]"></div>
+                                    <div class="w-9 h-5 md:w-11 md:h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 md:after:h-5 md:after:w-5 after:transition-all peer-checked:bg-[#DC2626]"></div>
                                 </label>
                             </div>
                             <svg class="w-5 h-5 text-[#1E293B] hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"></path></svg>
@@ -160,7 +160,7 @@
                             @foreach(['Mr.', 'Mrs.', 'Ms.'] as $title)
                                 <label class="flex items-center gap-3 cursor-pointer group">
                                     <input type="radio" wire:model="visitorTitle" value="{{ $title }}" class="sr-only peer">
-                                    <div class="w-5 h-5 rounded-full border-2 border-[#E2E8F0] peer-checked:border-[#1A8DFF] peer-checked:border-[6px] transition-all bg-white"></div>
+                                    <div class="w-5 h-5 rounded-full border-2 border-[#E2E8F0] peer-checked:border-[#DC2626] peer-checked:border-[6px] transition-all bg-white"></div>
                                     <span class="text-[15px] font-bold text-[#64748B] peer-checked:text-[#1E293B]">{{ $title }}</span>
                                 </label>
                             @endforeach
@@ -168,42 +168,43 @@
 
                         {{-- Name Input --}}
                         <div class="relative">
-                            <input type="text" wire:model.live="visitorName" {{ $sameAsContact ? 'readonly' : '' }} class="w-full px-4 md:px-5 py-3 md:py-4 rounded-[14px] md:rounded-[16px] border border-[#E2E8F0] text-[15px] font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#1A8DFF]/10 focus:border-[#1A8DFF] transition-all {{ $sameAsContact ? 'bg-[#F8FAFC]' : 'bg-white' }}" placeholder="Full name">
+                            <input type="text" wire:model.live="visitorName" {{ $sameAsContact ? 'readonly' : '' }} class="w-full px-4 md:px-5 py-3 md:py-4 rounded-[14px] md:rounded-[16px] border border-[#E2E8F0] text-[15px] font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#DC2626]/10 focus:border-[#DC2626] transition-all {{ $sameAsContact ? 'bg-[#F8FAFC]' : 'bg-gray-50/50 shadow-inner' }}" placeholder="Full name">
                             @error('visitorName') <p class="text-red-500 text-xs mt-1 ml-2 font-medium">{{ $message }}</p> @enderror
                         </div>
 
-                        {{-- Phone Input Cluster --}}
                         <div class="relative">
-                            <div class="w-full px-4 md:px-5 py-3 md:py-4 rounded-[14px] md:rounded-[16px] border border-[#E2E8F0] flex items-center bg-white focus-within:ring-2 focus-within:ring-[#1A8DFF]/10 focus-within:border-[#1A8DFF] transition-all">
+                            <div class="w-full px-4 md:px-5 py-3 md:py-4 rounded-[14px] md:rounded-[16px] border border-[#E2E8F0] flex items-center transition-all {{ $sameAsContact ? 'bg-[#F8FAFC]' : 'bg-gray-50/50 shadow-inner focus-within:ring-2 focus-within:ring-[#DC2626]/10 focus-within:border-[#DC2626]' }}">
                                 <div class="flex items-center gap-2 mr-3 opacity-80 select-none border-r border-[#F1F5F9] pr-3">
                                     <img src="https://flagcdn.com/w20/id.png" class="w-5 h-auto rounded-sm md:w-5 shadow-sm" alt="ID">
                                     <span class="text-[15px] font-medium text-[#64748B]">+62</span>
                                 </div>
                                 <input
-                                            type="text"
-                                            wire:model="visitorPhone"
-                                            x-data
-                                            x-init="$el.addEventListener('input', function(e) {
-                                                let value = e.target.value.replace(/[^0-9]/g, '');
-                                                value = value.substring(0, 12);
-                                                if (value.length > 8) {
-                                                    value = value.substring(0, 4) + '-' + value.substring(4, 8) + '-' + value.substring(8);
-                                                } else if (value.length > 4) {
-                                                    value = value.substring(0, 4) + '-' + value.substring(4);
-                                                }
-                                                e.target.value = value;
-                                                $wire.set('visitorPhone', value);
-                                            })"
-                                            class="flex-1 w-full text-[15px] font-medium text-[#1E293B] focus:outline-none placeholder-[#94A3B8] bg-transparent"
-                                            placeholder="812-3456-7890"
-                                        >
+                                             type="text"
+                                             wire:model="visitorPhone"
+                                             {{ $sameAsContact ? 'readonly' : '' }}
+                                             x-data
+                                             x-init="$el.addEventListener('input', function(e) {
+                                                 if ($wire.sameAsContact) return;
+                                                 let value = e.target.value.replace(/[^0-9]/g, '');
+                                                 value = value.substring(0, 12);
+                                                 if (value.length > 8) {
+                                                     value = value.substring(0, 4) + '-' + value.substring(4, 8) + '-' + value.substring(8);
+                                                 } else if (value.length > 4) {
+                                                     value = value.substring(0, 4) + '-' + value.substring(4);
+                                                 }
+                                                 e.target.value = value;
+                                                 $wire.set('visitorPhone', value);
+                                             })"
+                                             class="flex-1 w-full text-[15px] font-medium text-[#1E293B] focus:outline-none placeholder-[#94A3B8] bg-transparent"
+                                             placeholder="812-3456-7890"
+                                         >
                             </div>
                             @error('visitorPhone') <p class="text-red-500 text-xs mt-1 ml-2 font-medium">{{ $message }}</p> @enderror
                         </div>
 
                         {{-- Email Input --}}
                         <div class="relative">
-                            <input type="email" wire:model.live="visitorEmail" {{ $sameAsContact ? 'readonly' : '' }} class="w-full px-5 py-4 rounded-[16px] border border-[#E2E8F0] text-[15px] font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#1A8DFF]/10 focus:border-[#1A8DFF] transition-all {{ $sameAsContact ? 'bg-[#F8FAFC]' : 'bg-white' }}" placeholder="Email">
+                            <input type="email" wire:model.live="visitorEmail" {{ $sameAsContact ? 'readonly' : '' }} class="w-full px-5 py-4 rounded-[16px] border border-[#E2E8F0] text-[15px] font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#DC2626]/10 focus:border-[#DC2626] transition-all {{ $sameAsContact ? 'bg-[#F8FAFC]' : 'bg-gray-50/50 shadow-inner' }}" placeholder="Email">
                             @error('visitorEmail') <p class="text-red-500 text-xs mt-1 ml-2 font-medium">{{ $message }}</p> @enderror
                         </div>
 
@@ -212,14 +213,16 @@
                             <input
                                 type="text"
                                 wire:model="visitorIdentityCard"
+                                {{ $sameAsContact ? 'readonly' : '' }}
                                 maxlength="16"
                                 x-data
                                 x-init="$el.addEventListener('input', function(e) {
+                                    if ($wire.sameAsContact) return;
                                     let value = e.target.value.replace(/[^0-9]/g, '');
                                     e.target.value = value;
                                     $wire.set('visitorIdentityCard', value);
                                 })"
-                                class="w-full px-5 py-4 rounded-[16px] border border-[#E2E8F0] text-[15px] font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none focus:ring-2 focus:ring-[#1A8DFF]/10 focus:border-[#1A8DFF] transition-all bg-white"
+                                class="w-full px-5 py-4 rounded-[16px] border border-[#E2E8F0] text-[15px] font-medium text-[#1E293B] placeholder-[#94A3B8] focus:outline-none transition-all {{ $sameAsContact ? 'bg-[#F8FAFC]' : 'bg-gray-50/50 shadow-inner focus:ring-2 focus:ring-[#DC2626]/10 focus:border-[#DC2626]' }}"
                                 placeholder="Identity Card Number (16 digits)"
                             >
                             @error('visitorIdentityCard') <p class="text-red-500 text-xs mt-1 ml-2 font-medium">{{ $message }}</p> @enderror
@@ -229,13 +232,14 @@
 
                 {{-- Total Payment Section (Compact & Relocated) --}}
                 <div class="mt-6">
-                    <div class="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] overflow-hidden">
-                        {{-- Gradient Header --}}
-                        <div class="bg-gradient-to-r from-[#00DDA3] to-[#7150FF] px-5 py-3 flex items-center gap-3">
+                    <div class="bg-white/80 backdrop-blur-xl rounded-[24px] shadow-[0_8px_32px_rgba(0,0,0,0.05)] border border-white/50 overflow-hidden">
+                        {{-- Glossy Red Header --}}
+                        <div class="bg-gradient-to-r from-[#ef4444] to-[#991b1b] px-5 py-3 flex items-center gap-3 relative overflow-hidden">
+                            <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
                             <div class="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center border border-white/20">
                                 <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
                             </div>
-                            <span class="text-[13px] font-bold text-white uppercase tracking-tight">You one more step to booking</span>
+                            <span class="text-[13px] font-bold text-white uppercase tracking-tight relative z-10">You're one more step to booking</span>
                         </div>
 
                         <div class="p-6">
@@ -250,7 +254,7 @@
                             <div class="pt-5 border-t border-dashed border-[#E2E8F0] flex justify-end">
                                 <button
                                     wire:click="confirmBooking"
-                                    class="px-10 py-3 bg-[#0081FF] hover:bg-[#0071E3] text-white font-black text-[14px] rounded-[10px] transition-all shadow-md active:scale-[0.98] uppercase tracking-tight"
+                                    class="px-10 py-3 bg-gradient-to-br from-[#ef4444] to-[#dc2626] hover:from-[#f87171] hover:to-[#ef4444] text-white font-black text-[14px] rounded-[10px] transition-all shadow-[0_10px_15px_-3px_rgba(220,38,38,0.3)] hover:shadow-[0_15px_20px_-3px_rgba(220,38,38,0.4)] active:scale-[0.98] border border-white/20 uppercase tracking-tight"
                                 >
                                     Continue to payment
                                 </button>
@@ -262,7 +266,7 @@
 
             {{-- Right Column (4 cols) - Event Summary --}}
             <div class="lg:col-span-4 space-y-6">
-                <div class="bg-white rounded-[24px] border border-[#E2E8F0] shadow-sm overflow-hidden sticky top-8">
+                <div class="bg-white/80 backdrop-blur-xl rounded-[32px] border border-white/50 shadow-[0_8px_32px_rgba(0,0,0,0.05)] overflow-hidden sticky top-8">
                     <div class="p-6">
                         <div class="flex gap-4">
                             @if($order->event->banner)
@@ -275,7 +279,7 @@
                             <div class="flex-1 min-w-0 flex flex-col justify-center">
                                 <div class="flex items-start justify-between gap-2">
                                     <h3 class="text-[14px] font-black text-[#1E293B] leading-tight line-clamp-2 uppercase tracking-tight">{{ $order->event->title }}</h3>
-                                    <a href="#" class="text-[13px] font-bold text-[#1A8DFF] hover:underline whitespace-nowrap">Details</a>
+                                    <a href="#" class="text-[13px] font-bold text-[#DC2626] hover:underline whitespace-nowrap">Details</a>
                                 </div>
                             </div>
                         </div>
@@ -325,13 +329,28 @@
                                     <span class="text-[20px] font-black text-[#1E293B] tracking-tight">IDR {{ number_format($order->total_amount) }}</span>
                                     <div class="w-6 h-6 rounded-full bg-[#F8FAFC] flex items-center justify-center group-hover:bg-[#F1F5F9] transition-colors">
                                         <svg class="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#1E293B] transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- Success Notification Script --}}
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('show-success-notification', (data) => {
+                const message = Array.isArray(data) ? data[0].message : (data.message || 'Order confirmed successfully.');
+                window.showNotification(message, 'success');
+            });
+
+            Livewire.on('show-notification', (data) => {
+                const payload = Array.isArray(data) ? data[0] : data;
+                window.showNotification(payload.message, payload.type || 'info');
+            });
+        });
+    </script>
+</div>
         </div>
     
     </div>

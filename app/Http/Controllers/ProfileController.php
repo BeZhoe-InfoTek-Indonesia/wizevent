@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
@@ -118,14 +119,12 @@ class ProfileController extends Controller
             $filename = 'avatars/'.$user->id.'_'.time().'.'.$avatar->getClientOriginalExtension();
 
             // Resize and optimize image
-            $image = Image::make($avatar);
-            $image->fit(300, 300, function ($constraint) {
-                $constraint->upsize();
-            });
-            $image->encode('jpg', 80);
+            $image = Image::read($avatar);
+            $image->cover(300, 300);
+            $encoded = $image->toJpeg(80);
 
             // Store the processed image
-            Storage::disk('public')->put($filename, $image->getEncoded());
+            Storage::disk('public')->put($filename, (string) $encoded);
 
             // Update user avatar
             $user->update(['avatar' => $filename]);
@@ -169,6 +168,8 @@ class ProfileController extends Controller
 
         return view('profile.activity', compact('user', 'recentLogins', 'profileChanges'));
     }
+
+    
 
     /**
      * Delete the user's account.
@@ -231,5 +232,35 @@ class ProfileController extends Controller
         return view('profile.delete-account', [
             'user' => $request->user(),
         ]);
+    }
+
+    /**
+     * Download user's data as JSON file.
+     */
+    public function downloadData(Request $request)
+    {
+        $user = $request->user();
+
+        // Prepare user data for download
+        $data = [
+            'user' => [
+                'name' => $user->name,
+                'email' => $user->email,
+                'phone' => $user->phone,
+                'created_at' => $user->created_at->toIso8601String(),
+                'updated_at' => $user->updated_at->toIso8601String(),
+            ],
+            'email_notifications' => $user->email_notifications ?? [],
+            'in_app_notifications' => $user->in_app_notifications ?? [],
+        ];
+
+        // Create JSON file
+        $filename = 'user_data_'.$user->id.'_'.time().'.json';
+        $content = json_encode($data, JSON_PRETTY_PRINT);
+
+        // Return file download
+        return response()->streamDownload(function () use ($content) {
+            echo $content;
+        }, $filename);
     }
 }

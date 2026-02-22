@@ -13,6 +13,7 @@
 .phpactor.json
 .phpunit.result.cache
 .github
+.husky
 
 Homestead.json
 Homestead.yaml

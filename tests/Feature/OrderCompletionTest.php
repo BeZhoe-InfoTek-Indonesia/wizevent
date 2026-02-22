@@ -54,10 +54,10 @@ class OrderCompletionTest extends TestCase
         $job->handle($invoiceService, $ticketService);
 
         // Assert Invoice PDF exists
-        Storage::disk('public')->assertExists("orders/{$order->id}/invoice.pdf");
+        Storage::disk('public')->assertExists("orders/{$order->uuid}/invoice.pdf");
 
         // Assert Ticket PDF exists
-        Storage::disk('public')->assertExists("orders/{$order->id}/tickets/{$ticket->id}.pdf");
+        Storage::disk('public')->assertExists("orders/{$order->uuid}/tickets/{$ticket->id}.pdf");
 
         // Assert Email sent
         Mail::assertSent(PaymentVerificationApproved::class, function ($mail) use ($order) {

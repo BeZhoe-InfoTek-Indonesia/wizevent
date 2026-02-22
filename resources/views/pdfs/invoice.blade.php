@@ -247,12 +247,33 @@
         .clear {
             clear: both;
         }
+        .pending-stamp {
+            position: absolute;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-30deg);
+            border: 8px solid #ecc94b;
+            color: #ecc94b;
+            font-size: 100px;
+            font-weight: 900;
+            padding: 10px 40px;
+            border-radius: 20px;
+            opacity: 0.4;
+            z-index: 10;
+            pointer-events: none;
+            text-transform: uppercase;
+            letter-spacing: 15px;
+        }
     </style>
 </head>
 <body>
 
     @if($order->status == 'completed')
     <div class="paid-stamp">PAID</div>
+    @elseif(in_array($order->status, ['pending', 'pending_payment', 'pending_verification', 'payment_uploaded']))
+    <div class="pending-stamp">PENDING</div>
+    @elseif($order->status === 'cancelled')
+    <div class="pending-stamp" style="border-color: #f56565; color: #f56565;">CANCELLED</div>
     @endif
 
     <div class="header">

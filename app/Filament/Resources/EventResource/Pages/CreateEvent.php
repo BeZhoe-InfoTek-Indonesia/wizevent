@@ -15,6 +15,11 @@ class CreateEvent extends CreateRecord
     protected static string $resource = EventResource::class;
     public static bool $formActionsAreSticky = true;
 
+    protected function getFormActions(): array
+    {
+        return [];
+    }
+
     protected function handleRecordCreation(array $data): Model
     {
         return DB::transaction(function () use ($data) {
@@ -23,13 +28,18 @@ class CreateEvent extends CreateRecord
             $bannerData = $data['banner_image'] ?? [];
             unset($data['banner_image']);
 
+            // Remove seoMetadata from data to avoid mass-assignment issues
+            // and because we handle it manually
+            $seoMetadataData = $data['seoMetadata'] ?? [];
+            unset($data['seoMetadata']);
+
             $record = static::getModel()::create($data);
 
             if (!empty($bannerData)) {
                 $service = app(FileBucketService::class);
                 
-                $paths = is_array($bannerData) 
-                    ? $bannerData 
+                $paths = is_array($bannerData)
+                    ? $bannerData
                     : [$bannerData];
 
                 foreach ($paths as $path) {
@@ -52,6 +62,11 @@ class CreateEvent extends CreateRecord
                         $service->processImage($fileBucket);
                     }
                 }
+            }
+
+            // Create or update SEO metadata
+            if (!empty($seoMetadataData)) {
+                $record->seoMetadata()->create($seoMetadataData);
             }
 
             return $record;

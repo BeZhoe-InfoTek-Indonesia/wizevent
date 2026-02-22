@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Event;
 
+use App\Models\Banner;
 use App\Models\Event;
 use App\Models\SettingComponent;
 use Livewire\Component;
@@ -101,6 +102,18 @@ class EventDiscovery extends Component
         $this->selectedCategories = array_values($this->selectedCategories);
     }
 
+    public function trackBannerImpression(int $id): void
+    {
+        $banner = Banner::find($id);
+        $banner?->incrementImpressionCount();
+    }
+
+    public function trackBannerClick(int $id): void
+    {
+        $banner = Banner::find($id);
+        $banner?->incrementClickCount();
+    }
+
     public function getLocationsProperty()
     {
         // Try to use Laravolt\Indonesia models
@@ -165,7 +178,7 @@ class EventDiscovery extends Component
 
     public function render()
     {
-        $query = Event::published()->with(['banner', 'ticketTypes', 'categories']);
+        $query = Event::published()->with(['banner', 'ticketTypes', 'categories', 'seoMetadata']);
 
         if ($this->search) {
             $query->where(function ($q) {
@@ -236,9 +249,16 @@ class EventDiscovery extends Component
             $q->where('key', 'event_categories');
         })->get();
 
+        $heroBanners    = Banner::active()->scheduled()->byType('hero')->with('fileBucket')->orderBy('position')->get();
+        $sectionBanners = Banner::active()->scheduled()->byType('section')->with('fileBucket')->orderBy('position')->get();
+        $mobileBanner   = Banner::active()->scheduled()->byType('mobile')->with('fileBucket')->orderBy('position')->first();
+
         return view('livewire.event.event-discovery', [
-            'events' => $events,
-            'categories' => $categories,
+            'events'         => $events,
+            'categories'     => $categories,
+            'heroBanners'    => $heroBanners,
+            'sectionBanners' => $sectionBanners,
+            'mobileBanner'   => $mobileBanner,
         ]);
     }
 }

@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Auth\VerifyEmailController;
 
 Route::middleware('guest')->group(function () {
     Volt::route('register', 'pages.auth.register')
@@ -33,7 +35,17 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    // Email verification disabled - routes removed
+    // Email verification routes
+    Volt::route('verify-email', 'pages.auth.verify-email')
+        ->name('verification.notice');
+
+    Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+        ->name('verification.verify');
+
+    Route::post('email/verification-notification', function (Request $request) {
+        \App\Jobs\SendEmailVerification::dispatch($request->user()->id);
+        return back()->with('status', 'verification-link-sent');
+    })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
     Volt::route('confirm-password', 'pages.auth.confirm-password')
         ->name('password.confirm');

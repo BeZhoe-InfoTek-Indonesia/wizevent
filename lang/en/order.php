@@ -2,6 +2,10 @@
 
 return [
     'order_number' => 'Order Number',
+    'filter' => [
+        'created_from' => 'Created From',
+        'created_until' => 'Created Until',
+    ],
     'user' => 'User',
     'event' => 'Event',
     'total_tickets' => 'Total Tickets',

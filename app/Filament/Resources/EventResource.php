@@ -4,51 +4,53 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\EventResource\Pages;
 use App\Models\Event;
-use App\Services\FileBucketService;
-use Filament\Forms;
-use Filament\Schemas\Schema;
-use Filament\Resources\Resource;
-use Filament\Actions\BulkAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\CreateAction;
-use Filament\Schemas\Components\Group;
-use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\RichEditor;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\Repeater;
 use Dotswan\MapPicker\Fields\Map;
-use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\RestoreAction;
+use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreAction;
 use Filament\Actions\RestoreBulkAction;
-use Filament\Actions\Action as TableAction;
-use Filament\Tables\Table;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Wizard;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Schemas\Components\Utilities\Set;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 
 class EventResource extends Resource
 {
     protected static ?string $model = Event::class;
 
     protected static ?int $navigationSort = 1;
+
+    public static function getMaxContentWidth(): string
+    {
+        return 'full';
+    }
 
     public static function getNavigationIcon(): ?string
     {
@@ -64,347 +66,472 @@ class EventResource extends Resource
     {
         return $schema
             ->schema([
-                Group::make()
-                    ->schema([
-                        Section::make('Basic Information')
-                            ->schema([
-                                TextInput::make('title')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->placeholder(__('event.placeholders.title'))
-                                    ->afterStateUpdated(
-                                        fn (string $operation, $state, Set $set) =>
-                                            $operation === 'create'
-                                                ? $set('slug', Str::slug($state))
-                                                : null
-                                    ),
+                Wizard::make([
+                    Wizard\Step::make('basic_information')
+                        ->label(__('event.steps.basic_information'))
+                        ->description(__('event.steps.basic_information_description'))
+                        ->icon('heroicon-o-information-circle')
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    TextInput::make('title')
+                                        ->label(__('event.labels.title'))
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->live(onBlur: true)
+                                        ->placeholder(__('event.placeholders.title'))
+                                        ->afterStateUpdated(
+                                            fn (string $operation, $state, $set) => $operation === 'create'
+                                                    ? $set('slug', Str::slug($state))
+                                                    : null
+                                        ),
 
-                                TextInput::make('slug')
-                                    ->disabled()
-                                    ->dehydrated()
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->placeholder(__('event.placeholders.slug'))
-                                    ->unique(Event::class, 'slug', ignoreRecord: true),
+                                    TextInput::make('slug')
+                                        ->label(__('event.labels.slug'))
+                                        ->disabled()
+                                        ->dehydrated()
+                                        ->required()
+                                        ->maxLength(255)
+                                        ->placeholder(__('event.placeholders.slug'))
+                                        ->unique(Event::class, 'slug', ignoreRecord: true),
+                                ]),
 
-                                Select::make('categories')
-                                    ->relationship(
-                                        'categories', 
-                                        'name',
-                                        fn (Builder $query) => $query->whereHas('setting', fn ($q) => $q->where('key', 'event_categories'))
-                                    )
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->placeholder(__('event.placeholders.categories')),
+                            TextInput::make('short_description')
+                                ->label(__('event.labels.short_description'))
+                                ->maxLength(500)
+                                ->placeholder(__('event.placeholders.short_description'))
+                                ->columnSpanFull()
+                                ->suffixActions([
+                                    Action::make('generate_short_description')
+                                        ->label(__('event.buttons.generate_short_description'))
+                                        ->icon('heroicon-o-sparkles')
+                                        ->color('primary')
+                                        ->visible(fn ($get) => !empty($get('description')))
+                                        ->action(function ($get, $set) {
+                                            $description = $get('description');
+                                            $title = $get('title');
 
-                                RichEditor::make('description')
-                                    ->required()
-                                    ->minLength(1)
-                                    ->placeholder(__('event.placeholders.description'))
-                                    ->columnSpanFull()
-                                    ->floatingToolbars([
-                                        'paragraph' => [
-                                            'bold', 'italic', 'underline', 'strike', 'subscript', 'superscript',
-                                        ],
-                                        'heading' => [
-                                            'h1', 'h2', 'h3',
-                                        ], 
-                                    ])
-                                    ->toolbarButtons(
-                                       [
-                                            ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
-                                            ['h2', 'h3', 'alignStart', 'alignCenter', 'alignEnd'],
-                                            ['blockquote', 'bulletList', 'orderedList'],
-                                            ['undo', 'redo'],
-                                        ]
-                                    ),
-                            ]),
-
-                        Section::make('Event Details')
-                            ->schema([
-                                DateTimePicker::make('event_date')
-                                    ->required()
-                                    ->label(__('event.labels.start_date_time'))
-                                    ->placeholder(__('event.placeholders.start_date_time')),
-
-                                DateTimePicker::make('event_end_date')
-                                    ->label(__('event.labels.end_date_time'))
-                                    ->after('event_date')
-                                    ->placeholder(__('event.placeholders.end_date_time')),
-
-                                TextInput::make('venue_name')
-                                    ->placeholder(__('event.placeholders.venue_name'))
-                                    ->maxLength(255),
-
-                                TextInput::make('location')
-                                    ->label(__('event.labels.location'))
-                                    ->required()
-                                    ->placeholder(__('event.placeholders.location'))
-                                    ->maxLength(500)
-                                    ->columnSpanFull(),
-
-                                Select::make('city_code')
-                                    ->label('City')
-                                    ->searchable()
-                                    ->live()
-                                    ->afterStateUpdated(function ($state, Set $set, $livewire) {
-                                        if (!$state) {
-                                            // Clear coordinates if city is cleared
-                                            $set('latitude', null);
-                                            $set('longitude', null);
-                                            $set('location_map', null);
-                                            $livewire->dispatch('refreshMap');
-                                            return;
-                                        }
-                                        
-                                        $city = \Laravolt\Indonesia\Models\City::where('code', $state)->first();
-                                        if ($city) {
-                                            $lat = null;
-                                            $lng = null;
-                                            
-                                            // Try to get from meta if exists
-                                            $meta = is_string($city->meta) ? json_decode($city->meta, true) : $city->meta;
-                                            if (isset($meta['lat']) && isset($meta['lng'])) {
-                                                $lat = (float)$meta['lat'];
-                                                $lng = (float)$meta['lng'];
-                                            } elseif (isset($meta['latitude']) && isset($meta['longitude'])) {
-                                                $lat = (float)$meta['latitude'];
-                                                $lng = (float)$meta['longitude'];
-                                            } else {
-                                                // Fallback: Public geocoding for better UX
-                                                try {
-                                                    $response = \Illuminate\Support\Facades\Http::withHeaders([
-                                                        'User-Agent' => 'FilamentMapPicker/1.0'
-                                                    ])->get("https://nominatim.openstreetmap.org/search", [
-                                                        'q' => $city->name . ', Indonesia',
-                                                        'format' => 'json',
-                                                        'limit' => 1
-                                                    ]);
-                                                    
-                                                    if ($response->successful() && count($response->json()) > 0) {
-                                                        $result = $response->json()[0];
-                                                        $lat = (float)$result['lat'];
-                                                        $lng = (float)$result['lon'];
-                                                    }
-                                                } catch (\Exception $e) {
-                                                    // Log error but don't break the flow
-                                                    \Illuminate\Support\Facades\Log::warning('Geocoding failed for city: ' . $city->name, [
-                                                        'error' => $e->getMessage()
-                                                    ]);
-                                                }
+                                            if (empty($description)) {
+                                                return;
                                             }
-                                            
-                                            if ($lat && $lng) {
-                                                // Update latitude and longitude fields
-                                                $set('latitude', $lat);
-                                                $set('longitude', $lng);
-                                                
-                                                // Update the map location
-                                                $set('location_map', [
-                                                    'lat' => $lat,
-                                                    'lng' => $lng
+
+                                            try {
+                                                $aiService = app(\App\Services\AiService::class);
+                                                $shortDescription = $aiService->generateShortDescription([
+                                                    'description' => $description,
+                                                    'title' => $title,
                                                 ]);
 
-                                                // Force the map to move
-                                                $livewire->dispatch('refreshMap');
+                                                if ($shortDescription) {
+                                                    $set('short_description', $shortDescription);
+                                                    \Filament\Notifications\Notification::make()
+                                                        ->success()
+                                                        ->title(__('event.notifications.short_description_generated'))
+                                                        ->send();
+                                                } else {
+                                                    \Filament\Notifications\Notification::make()
+                                                        ->warning()
+                                                        ->title(__('event.notifications.short_description_generation_failed'))
+                                                        ->send();
+                                                }
+                                            } catch (\Exception $e) {
+                                                \Illuminate\Support\Facades\Log::error('Failed to generate short description: ' . $e->getMessage());
+                                                \Filament\Notifications\Notification::make()
+                                                    ->danger()
+                                                    ->title(__('event.notifications.short_description_generation_error'))
+                                                    ->body($e->getMessage())
+                                                    ->send();
+                                            }
+                                        }),
+                                ]),
+
+
+                            Select::make('categories')
+                                ->label(__('event.labels.categories'))
+                                ->relationship(
+                                    'categories',
+                                    'name',
+                                    fn (Builder $query) => $query->whereHas('setting', fn ($q) => $q->where('key', 'event_categories'))
+                                )
+                                ->multiple()
+                                ->searchable()
+                                ->preload()
+                                ->placeholder(__('event.placeholders.categories'))
+                                ->columnSpanFull(),
+
+                            RichEditor::make('description')
+                                ->label(__('event.labels.description'))
+                                ->statePath('description')
+                                ->required()
+                                ->minLength(1)
+                                ->placeholder(__('event.placeholders.description'))
+                                ->columnSpanFull()
+                                ->floatingToolbars([
+                                    'paragraph' => [
+                                        'bold', 'italic', 'underline', 'strike', 'subscript', 'superscript',
+                                    ],
+                                    'heading' => [
+                                        'h1', 'h2', 'h3',
+                                    ],
+                                ])
+                                ->toolbarButtons(
+                                    [
+                                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link'],
+                                        ['h2', 'h3', 'alignStart', 'alignCenter', 'alignEnd'],
+                                        ['blockquote', 'bulletList', 'orderedList'],
+                                        ['undo', 'redo'],
+                                    ]
+                                ),
+                        ]),
+
+                    Wizard\Step::make('location_time')
+                        ->label(__('event.steps.location_time'))
+                        ->description(__('event.steps.location_time_description'))
+                        ->icon('heroicon-o-map-pin')
+                        ->schema([
+                            Grid::make(2)
+                                ->schema([
+                                    DateTimePicker::make('event_date')
+                                        ->required()
+                                        ->label(__('event.labels.start_date_time'))
+                                        ->placeholder(__('event.placeholders.start_date_time')),
+
+                                    DateTimePicker::make('event_end_date')
+                                        ->label(__('event.labels.end_date_time'))
+                                        ->after('event_date')
+                                        ->placeholder(__('event.placeholders.end_date_time')),
+                                ]),
+
+                            TextInput::make('venue_name')
+                                ->label(__('event.labels.venue_name'))
+                                ->placeholder(__('event.placeholders.venue_name'))
+                                ->maxLength(255),
+
+                            TextInput::make('location')
+                                ->label(__('event.labels.location'))
+                                ->required()
+                                ->placeholder(__('event.placeholders.location'))
+                                ->maxLength(500)
+                                ->columnSpanFull(),
+
+                            Select::make('city_code')
+                                ->label(__('event.labels.city'))
+                                ->searchable()
+                                ->live()
+                                ->afterStateUpdated(function ($state, $set, $livewire) {
+                                    if (! $state) {
+                                        $set('latitude', null);
+                                        $set('longitude', null);
+                                        $set('location_map', null);
+                                        $livewire->dispatch('refreshMap');
+
+                                        return;
+                                    }
+
+                                    $city = \Laravolt\Indonesia\Models\City::where('code', $state)->first();
+                                    if ($city) {
+                                        $lat = null;
+                                        $lng = null;
+
+                                        $meta = is_string($city->meta) ? json_decode($city->meta, true) : $city->meta;
+                                        if (isset($meta['lat']) && isset($meta['lng'])) {
+                                            $lat = (float) $meta['lat'];
+                                            $lng = (float) $meta['lng'];
+                                        } elseif (isset($meta['latitude']) && isset($meta['longitude'])) {
+                                            $lat = (float) $meta['latitude'];
+                                            $lng = (float) $meta['longitude'];
+                                        } else {
+                                            try {
+                                                $response = \Illuminate\Support\Facades\Http::withHeaders([
+                                                    'User-Agent' => 'FilamentMapPicker/1.0',
+                                                ])->get('https://nominatim.openstreetmap.org/search', [
+                                                    'q' => $city->name.', Indonesia',
+                                                    'format' => 'json',
+                                                    'limit' => 1,
+                                                ]);
+
+                                                if ($response->successful() && count($response->json()) > 0) {
+                                                    $result = $response->json()[0];
+                                                    $lat = (float) $result['lat'];
+                                                    $lng = (float) $result['lon'];
+                                                }
+                                            } catch (\Exception $e) {
+                                                \Illuminate\Support\Facades\Log::warning('Geocoding failed for city: '.$city->name, [
+                                                    'error' => $e->getMessage(),
+                                                ]);
                                             }
                                         }
-                                    })
-                                    ->getSearchResultsUsing(fn (string $search): array => \Laravolt\Indonesia\Models\City::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'code')->toArray())
-                                    ->getOptionLabelUsing(fn ($value): ?string => \Laravolt\Indonesia\Models\City::where('code', $value)->first()?->name)
-                                    ->required()
-                                    ->columnSpanFull(),
 
-                                Map::make('location_map')
-                                    ->label('Pick Location on Map')
-                                    ->columnSpanFull()
-                                    ->draggable(true)
-                                    ->clickable(true)
-                                    ->zoom(15)
-                                    ->minZoom(0)
-                                    ->maxZoom(28)
-                                    ->detectRetina(true)
-                                    ->defaultLocation(latitude: -6.2088, longitude: 106.8456)
-                                    ->afterStateHydrated(function ($set, $record) {
-                                        if ($record && $record->latitude && $record->longitude) {
-                                            $set('location_map', ['lat' => (float)$record->latitude, 'lng' => (float)$record->longitude]);
+                                        if ($lat && $lng) {
+                                            $set('latitude', $lat);
+                                            $set('longitude', $lng);
+                                            $set('location_map', [
+                                                'lat' => $lat,
+                                                'lng' => $lng,
+                                            ]);
+                                            $livewire->dispatch('refreshMap');
                                         }
-                                    })
-                                    ->afterStateUpdated(function ($set, $state) {
-                                        if ($state) {
-                                            $set('latitude', $state['lat']);
-                                            $set('longitude', $state['lng']);
-                                        }
-                                    })
-                                    // Search Controls
-                                    ->showMyLocationButton()
-                                    ->showFullscreenControl(true)
-                                    ->showZoomControl(true)
-                                    ->rangeSelectField('distance')
-                                    ->live(),
+                                    }
+                                })
+                                ->getSearchResultsUsing(fn (string $search): array => \Laravolt\Indonesia\Models\City::where('name', 'like', "%{$search}%")->limit(50)->pluck('name', 'code')->toArray())
+                                ->getOptionLabelUsing(fn ($value): ?string => \Laravolt\Indonesia\Models\City::where('code', $value)->first()?->name)
+                                ->required()
+                                ->columnSpanFull(),
 
-                                Group::make()
-                                    ->schema([
-                                        TextInput::make('latitude')
-                                            ->numeric()
-                                            ->required()
-                                            ->placeholder(__('event.placeholders.latitude'))
-                                            ->step('any')
-                                            ->live()
-                                            ->afterStateUpdated(function ($state, Set $set, $get, $livewire) {
-                                                if (filled($state) && filled($get('longitude'))) {
-                                                    $set('location_map', [
-                                                        'lat' => (float)$state,
-                                                        'lng' => (float)$get('longitude')
-                                                    ]);
-                                                    $livewire->dispatch('refreshMap');
-                                                }
-                                            }),
-                                        TextInput::make('longitude')
-                                            ->numeric()
-                                            ->required()
-                                            ->placeholder(__('event.placeholders.longitude'))
-                                            ->step('any')
-                                            ->live()
-                                            ->afterStateUpdated(function ($state, Set $set, $get, $livewire) {
-                                                if (filled($state) && filled($get('latitude'))) {
-                                                    $set('location_map', [
-                                                        'lat' => (float)$get('latitude'),
-                                                        'lng' => (float)$state
-                                                    ]);
-                                                    $livewire->dispatch('refreshMap');
-                                                }
-                                            }),
-                                    ])
-                                    ->columns(2),
-                            ]),
+                            Map::make('location_map')
+                                ->label(__('event.labels.location_map'))
+                                ->columnSpanFull()
+                                ->draggable(true)
+                                ->clickable(true)
+                                ->zoom(15)
+                                ->minZoom(0)
+                                ->maxZoom(28)
+                                ->detectRetina(true)
+                                ->defaultLocation(latitude: -6.2088, longitude: 106.8456),
 
-                        Section::make('Media')
-                            ->schema([
-                                FileUpload::make('banner_image')
-                                    ->label('Event Banner')
-                                    ->image()
-                                    ->imageEditor()
-                                    ->disk('public')
-                                    ->directory('event-images')
-                                    ->visibility('public')
-                                    ->maxSize(5120) // 5MB
+                            Group::make()
+                                ->schema([
+                                    TextInput::make('latitude')
+                                        ->label(__('event.labels.latitude'))
+                                        ->numeric()
+                                        ->required()
+                                        ->placeholder(__('event.placeholders.latitude'))
+                                        ->step('any')
+                                        ->live(),
+                                    TextInput::make('longitude')
+                                        ->label(__('event.labels.longitude'))
+                                        ->numeric()
+                                        ->required()
+                                        ->placeholder(__('event.placeholders.longitude'))
+                                        ->step('any')
+                                        ->live(),
+                                ])
+                                ->columns(2),
+                        ]),
 
-                                    ->multiple()
-                                    ->reorderable()
-                                    ->openable()
-                                    ->downloadable()
+                    Wizard\Step::make('media_seo')
+                        ->label(__('event.steps.media_seo'))
+                        ->description(__('event.steps.media_seo_description'))
+                        ->icon('heroicon-o-photo')
+                        ->schema([
+                            Grid::make(3)
+                                ->schema([
+                                    FileUpload::make('banner_image')
+                                        ->label(__('event.labels.banner'))
+                                        ->image()
+                                        ->imageEditor()
+                                        ->disk('public')
+                                        ->directory('event-images')
+                                        ->visibility('public')
+                                        ->maxSize(5120)
+                                        ->multiple()
+                                        ->reorderable()
+                                        ->openable()
+                                        ->downloadable()
+                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                        ->helperText(__('event.helper_texts.banner'))
+                                        ->afterStateHydrated(fn (FileUpload $component, ?\Illuminate\Database\Eloquent\Model $record) => $component->state($record ? $record->banners->pluck('file_path')->toArray() : []))
+                                        ->dehydrated(true),
 
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->helperText('Recommended size: 1200x600px (2:1 ratio). Max 5MB.')
-                                    ->afterStateHydrated(fn (FileUpload $component, ?\Illuminate\Database\Eloquent\Model $record) => $component->state($record ? $record->banners->pluck('file_path')->toArray() : []))
-                                    ->dehydrated(true),
-                                    // ->required(),
-                            ]),
-                    ])
-                    ->columnSpan(['lg' => 2]),
+                                    Group::make()
+                                        ->schema([
+                                            TextInput::make('seoMetadata.title')
+                                                ->label(__('event.labels.seo_title'))
+                                                ->maxLength(60)
+                                                ->placeholder(__('event.placeholders.seo_title'))
+                                                ->helperText(__('event.helper_texts.seo_title')),
 
-                Group::make()
-                    ->schema([
-                        Section::make('Status & Visibility')
-                            ->schema([
-                                Select::make('status')
-                                    ->options([
-                                        'draft' => __('event.status.draft'),
-                                        'published' => __('event.status.published'),
-                                        'sold_out' => __('event.status.sold_out'),
-                                        'cancelled' => __('event.status.cancelled'),
-                                    ])
-                                    ->default('draft')
-                                    ->required()
-                                    ->placeholder(__('event.placeholders.status')),
+                                            TextInput::make('seoMetadata.description')
+                                                ->label(__('event.labels.seo_description'))
+                                                ->maxLength(160)
+                                                ->placeholder(__('event.placeholders.seo_description'))
+                                                ->helperText(__('event.helper_texts.seo_description')),
 
-                                DateTimePicker::make('published_at')
-                                    ->visible(fn ($get) => $get('status') === 'published')
-                                    ->placeholder(__('event.placeholders.published_at')),
-                            ]),
+                                            FileUpload::make('seoMetadata.og_image')
+                                                ->label(__('event.labels.og_image'))
+                                                ->image()
+                                                ->disk('public')
+                                                ->directory('seo-images')
+                                                ->visibility('public')
+                                                ->maxSize(5120)
+                                                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                ->helperText(__('event.helper_texts.og_image')),
 
-                        Section::make('Sales Configuration')
-                            ->schema([
-                                DatePicker::make('sales_start_at')
-                                    ->placeholder(__('event.placeholders.sales_start_at')),
-                                DatePicker::make('sales_end_at')
-                                    ->placeholder(__('event.placeholders.sales_end_at')),
-                                Toggle::make('seating_enabled')
-                                    ->label('Enable Seating Layout')
-                                    ->default(false),
-                                Select::make('tags')
-                                    ->relationship(
-                                        'tags', 
-                                        'name',
-                                        fn (Builder $query) => $query->whereHas('setting', fn ($q) => $q->where('key', 'event_tags'))
-                                    )
-                                    ->multiple()
-                                    ->searchable()
-                                    ->preload()
-                                    ->placeholder(__('event.placeholders.tags')),
-                                
-                                Section::make('Ticket Types')
-                                    ->schema([
-                                        Repeater::make('ticketTypes')
-                                            ->relationship('ticketTypes')
-                                            ->schema([
-                                                Select::make('name')
-                                                    ->options(\App\Models\SettingComponent::whereHas('setting', fn ($q) => $q->where('key', 'ticket_types'))->pluck('name', 'name'))
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required()
-                                                    ->placeholder(__('event.placeholders.ticket_type'))
-                                                    ->columnSpanFull(),
-                                                TextInput::make('price')
-                                                    ->numeric()
-                                                    ->prefix('IDR')
-                                                    ->required()
-                                                    ->placeholder(__('event.placeholders.price'))
-                                                    ->columnSpanFull(),
-                                                Grid::make(3)
-                                                    ->schema([
-                                                        TextInput::make('quantity')
-                                                            ->numeric()
-                                                            ->required()
-                                                            ->placeholder(__('event.placeholders.quantity')),
-                                                        TextInput::make('min_purchase')
-                                                            ->numeric()
-                                                            ->label('Min')
-                                                            ->default(1)
-                                                            ->required(),
-                                                        TextInput::make('max_purchase')
-                                                            ->numeric()
-                                                            ->label('Max')
-                                                            ->default(10)
-                                                            ->required(),
-                                                    ]),
-                                                Grid::make(2)
-                                                    ->schema([
-                                                        DatePicker::make('sales_start_at')
-                                                            ->label(__('event.labels.sales_start'))
-                                                            ->placeholder(__('event.placeholders.ticket_sales_start')),
-                                                        DatePicker::make('sales_end_at')
-                                                            ->label(__('event.labels.sales_end'))
-                                                            ->placeholder(__('event.placeholders.ticket_sales_end')),
-                                                    ]),
-                                                Toggle::make('is_active')
-                                                    ->label('Active for Sale')
-                                                    ->default(true),
-                                            ])
-                                            ->collapsible()
-                                            ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
-                                            ->defaultItems(1)
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->compact(),
-                            ]),
-                    ])
-                    ->columnSpan(['lg' => 1]),
-            ])
-            ->columns(3);
+                                            TextInput::make('seoMetadata.keywords')
+                                                ->label(__('event.labels.seo_keywords'))
+                                                ->placeholder(__('event.placeholders.seo_keywords'))
+                                                ->helperText(__('event.helper_texts.seo_keywords')),
+
+                                            TextInput::make('seoMetadata.canonical_url')
+                                                ->label(__('event.labels.canonical_url'))
+                                                ->url()
+                                                ->placeholder(__('event.placeholders.canonical_url'))
+                                                ->helperText(__('event.helper_texts.canonical_url')),
+                                        ])
+                                        ->columnSpan(2),
+                                ]),
+                        ]),
+
+                    Wizard\Step::make('sales_configuration')
+                        ->label(__('event.steps.sales_configuration'))
+                        ->description(__('event.steps.sales_configuration_description'))
+                        ->icon('heroicon-o-currency-dollar')
+                        ->schema([
+                            Grid::make(3)
+                                ->schema([
+                                    Select::make('status')
+                                        ->label(__('event.labels.status'))
+                                        ->options([
+                                            'draft' => __('event.status.draft'),
+                                            'published' => __('event.status.published'),
+                                            'sold_out' => __('event.status.sold_out'),
+                                            'cancelled' => __('event.status.cancelled'),
+                                        ])
+                                        ->default('draft')
+                                        ->required()
+                                        ->placeholder(__('event.placeholders.status')),
+
+                                    DateTimePicker::make('published_at')
+                                        ->label(__('event.labels.published_at'))
+                                        ->visible(fn ($get) => $get('status') === 'published')
+                                        ->placeholder(__('event.placeholders.published_at')),
+
+                                    DatePicker::make('sales_start_at')
+                                        ->label(__('event.labels.sales_start_at'))
+                                        ->placeholder(__('event.placeholders.sales_start_at')),
+                                    DatePicker::make('sales_end_at')
+                                        ->label(__('event.labels.sales_end_at'))
+                                        ->placeholder(__('event.placeholders.sales_end_at')),
+                                    Toggle::make('seating_enabled')
+                                        ->label(__('event.labels.seating_enabled'))
+                                        ->default(false),
+                                    Select::make('tags')
+                                        ->label(__('event.labels.tags'))
+                                        ->relationship(
+                                            'tags',
+                                            'name',
+                                            fn (Builder $query) => $query->whereHas('setting', fn ($q) => $q->where('key', 'event_tags'))
+                                        )
+                                        ->multiple()
+                                        ->searchable()
+                                        ->preload()
+                                        ->placeholder(__('event.placeholders.tags'))
+                                        ->columnSpan(3),
+
+                                    Select::make('rules')
+                                        ->label(__('event.labels.rules'))
+                                        ->relationship(
+                                            'rules',
+                                            'name',
+                                            fn (Builder $query) => $query->whereHas('setting', fn ($q) => $q->where('key', 'terms_&_condition'))
+                                        )
+                                        ->multiple()
+                                        ->searchable()
+                                        ->preload()
+                                        ->placeholder(__('event.placeholders.rules'))
+                                        ->columnSpan(3),
+                                ]),
+
+                            Section::make(__('event.labels.ticket_types'))
+                                ->schema([
+                                    Repeater::make('ticketTypes')
+                                        ->relationship('ticketTypes')
+                                        ->schema([
+                                            Select::make('name')
+                                                ->label(__('event.labels.ticket_name'))
+                                                ->options(\App\Models\SettingComponent::whereHas('setting', fn ($q) => $q->where('key', 'ticket_types'))->pluck('name', 'name'))
+                                                ->searchable()
+                                                ->preload()
+                                                ->required()
+                                                ->placeholder(__('event.placeholders.ticket_type'))
+                                                ->columnSpanFull(),
+                                            TextInput::make('price')
+                                                ->label(__('event.labels.price'))
+                                                ->numeric()
+                                                ->prefix('IDR')
+                                                ->required()
+                                                ->placeholder(__('event.placeholders.price'))
+                                                ->columnSpanFull(),
+                                            Grid::make(3)
+                                                ->schema([
+                                                    TextInput::make('quantity')
+                                                        ->label(__('event.labels.quantity'))
+                                                        ->numeric()
+                                                        ->required()
+                                                        ->placeholder(__('event.placeholders.quantity')),
+                                                    TextInput::make('min_purchase')
+                                                        ->label(__('event.labels.min_purchase'))
+                                                        ->numeric()
+                                                        ->default(1)
+                                                        ->required(),
+                                                    TextInput::make('max_purchase')
+                                                        ->label(__('event.labels.max_purchase'))
+                                                        ->numeric()
+                                                        ->default(10)
+                                                        ->required(),
+                                                ]),
+                                            Grid::make(2)
+                                                ->schema([
+                                                    DatePicker::make('sales_start_at')
+                                                        ->label(__('event.labels.sales_start'))
+                                                        ->placeholder(__('event.placeholders.ticket_sales_start')),
+                                                    DatePicker::make('sales_end_at')
+                                                        ->label(__('event.labels.sales_end'))
+                                                        ->placeholder(__('event.placeholders.ticket_sales_end')),
+                                                ]),
+                                            Toggle::make('is_active')
+                                                ->label(__('event.labels.is_active'))
+                                                ->default(true),
+                                        ])
+                                        ->collapsible()
+                                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                                        ->defaultItems(1)
+                                        ->columnSpanFull(),
+                                ])
+                                ->compact(),
+                        ]),
+
+                    Wizard\Step::make('organizer_payment')
+                        ->label(__('event.steps.organizer_payment'))
+                        ->description(__('event.steps.organizer_payment_description'))
+                        ->icon('heroicon-o-user-group')
+                        ->schema([
+                            Select::make('organizers')
+                                ->label(__('event.labels.organizers'))
+                                ->relationship('organizers', 'name')
+                                ->multiple()
+                                ->searchable()
+                                ->preload()
+                                ->placeholder(__('event.placeholders.organizers'))
+                                ->columnSpanFull(),
+
+                            Select::make('performers')
+                                ->label(__('event.labels.performers'))
+                                ->relationship('performers', 'name', fn (Builder $query) => $query->with('profession'))
+                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->name} ({$record->profession?->name})")
+                                ->multiple()
+                                ->searchable()
+                                ->preload()
+                                ->placeholder(__('event.placeholders.performers'))
+                                ->columnSpanFull(),
+
+                            Select::make('paymentBanks')
+                                ->label(__('event.labels.payment_banks'))
+                                ->relationship('paymentBanks', 'bank_name')
+                                ->getOptionLabelFromRecordUsing(fn (Model $record) => "{$record->bank_name} - {$record->account_number}")
+                                ->multiple()
+                                ->searchable()
+                                ->preload()
+                                ->placeholder(__('event.placeholders.payment_banks'))
+                                ->columnSpanFull(),
+                        ]),
+                ])
+                    ->columnSpanFull()
+                    ->maxWidth('full')
+                    ->skippable()
+                    ->startOnStep(1)
+                    ->submitAction(new HtmlString('<button type="submit" class="fi-btn fi-btn-size-md fi-btn-color-primary fi-color-primary fi-color-custom fi-btn-has-label"><span class="fi-btn-label">'.__('event.buttons.save_changes').'</span></button>')),
+            ]);
     }
 
     public static function table(Table $table): Table
@@ -412,80 +539,105 @@ class EventResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('banner.url')
-                    ->label('Banner'),
-                
+                    ->label(__('event.labels.banner')),
+
                 TextColumn::make('title')
+                    ->label(__('event.labels.title'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('city.name')
-                    ->label('City')
+                    ->label(__('event.labels.city'))
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('categories.name')
-                    ->label('Categories')
+                    ->label(__('event.labels.categories'))
                     ->badge(),
 
                 TextColumn::make('event_date')
+                    ->label(__('event.labels.start_date_time'))
                     ->dateTime()
                     ->sortable(),
 
                 BadgeColumn::make('status')
-                ->colors([
-                    'secondary' => 'draft',
-                    'warning' => 'sold_out',
-                    'success' => 'published',
-                    'danger' => 'cancelled',
-                ]),
+                    ->label(__('event.labels.status'))
+                    ->colors([
+                        'secondary' => 'draft',
+                        'warning' => 'sold_out',
+                        'success' => 'published',
+                        'danger' => 'cancelled',
+                    ]),
 
-            TextColumn::make('created_at')
-                ->dateTime()
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
-        ])
-        ->filters([
-            SelectFilter::make('status')
-                ->options([
-                    'draft' => 'Draft',
-                    'published' => 'Published',
-                    'sold_out' => 'Sold Out',
-                    'cancelled' => 'Cancelled',
+                TextColumn::make('created_at')
+                    ->label(__('event.labels.created_at'))
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label(__('event.labels.status'))
+                    ->options([
+                        'draft' => __('event.status.draft'),
+                        'published' => __('event.status.published'),
+                        'sold_out' => __('event.status.sold_out'),
+                        'cancelled' => __('event.status.cancelled'),
+                    ]),
+
+                TrashedFilter::make(),
+            ])
+            ->actions([
+                Action::make('scan')
+                    ->label(__('scanner.start_scanning'))
+                    ->icon('heroicon-o-qr-code')
+                    ->color('success')
+                    ->visible(fn (Event $record) => 
+                        $record->status === 'published' && 
+                        ($record->event_end_date ? $record->event_end_date->isFuture() : $record->event_date->isFuture())
+                    )
+                    ->url(fn () => \App\Filament\Pages\ScanTickets::getUrl()),
+                Action::make('event-summary')
+                    ->label(__('event.actions.event_summary'))
+                    ->icon('heroicon-o-chart-bar')
+                    ->color('info')
+                    ->visible(fn (Event $record) => $record->status === 'published')
+                    ->modalContent(fn (Event $record): \Illuminate\View\View => view('filament.event-summary-modal', ['event' => $record]))
+                    ->modalHeading(fn (Event $record) => __('event.actions.event_summary_heading', ['event' => $record->title]))
+                    ->modalSubmitAction(false),
+                Action::make('revenue-calculator')
+                    ->label(__('event.actions.revenue_calculator'))
+                    ->icon('heroicon-o-calculator')
+                    ->color('info')
+                    ->modalContent(fn (Event $record): \Illuminate\View\View => view('components.revenue-calculator-modal', ['event' => $record]))
+                    ->modalHeading(__('event.actions.revenue_calculator_modal_heading'))
+                    ->modalWidth('7xl')
+                    ->modalFooterActions([]),
+                EditAction::make(),
+                DeleteAction::make()
+                    ->using(fn (Model $record) => DB::transaction(fn () => $record->delete())),
+                ForceDeleteAction::make()
+                    ->using(fn (Model $record) => DB::transaction(fn () => $record->forceDelete())),
+                RestoreAction::make()
+                    ->using(fn (Model $record) => DB::transaction(fn () => $record->restore())),
+            ])
+            ->bulkActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
+                        ->using(fn (\Illuminate\Support\Collection $records) => DB::transaction(fn () => $records->each->delete())),
+                    ForceDeleteBulkAction::make()
+                        ->using(fn (\Illuminate\Support\Collection $records) => DB::transaction(fn () => $records->each->forceDelete())),
+                    RestoreBulkAction::make()
+                        ->using(fn (\Illuminate\Support\Collection $records) => DB::transaction(fn () => $records->each->restore())),
                 ]),
-                
-            TrashedFilter::make(),
-        ])
-        ->actions([
-            TableAction::make('scan')
-                ->label(__('scanner.start_scanning'))
-                ->icon('heroicon-o-qr-code')
-                ->color('success')
-                ->url(fn () => \App\Filament\Pages\ScanTickets::getUrl()),
-            EditAction::make(),
-            DeleteAction::make()
-                ->using(fn (Model $record) => DB::transaction(fn () => $record->delete())),
-            ForceDeleteAction::make()
-                ->using(fn (Model $record) => DB::transaction(fn () => $record->forceDelete())),
-            RestoreAction::make()
-                ->using(fn (Model $record) => DB::transaction(fn () => $record->restore())),
-        ])
-        ->bulkActions([
-            BulkActionGroup::make([
-                DeleteBulkAction::make()
-                    ->using(fn (\Illuminate\Support\Collection $records) => DB::transaction(fn () => $records->each->delete())),
-                ForceDeleteBulkAction::make()
-                    ->using(fn (\Illuminate\Support\Collection $records) => DB::transaction(fn () => $records->each->forceDelete())),
-                RestoreBulkAction::make()
-                    ->using(fn (\Illuminate\Support\Collection $records) => DB::transaction(fn () => $records->each->restore())),
-            ]),
-        ]);
+            ]);
 
     }
 
     public static function getRelations(): array
     {
         return [
-            // RelationManagers\TicketTypesRelationManager::class,
+            //
         ];
     }
 
@@ -496,6 +648,11 @@ class EventResource extends Resource
             'create' => Pages\CreateEvent::route('/create'),
             'edit' => Pages\EditEvent::route('/{record}/edit'),
         ];
+    }
+
+    public static function canEdit(Model $record): bool
+    {
+        return ! ($record->event_end_date ? $record->event_end_date->isPast() : $record->event_date->isPast());
     }
 
     public static function getEloquentQuery(): Builder

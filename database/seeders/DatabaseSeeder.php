@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
             SettingComponentSeeder::class,
             EventSeeder::class,
             OrderSeeder::class,
+            TestimonialSeeder::class,
+            OrganizerSeeder::class,
+            PerformerSeeder::class,
+            CmsSeeder::class,
         ]);
     }
 }

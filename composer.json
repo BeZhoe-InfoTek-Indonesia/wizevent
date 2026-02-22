@@ -15,6 +15,7 @@
         "bezhansalleh/filament-shield": "^4.1",
         "dotswan/filament-map-picker": "^2.2",
         "filament/filament": "^4.7",
+        "google-gemini-php/laravel": "*",
         "intervention/image": "^3.11",
         "intervention/image-laravel": "^1.5",
         "laravel/framework": "^11.31",
@@ -24,7 +25,9 @@
         "laravolt/indonesia": "^0.39.0",
         "livewire/livewire": "^3.6.4",
         "livewire/volt": "^1.7.0",
+        "masmerise/livewire-toaster": "*",
         "simplesoftwareio/simple-qrcode": "^4.2",
+        "spatie/browsershot": "^5.2",
         "spatie/laravel-activitylog": "^4.11",
         "spatie/laravel-permission": "^6.24"
     },

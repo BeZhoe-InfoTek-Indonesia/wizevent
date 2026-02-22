@@ -9,8 +9,20 @@ use Filament\Schemas\Schema;
 
 class SettingComponentForm
 {
-    public static function configure(Schema $schema): Schema
+    public static function configure(Schema $schema, ?\Illuminate\Database\Eloquent\Model $parent = null): Schema
     {
+        $isTermsAndConditions = $parent?->key === 'terms_&_condition';
+
+        $options = [
+            'string' => __('setting.type_string'),
+            'integer' => __('setting.type_integer'),
+            'boolean' => __('setting.type_boolean'),
+        ];
+
+        if ($isTermsAndConditions) {
+            $options['html'] = __('setting.type_html');
+        }
+
         return $schema
             ->components([
                 TextInput::make('name')
@@ -18,27 +30,29 @@ class SettingComponentForm
                     ->required()
                     ->maxLength(255)
                     ->placeholder(__('setting.component_name_placeholder')),
+                
                 Select::make('type')
                     ->label(__('setting.component_type'))
                     ->required()
-                    ->options([
-                        'string' => __('setting.type_string'),
-                        'integer' => __('setting.type_integer'),
-                        'boolean' => __('setting.type_boolean'),
-                    ])
-                    ->default('string')
+                    ->options($options)
+                    ->default($isTermsAndConditions ? 'html' : 'string')
                     ->live()
                     ->placeholder(__('setting.component_type_placeholder'))
                     ->afterStateUpdated(function ($state, callable $set) {
+                        // Reset all value fields when type changes
+                        $set('value_text', null);
+                        $set('value_boolean', false);
+                        $set('value_html', null);
+                        
                         if ($state === 'boolean') {
-                            $set('value', 'true');
+                            $set('value_boolean', true);
                         } elseif ($state === 'integer') {
-                            $set('value', '0');
-                        } else {
-                            $set('value', '');
+                            $set('value_text', '0');
                         }
                     }),
-                TextInput::make('value')
+
+                // Text Input for String/Integer
+                TextInput::make('value_text')
                     ->label(__('setting.component_value'))
                     ->required()
                     ->maxLength(65535)
@@ -47,23 +61,46 @@ class SettingComponentForm
                         'string' => __('setting.component_value_placeholder_string'),
                         default => __('setting.component_value_placeholder_default'),
                     })
-                    ->hidden(fn (callable $get): bool => $get('type') === 'boolean')
-                    ->rules(function (callable $get) {
-                        $type = $get('type');
+                    ->visible(fn (callable $get): bool => in_array($get('type'), ['string', 'integer']))
+                    ->afterStateHydrated(function (TextInput $component, $state, $record) {
+                        if ($record && in_array($record->type, ['string', 'integer'])) {
+                            $component->state($record->value);
+                        }
+                    })
+                    ->dehydrated(fn (callable $get) => in_array($get('type'), ['string', 'integer']))
+                    ->rules(['string']),
 
-                        return match ($type) {
-                            'integer' => ['numeric'],
-                            'boolean' => ['in:true,false'],
-                            'string' => ['string'],
-                            default => [],
-                        };
-                    }),
-                Toggle::make('value')
+                // Toggle for Boolean
+                Toggle::make('value_boolean')
                     ->label(__('setting.component_value'))
                     ->required()
-                    ->hidden(fn (callable $get): bool => $get('type') !== 'boolean')
+                    ->visible(fn (callable $get): bool => $get('type') === 'boolean')
+                    ->afterStateHydrated(function (Toggle $component, $state, $record) {
+                        if ($record && $record->type === 'boolean') {
+                            $component->state($record->value === 'true');
+                        }
+                    })
+                    ->dehydrated(fn (callable $get) => $get('type') === 'boolean')
                     ->onColor('success')
                     ->offColor('danger'),
+
+                // Rich Editor for HTML
+                \Filament\Forms\Components\RichEditor::make('value_html')
+                    ->label(__('setting.component_value'))
+                    ->required()
+                    ->visible(fn (callable $get): bool => $get('type') === 'html')
+                    ->afterStateHydrated(function (\Filament\Forms\Components\RichEditor $component, $state, $record) {
+                        if ($record && $record->type === 'html') {
+                            $component->state($record->value);
+                        }
+                    })
+                    ->dehydrated(fn (callable $get) => $get('type') === 'html')
+                    ->columnSpanFull(),
+
+                // Hidden field to map data back to 'value'
+                \Filament\Forms\Components\Hidden::make('value')
+                    ->dehydrated(true)
+                    ->default(null),
             ]);
     }
 }

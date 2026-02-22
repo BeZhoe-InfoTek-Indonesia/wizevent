@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Models\Favorite;
 use App\Models\Testimonial;
 use App\Models\TestimonialVote;
+use App\Models\Ticket;
 use App\Services\SocialShareService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
@@ -18,16 +19,10 @@ class EventDetail extends Component
 {
     public Event $event;
 
-    public string $testimonialContent = '';
-
-    public int $testimonialRating = 5;
-
-    public bool $showTestimonialForm = false;
-
     public function mount(string $slug): void
     {
         $this->event = Event::where('slug', $slug)
-            ->with(['ticketTypes', 'categories', 'tags', 'banner', 'banners', 'creator'])
+            ->with(['ticketTypes', 'categories', 'tags', 'banner', 'banners', 'creator', 'seoMetadata'])
             ->firstOrFail();
     }
 
@@ -87,12 +82,15 @@ class EventDetail extends Component
 
     public function render(): View
     {
+        $seo = $this->event->seoMetadata;
+
         return view('livewire.event.event-detail', [
             'event' => $this->event,
-            'pageTitle' => $this->event->title,
-            'metaDescription' => Str::limit(strip_tags($this->event->description), 160),
-            'metaImage' => $this->event->banner?->url,
-            'canonicalUrl' => route('events.show', $this->event->slug),
+            'pageTitle' => $seo->title ?? $this->event->title,
+            'metaDescription' => $seo->description ?? Str::limit(strip_tags($this->event->description), 160),
+            'metaImage' => $seo->og_image ?? $this->event->banner?->url,
+            'metaKeywords' => $seo->keywords ?? null,
+            'canonicalUrl' => $seo->canonical_url ?? route('events.show', $this->event->slug),
         ]);
     }
 
@@ -122,8 +120,9 @@ class EventDetail extends Component
     public function getApprovedTestimonialsProperty()
     {
         return Testimonial::where('event_id', $this->event->id)
-            ->approved()
+            ->published()
             ->with(['user', 'votes'])
+            ->orderByDesc('is_featured')
             ->orderByDesc('created_at')
             ->get();
     }
@@ -136,36 +135,21 @@ class EventDetail extends Component
 
         $user = Auth::user();
 
-        return Testimonial::where('event_id', $this->event->id)
-            ->where('user_id', $user->id)
-            ->doesntExist()
-            && $this->event->hasPurchasedTicket($user);
-    }
+        $testimonial = Testimonial::where('user_id', $user->id)
+            ->where('event_id', $this->event->id)
+            ->first();
 
-    public function submitTestimonial(): void
-    {
-        if (! Auth::check()) {
-            return;
+        if ($testimonial) {
+            return false;
         }
 
-        $this->validate([
-            'testimonialContent' => 'required|min:10|max:1000',
-            'testimonialRating' => 'required|integer|min:1|max:5',
-        ]);
+        $hasCheckedIn = Ticket::whereHas('ticketType', function ($query) {
+            $query->where('event_id', $this->event->id);
+        })->whereHas('orderItem.order', function ($query) use ($user) {
+            $query->where('user_id', $user->id)->where('status', 'completed');
+        })->whereNotNull('checked_in_at')->exists();
 
-        Testimonial::create([
-            'user_id' => Auth::id(),
-            'event_id' => $this->event->id,
-            'content' => $this->testimonialContent,
-            'rating' => $this->testimonialRating,
-            'status' => 'pending',
-        ]);
-
-        $this->testimonialContent = '';
-        $this->testimonialRating = 5;
-        $this->showTestimonialForm = false;
-
-        session()->flash('testimonial_submitted', 'Thank you! Your testimonial has been submitted and will be published after moderation.');
+        return $hasCheckedIn;
     }
 
     public function voteOnTestimonial(int $testimonialId, bool $isHelpful): void
@@ -184,5 +168,16 @@ class EventDetail extends Component
             'user_id' => Auth::id(),
             'is_helpful' => $isHelpful,
         ]);
+    }
+
+    public function book()
+    {
+        if (! Auth::check()) {
+            session(['url.intended' => route('events.show', $this->event->slug)]);
+
+            return redirect()->route('login');
+        }
+
+        return redirect()->route('events.checkout', $this->event->slug);
     }
 }

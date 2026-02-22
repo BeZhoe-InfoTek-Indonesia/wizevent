@@ -2,6 +2,10 @@
 
 return [
     'order_number' => 'Nomor Pesanan',
+    'filter' => [
+        'created_from' => 'Dibuat Dari',
+        'created_until' => 'Dibuat Sampai',
+    ],
     'user' => 'Pengguna',
     'event' => 'Acara',
     'total_tickets' => 'Total Tiket',

@@ -14,7 +14,7 @@ class InvoiceService
 
         $pdf = Pdf::loadView('pdfs.invoice', ['order' => $order]);
         
-        $path = "orders/{$order->id}/invoice.pdf";
+        $path = "orders/{$order->uuid}/invoice.pdf";
         
         Storage::disk('public')->put($path, $pdf->output());
 

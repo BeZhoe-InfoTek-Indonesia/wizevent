@@ -329,7 +329,7 @@
              <a href="{{ route('dashboard') }}" class="text-sm font-bold text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                 &larr; Back to Dashboard
             </a>
-            <a href="{{ route('tickets.download', $ticket->id) }}" target="_blank" class="bg-red-500 px-8 py-3.5 rounded-2xl flex items-center gap-2 shadow-xl shadow-red-500/30 hover:bg-red-600 hover:-translate-y-0.5 transition-all">
+            <a href="{{ route('tickets.download', $ticket) }}" target="_blank" class="bg-red-500 px-8 py-3.5 rounded-2xl flex items-center gap-2 shadow-xl shadow-red-500/30 hover:bg-red-600 hover:-translate-y-0.5 transition-all">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>

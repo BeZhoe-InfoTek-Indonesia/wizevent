@@ -52,7 +52,21 @@ class FileBucketService
         $filePath = $this->buildFilePath($fileable, $bucketType, $storedFilename);
 
         // Store file
-        Storage::disk('public')->put($filePath, file_get_contents($file->getRealPath()));
+        if ($this->isImage($file)) {
+             // Securely process and save image using Intervention Image
+             // This re-encodes the image, stripping metadata and potential payloads
+             $fullPath = Storage::disk('public')->path($filePath);
+             
+             // Ensure directory exists
+             $directory = dirname($fullPath);
+             if (!file_exists($directory)) {
+                 mkdir($directory, 0755, true);
+             }
+
+             Image::read($file->getRealPath())->save($fullPath);
+        } else {
+             Storage::disk('public')->put($filePath, file_get_contents($file->getRealPath()));
+        }
 
         // Create FileBucket record
         $fileBucket = FileBucket::create([
@@ -65,11 +79,11 @@ class FileBucketService
             'file_path' => $filePath,
             'url' => Storage::disk('public')->url($filePath),
             'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
+            'file_size' => Storage::disk('public')->size($filePath), // Get actual size after processing
             'created_by' => auth()->id(),
         ]);
 
-        // Process image if applicable
+        // Process image variants if applicable (thumbnails, etc.)
         if ($this->isImage($file)) {
             $this->processImage($fileBucket, $options);
         }
@@ -259,7 +273,7 @@ class FileBucketService
     {
         return match ($bucketType) {
             'event-banners', 'event-galleries', 'category-icons', 'ticket-type-images', 'user-avatars' => ['image/jpeg', 'image/png', 'image/webp', 'image/svg+xml'],
-            'payment-proofs' => ['image/jpeg', 'image/png', 'application/pdf'],
+            'payment-proofs' => ['image/jpeg', 'image/png', 'image/jpg'], // Stricter for payment proofs
             default => ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'],
         };
     }

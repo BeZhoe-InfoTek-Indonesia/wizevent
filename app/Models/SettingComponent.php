@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
- * @mixin IdeHelperSettingComponent
  * @property int $id
  * @property int $setting_id
  * @property string $name
@@ -20,6 +19,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\User|null $createdBy
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Event> $events
+ * @property-read int|null $events_count
  * @property mixed $typed_value
  * @property-read \App\Models\Setting $setting
  * @property-read \App\Models\User|null $updatedBy
@@ -84,6 +85,7 @@ class SettingComponent extends Model
             'string' => (string) $this->value,
             'integer' => (int) $this->value,
             'boolean' => filter_var($this->value, FILTER_VALIDATE_BOOLEAN),
+            'html' => (string) $this->value,
             default => $this->value,
         };
     }
@@ -94,6 +96,7 @@ class SettingComponent extends Model
             'string' => $this->attributes['value'] = (string) $value,
             'integer' => $this->attributes['value'] = (int) $value,
             'boolean' => $this->attributes['value'] = $value ? 'true' : 'false',
+            'html' => $this->attributes['value'] = (string) $value,
             default => $this->attributes['value'] = $value,
         };
     }

@@ -21,6 +21,8 @@ class NotificationService
 
     public const TYPE_PROMOTION = 'promotion';
 
+    public const TYPE_TESTIMONIAL_REMINDER = 'testimonial_reminder';
+
     /**
      * Send payment approved notification.
      */
@@ -179,7 +181,27 @@ class NotificationService
             self::TYPE_EVENT_CANCELLED => 'Event',
             self::TYPE_LOVED_EVENT_UPDATE => 'Event',
             self::TYPE_PROMOTION => 'Promotion',
+            self::TYPE_TESTIMONIAL_REMINDER => 'Testimonial',
             default => 'Notification',
         };
+    }
+
+    /**
+     * Send testimonial reminder notification to checked-in attendees.
+     */
+    public function sendTestimonialReminder(User $user, Event $event): void
+    {
+        if (! $user->hasEmailNotificationEnabled('events')) {
+            return;
+        }
+
+        NotificationFacade::send($user, new \App\Notifications\TestimonialReminderNotification($event));
+        $this->sendInAppNotification($user, self::TYPE_TESTIMONIAL_REMINDER, [
+            'title' => __('testimonial.reminder_title'),
+            'message' => __('testimonial.reminder_message', ['event' => $event->title]),
+            'event_id' => $event->id,
+            'event_title' => $event->title,
+            'event_slug' => $event->slug,
+        ]);
     }
 }

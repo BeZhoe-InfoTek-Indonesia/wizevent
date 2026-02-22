@@ -68,7 +68,7 @@
                         <div class="w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center flex-shrink-0">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         </div>
-                        <span class="text-sm font-medium text-gray-500">support@ticketred.com</span>
+                        <span class="text-sm font-medium text-gray-500">support@{{ strtolower(str_replace(' ', '', config('app.name'))) }}.com</span>
                     </li>
                 </ul>
             </div>
@@ -76,7 +76,7 @@
 
         <!-- Checkpoint -->
         <div class="pt-8 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p class="text-sm font-medium text-gray-400">&copy; {{ date('Y') }} TicketRed Inc. All rights reserved.</p>
+            <p class="text-sm font-medium text-gray-400">&copy; {{ date('Y') }} {{ config('app.name') }} Inc. All rights reserved.</p>
             
             <button class="flex items-center gap-2 px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors text-sm font-bold text-gray-600">
                 <span>English (US)</span>

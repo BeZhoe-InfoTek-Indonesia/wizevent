@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Models\Event;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Intervention\Image\Laravel\Facades\Image;
 
 class ImageService
 {
@@ -16,25 +16,23 @@ class ImageService
 
     public function processEventBanner(string $filePath, Event $event): array
     {
-        $image = Image::make($filePath);
+        $image = Image::read($filePath);
+        $extension = pathinfo($filePath, PATHINFO_EXTENSION) ?: 'jpg';
 
-        $originalPath = 'storage/app/public/events/banners/'.$event->id.'/original.'.$image->extension();
+        $originalPath = 'events/banners/'.$event->id.'/original.'.$extension;
 
-        Storage::disk('public')->put($originalPath, $image->stream());
+        Storage::disk('public')->put($originalPath, (string) $image->encodeByExtension($extension));
 
         $sizes = [];
 
         foreach ($this->imageSizes as $sizeName => [$width, $height]) {
-            $sizedImage = clone $image;
+            $sizedImage = Image::read($filePath);
 
-            $sizedImage->resize($width, $height, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+            $sizedImage->scaleDown(width: $width, height: $height);
 
-            $sizePath = 'storage/app/public/events/banners/'.$event->id.'/'.$sizeName.'.'.$sizedImage->extension();
+            $sizePath = 'events/banners/'.$event->id.'/'.$sizeName.'.'.$extension;
 
-            Storage::disk('public')->put($sizePath, $sizedImage->encode());
+            Storage::disk('public')->put($sizePath, (string) $sizedImage->encodeByExtension($extension));
 
             $sizes[$sizeName] = $sizePath;
         }
@@ -75,5 +73,69 @@ class ImageService
             'thumbnail_800' => null,
             'thumbnail_1200' => null,
         ]);
+    }
+
+    public function processTestimonialImage(string $filePath, string $originalName, int $testimonialId): array
+    {
+        $disk = Storage::disk('public');
+        $absolutePath = $disk->path($filePath);
+        
+        $image = Image::read($absolutePath);
+        $originalSize = filesize($absolutePath);
+
+        $image->orient();
+
+        $image->scaleDown(width: 1920, height: 1080);
+
+        $encoded = $image->toWebp(85);
+
+        $path = 'testimonials/'.$testimonialId.'.webp';
+        $disk->put($path, (string) $encoded);
+
+        return [
+            'image_path' => $path,
+            'image_original_name' => $originalName,
+            'image_mime_type' => 'image/webp',
+            'image_width' => $image->width(),
+            'image_height' => $image->height(),
+            'image_file_size' => strlen((string) $encoded),
+        ];
+    }
+
+    public function deleteTestimonialImage(string $path): void
+    {
+        if ($path) {
+            Storage::disk('public')->delete($path);
+        }
+    }
+
+    public function validateTestimonialImage(\Illuminate\Http\UploadedFile $file): array
+    {
+        $errors = [];
+
+        $allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+        if (! in_array($file->getMimeType(), $allowedMimes, true)) {
+            $errors[] = __('validation.mimes', ['attribute' => 'image', 'values' => 'jpeg, png, webp']);
+        }
+
+        $maxSize = 5 * 1024 * 1024;
+        if ($file->getSize() > $maxSize) {
+            $errors[] = __('validation.max.file', ['attribute' => 'image', 'max' => '5MB']);
+        }
+
+        try {
+            $image = Image::read($file);
+            if ($image->width() < 300 || $image->height() < 300) {
+                $errors[] = __('testimonial.image_too_small', ['min' => '300x300']);
+            }
+
+            if ($image->width() > 4096 || $image->height() > 4096) {
+                $errors[] = __('testimonial.image_too_large', ['max' => '4096x4096']);
+            }
+        } catch (\Exception $e) {
+            $errors[] = 'Invalid image file.';
+        }
+
+        return $errors;
     }
 }

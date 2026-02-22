@@ -3,6 +3,7 @@
 return [
     'details' => 'Payment Proof Details',
     'view' => 'View Payment Proof',
+    'review' => 'Review Payment',
     'approve' => 'Approve Payment',
     'approve_manual' => 'Approve Manually',
     'reject' => 'Reject Payment',
@@ -20,4 +21,8 @@ return [
     'status.pending' => 'Pending',
     'status.approved' => 'Approved',
     'status.rejected' => 'Rejected',
+    'uploaded_successfully' => 'Payment proof uploaded successfully.',
+    'no_file_selected' => 'No file selected.',
+    'label' => 'Payment Proof',
+    'no_file_uploaded_manual_check' => 'No payment proof file uploaded. This order requires manual checking.',
 ];

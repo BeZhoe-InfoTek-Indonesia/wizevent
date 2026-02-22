@@ -76,6 +76,7 @@ class SettingService
             'string' => (string) $component->value,
             'integer' => (int) $component->value,
             'boolean' => filter_var($component->value, FILTER_VALIDATE_BOOLEAN),
+            'html' => (string) $component->value,
             default => $component->value,
         };
     }

@@ -15,12 +15,14 @@ return [
     'component_value' => 'Value',
     'component_value_placeholder_integer' => 'e.g., 100, 500, 1000',
     'component_value_placeholder_string' => 'e.g., Default text value',
+    'component_value_placeholder_html' => 'e.g., <p>Enter HTML content here</p>',
     'component_value_placeholder_default' => 'Enter value',
-    
+
     // Component types
     'type_string' => 'String',
     'type_integer' => 'Integer',
     'type_boolean' => 'Boolean',
+    'type_html' => 'HTML',
     
     // Table columns
     'components_count' => 'Components',

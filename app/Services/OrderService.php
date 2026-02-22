@@ -12,16 +12,53 @@ use Illuminate\Validation\ValidationException;
 use App\Mail\OrderCreated;
 use App\Mail\PaymentVerificationApproved;
 use App\Mail\PaymentVerificationRejected;
+use App\Jobs\ProcessOrderReservation;
+use Illuminate\Support\Facades\Bus;
+use Illuminate\Bus\Batch;
 
 class OrderService
 {
     public function createOrder(array $data): Order
     {
-        return DB::transaction(function () use ($data) {
+        // Validate requested ticket quantities against current stock before creating the order.
+        // This gives immediate feedback to the user if requested quantity is unavailable.
+        $validationErrors = [];
+        foreach ($data['items'] as $index => $item) {
+            $ticketType = TicketType::find($item['ticket_type_id']);
+            if (! $ticketType) {
+                $validationErrors["items.{$index}"] = 'Ticket type not found';
+                continue;
+            }
+
+            $quantity = (int) ($item['quantity'] ?? 0);
+            if ($quantity <= 0) {
+                $validationErrors["items.{$index}"] = 'Quantity must be at least 1';
+                continue;
+            }
+
+            if (! $ticketType->is_available_for_sale) {
+                $validationErrors["items.{$index}"] = 'Ticket not available for sale';
+                continue;
+            }
+
+            if (! $ticketType->canPurchase($quantity)) {
+                $validationErrors["items.{$index}"] = 'Requested quantity not available';
+                continue;
+            }
+        }
+
+        if (! empty($validationErrors)) {
+            throw ValidationException::withMessages($validationErrors);
+        }
+
+        // Create order and items inside a transaction, but do NOT reserve tickets here.
+        // Reservations are handled by a queued job to serialize access and avoid race conditions.
+        $order = DB::transaction(function () use ($data) {
             $order = Order::create([
                 'order_number' => (new Order)->generateOrderNumber(),
                 'user_id' => $data['user_id'] ?? auth()->id(),
                 'event_id' => $data['event_id'],
+                // mark as pending_payment; queued job will perform reservation
                 'status' => $data['status'] ?? 'pending_payment',
                 'subtotal' => $data['subtotal'] ?? 0,
                 'discount_amount' => $data['discount_amount'] ?? 0,
@@ -32,39 +69,35 @@ class OrderService
             ]);
 
             foreach ($data['items'] as $item) {
-                $ticketType = TicketType::lockForUpdate()->find($item['ticket_type_id']);
+                $ticketType = TicketType::find($item['ticket_type_id']);
 
-                if (! $ticketType || ! $ticketType->canPurchase($item['quantity'])) {
+                if (! $ticketType) {
                     throw ValidationException::withMessages([
-                        "items.{$item['ticket_type_id']}" => 'Ticket type not available or insufficient quantity',
+                        "items.{$item['ticket_type_id']}" => 'Ticket type not found',
                     ]);
                 }
 
-                $orderItem = OrderItem::create([
+                OrderItem::create([
                     'order_id' => $order->id,
                     'ticket_type_id' => $ticketType->id,
                     'quantity' => $item['quantity'],
                     'unit_price' => $ticketType->price,
                     'total_price' => $ticketType->price * $item['quantity'],
                 ]);
-
-                $ticketType->reserveTickets($item['quantity']);
             }
 
             activity()
                 ->performedOn($order)
                 ->causedBy(auth()->user())
-                ->log('Order created');
-
-            try {
-                Mail::to($order->user)->queue(new OrderCreated($order));
-            } catch (\Exception $e) {
-                // Log error but don't fail transaction
-                logger()->error('Failed to send order created email', ['error' => $e->getMessage()]);
-            }
+                ->log('Order created (awaiting reservation)');
 
             return $order->load('orderItems');
         });
+
+        // Dispatch a job to perform the actual ticket reservation under DB locks.
+        ProcessOrderReservation::dispatch($order->id);
+
+        return $order;
     }
 
     public function updateOrderStatus(Order $order, string $status): Order
@@ -125,18 +158,30 @@ class OrderService
             // Lock the order record to prevent race conditions
             $lockedOrder = Order::where('id', $order->id)->lockForUpdate()->first();
 
-            if ($lockedOrder->status !== 'pending_payment') {
-                throw ValidationException::withMessages(['order' => 'Order is not in pending payment status']);
+            if (! in_array($lockedOrder->status, ['pending_payment', 'pending_verification'])) {
+                throw ValidationException::withMessages(['order' => 'Order is not in pending payment or verification status']);
             }
 
-            $paymentProof = null;
+            $paymentProof = $lockedOrder->paymentProof;
 
             if ($fileBucketId) {
-                $paymentProof = PaymentProof::create([
-                    'order_id' => $lockedOrder->id,
-                    'file_bucket_id' => $fileBucketId,    
-                    'status' => 'pending',
-                ]);
+                if ($paymentProof) {
+                    // Update existing proof
+                    $paymentProof->update([
+                        'file_bucket_id' => $fileBucketId,
+                        'status' => 'pending',
+                        'rejection_reason' => null, // Clear any previous rejection reason
+                        'verified_at' => null,
+                        'verified_by' => null,
+                    ]);
+                } else {
+                    // Create new proof
+                    $paymentProof = PaymentProof::create([
+                        'order_id' => $lockedOrder->id,
+                        'file_bucket_id' => $fileBucketId,
+                        'status' => 'pending',
+                    ]);
+                }
             }
 
             $updateData = ['status' => 'pending_verification'];
@@ -279,5 +324,95 @@ class OrderService
 
             return $order->refresh();
         });
+    }
+
+    /**
+     * Create multiple orders and dispatch a Bus batch to reserve tickets for them.
+     * Returns the dispatched Batch instance.
+     *
+     * @param array $ordersData Array of order payloads (same shape as createOrder)
+     */
+    public function createOrdersBatch(array $ordersData): Batch
+    {
+        $createdOrders = [];
+
+        DB::transaction(function () use ($ordersData, &$createdOrders) {
+            foreach ($ordersData as $data) {
+                $order = Order::create([
+                    'order_number' => (new Order)->generateOrderNumber(),
+                    'user_id' => $data['user_id'] ?? auth()->id(),
+                    'event_id' => $data['event_id'],
+                    'status' => $data['status'] ?? 'pending_payment',
+                    'subtotal' => $data['subtotal'] ?? 0,
+                    'discount_amount' => $data['discount_amount'] ?? 0,
+                    'tax_amount' => $data['tax_amount'] ?? 0,
+                    'total_amount' => $data['total_amount'] ?? 0,
+                    'notes' => $data['notes'] ?? null,
+                    'expires_at' => $data['expires_at'] ?? now()->addHours(24),
+                ]);
+
+                foreach ($data['items'] as $item) {
+                    $ticketType = TicketType::find($item['ticket_type_id']);
+
+                    if (! $ticketType) {
+                        throw ValidationException::withMessages([
+                            "items.{$item['ticket_type_id']}" => 'Ticket type not found',
+                        ]);
+                    }
+
+                    $order->orderItems()->create([
+                        'ticket_type_id' => $ticketType->id,
+                        'quantity' => $item['quantity'],
+                        'unit_price' => $ticketType->price,
+                        'total_price' => $ticketType->price * $item['quantity'],
+                    ]);
+                }
+
+                activity()
+                    ->performedOn($order)
+                    ->causedBy(auth()->user())
+                    ->log('Order created (batch, awaiting reservation)');
+
+                $createdOrders[] = $order;
+            }
+        });
+
+        $jobs = array_map(fn($o) => new ProcessOrderReservation($o->id), $createdOrders);
+
+        $batch = Bus::batch($jobs)
+            ->name('order-reservations-'.now()->format('YmdHis'))
+            ->then(function (Batch $batch) use ($createdOrders) {
+                // All jobs completed successfully
+                activity()
+                    ->withProperties(['batch_id' => $batch->id, 'orders' => array_map(fn($o) => $o->id, $createdOrders)])
+                    ->log('Batch order reservations completed');
+            })
+            ->catch(function (Batch $batch, \Throwable $e) use ($createdOrders) {
+                // At least one job failed during processing
+                activity()
+                    ->withProperties(['batch_id' => $batch->id, 'error' => $e->getMessage()])
+                    ->log('Batch order reservations encountered an error');
+
+                // Mark orders as cancelled with a note about batch failure
+                foreach ($createdOrders as $order) {
+                    try {
+                        $order->update([
+                            'status' => 'cancelled',
+                            'notes' => $order->notes ? $order->notes."\nBatch reservation failed" : 'Batch reservation failed',
+                        ]);
+                    } catch (\Throwable $ex) {
+                        logger()->error('Failed to update order status after batch failure', ['order_id' => $order->id, 'error' => $ex->getMessage()]);
+                    }
+                }
+            })
+            ->finally(function (Batch $batch) use ($createdOrders) {
+                // Final cleanup or metrics logging
+                activity()
+                    ->withProperties(['batch_id' => $batch->id, 'orders' => array_map(fn($o) => $o->id, $createdOrders)])
+                    ->log('Batch order reservations finalized');
+            })
+            ->dispatch();
+
+        return $batch;
     }
 }

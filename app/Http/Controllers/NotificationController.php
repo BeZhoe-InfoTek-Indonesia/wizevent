@@ -12,10 +12,13 @@ class NotificationController extends Controller
 {
     public function index(): \Illuminate\Http\JsonResponse
     {
-        $notifications = Auth::user()->notifications()->orderBy('created_at', 'desc')->get();
+        $notifications = Auth::user()
+            ->notifications()
+            ->orderBy('created_at', 'desc')
+            ->paginate(20);
 
         return response()->json([
-            'notifications' => $notifications->values([
+            'notifications' => [
                 'data' => $notifications->map(function ($notification) {
                     return [
                         'id' => $notification->id,
@@ -23,10 +26,11 @@ class NotificationController extends Controller
                         'title' => $notification->data['title'] ?? 'Notification',
                         'message' => $notification->data['message'] ?? '',
                         'created_at' => $notification->created_at->format('M d, H:i:s'),
-                        'is_read' => $notification->read_at ? false : null,
+                        'is_read' => $notification->read_at !== null,
                         'link' => $notification->data['link'] ?? null,
                     ];
-                }),
+                })->values(),
+            ],
             'pagination' => [
                 'current_page' => $notifications->currentPage(),
                 'per_page' => 20,
@@ -56,7 +60,7 @@ class NotificationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Notification marked as read',
-            ]);
+        ]);
     }
 
     public function markAllAsRead(): \Illuminate\Http\JsonResponse
@@ -68,7 +72,7 @@ class NotificationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'All notifications marked as read',
-            ]);
+        ]);
     }
 
     public function dismiss(int $notificationId): \Illuminate\Http\JsonResponse
@@ -91,6 +95,6 @@ class NotificationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Notification dismissed',
-            ]);
+        ]);
     }
 }

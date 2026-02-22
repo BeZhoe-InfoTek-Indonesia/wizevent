@@ -16,6 +16,7 @@ description: Specialized skill for reviewing Filament v4.x (with Livewire 3.x) a
 - Whenever you add a new language or translation key, always update the `lang/` folder accordingly.
 - Ensure all translation keys exist in `lang/en/` (English is the primary reference) before adding to other languages.
 
+
 ### 1. Filament Resource Review
 - Check for use of modals/slideovers for all create/edit actions (no separate pages)
 - Ensure all form fields have placeholders and use translation functions (`__()`)
@@ -23,6 +24,10 @@ description: Specialized skill for reviewing Filament v4.x (with Livewire 3.x) a
 - Confirm resource navigation and permissions match project roles/permissions
 - Check for explicit imports, sorted alphabetically, no unused imports
 - Validate adherence to PSR-12 and project naming conventions
+- **Money Field Best Practice:**
+	- Always use `->money('IDR', locale: 'id')` for all input money fields
+	- Always use `->formatStateUsing(fn ($state) => 'Rp ' . number_format($state, 0, ',', '.'))` for displaying money values
+	- Ensure all money fields are labeled and formatted consistently as IDR (Indonesian Rupiah)
 
 ### 2. Widget & Page Review
 - Ensure dashboard widgets use project metrics and are permission-aware

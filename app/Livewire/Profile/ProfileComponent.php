@@ -4,11 +4,13 @@ namespace App\Livewire\Profile;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Masmerise\Toaster\Toaster;
+use App\Services\ProfileService;
 
+#[Layout('layouts.app-visitor')]
 class ProfileComponent extends Component
 {
     use WithFileUploads;
@@ -16,6 +18,10 @@ class ProfileComponent extends Component
     public $name;
 
     public $email;
+
+    public $identity_number;
+
+    public $mobile_phone_number;
 
     public $current_password;
 
@@ -28,6 +34,8 @@ class ProfileComponent extends Component
     protected $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|string|email|max:255|unique:users,email',
+        'identity_number' => 'nullable|string|max:20',
+        'mobile_phone_number' => 'nullable|string|max:20',
         'current_password' => 'required|string',
         'password' => 'required|string|min:8|confirmed',
         'avatar' => 'nullable|image|mimes:jpeg,jpg,png,webp|max:5120',
@@ -43,26 +51,32 @@ class ProfileComponent extends Component
         $user = Auth::user();
         $this->name = $user->name;
         $this->email = $user->email;
+        $this->identity_number = $user->identity_number;
+        $this->mobile_phone_number = $user->mobile_phone_number;
     }
 
-    public function updateProfile()
+    public function updateProfile(ProfileService $profileService)
     {
         $user = Auth::user();
 
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'identity_number' => 'nullable|string|max:20',
+            'mobile_phone_number' => 'nullable|string|max:20',
         ]);
 
-        $user->update([
+        $profileService->updateProfile($user, [
             'name' => $this->name,
             'email' => $this->email,
+            'identity_number' => $this->identity_number,
+            'mobile_phone_number' => $this->mobile_phone_number,
         ]);
 
-        $this->dispatch('profile-updated', message: 'Profile updated successfully.');
+        Toaster::success(__('profile.profile_updated_successfully'));
     }
 
-    public function updatePassword()
+    public function updatePassword(ProfileService $profileService)
     {
         $user = Auth::user();
 
@@ -71,26 +85,23 @@ class ProfileComponent extends Component
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        // Verify current password
         if (! Hash::check($this->current_password, $user->password)) {
-            $this->addError('current_password', 'The current password is incorrect.');
+            $this->addError('current_password', __('profile.current_password_incorrect'));
 
             return;
         }
 
-        $user->update([
-            'password' => Hash::make($this->password),
-        ]);
+        $profileService->updatePassword($user, $this->password);
 
         // Clear password fields
         $this->current_password = '';
         $this->password = '';
         $this->password_confirmation = '';
 
-        $this->dispatch('password-updated', message: 'Password updated successfully.');
+        Toaster::success(__('profile.password_updated_successfully'));
     }
 
-    public function updateAvatar()
+    public function updateAvatar(ProfileService $profileService)
     {
         $this->validate([
             'avatar' => 'required|image|mimes:jpeg,jpg,png,webp|max:5120',
@@ -99,53 +110,33 @@ class ProfileComponent extends Component
         $user = Auth::user();
 
         try {
-            // Delete old avatar if exists
-            if ($user->avatar) {
-                Storage::disk('public')->delete($user->avatar);
-            }
-
-            // Process and store new avatar
-            $filename = 'avatars/'.$user->id.'_'.time().'.jpg';
-
-            // Resize and optimize image
-            $image = Image::make($this->avatar);
-            $image->fit(300, 300, function ($constraint) {
-                $constraint->upsize();
-            });
-            $image->encode('jpg', 80);
-
-            // Store the processed image
-            Storage::disk('public')->put($filename, $image->getEncoded());
-
-            // Update user avatar
-            $user->update(['avatar' => $filename]);
+            $profileService->updateAvatar($user, $this->avatar);
 
             // Clear avatar input
             $this->avatar = null;
 
-            $this->dispatch('avatar-updated', message: 'Avatar updated successfully.');
+            Toaster::success(__('profile.avatar_updated_successfully'));
 
         } catch (\Exception $e) {
-            $this->addError('avatar', 'Failed to update avatar. Please try again.');
+            $this->addError('avatar', __('profile.failed_to_update_avatar'));
         }
     }
 
-    public function deleteAvatar()
+    public function deleteAvatar(ProfileService $profileService)
     {
         $user = Auth::user();
+        $profileService->deleteAvatar($user);
 
-        if ($user->avatar) {
-            Storage::disk('public')->delete($user->avatar);
-            $user->update(['avatar' => null]);
-        }
-
-        $this->dispatch('avatar-deleted', message: 'Avatar deleted successfully.');
+        Toaster::success(__('profile.avatar_deleted_successfully'));
     }
 
-    public function render()
+    public function render(ProfileService $profileService)
     {
-        return view('livewire.profile.profile-component', [
-            'user' => Auth::user(),
-        ]);
+        $user = Auth::user();
+        $dashboardData = $profileService->getDashboardData($user);
+
+        return view('livewire.profile.profile-component', array_merge([
+            'user' => $user,
+        ], $dashboardData));
     }
 }

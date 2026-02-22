@@ -3,10 +3,11 @@
 namespace App\Livewire\Event;
 
 use App\Models\Event;
+use App\Models\Favorite;
 use App\Models\SettingComponent;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Url;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -30,6 +31,8 @@ class EventList extends Component
     public $showLocationModal = false;
     public $locationSearch = '';
     public $activeTab = 'sort'; // sort, category, price, date
+
+    public array $favoriteEventIds = [];
 
     protected $queryString = [
         'search' => ['except' => ''],
@@ -107,6 +110,47 @@ class EventList extends Component
         $this->selectedCategories = array_values($this->selectedCategories);
     }
 
+    public function mount(): void
+    {
+        if (Auth::check()) {
+            $this->favoriteEventIds = Favorite::where('user_id', Auth::id())
+                ->pluck('event_id')
+                ->toArray();
+        }
+    }
+
+    public function toggleFavorite(int $eventId): void
+    {
+        if (! Auth::check()) {
+            $this->dispatch('show-login-modal');
+            return;
+        }
+
+        $userId = Auth::id();
+
+        $favorite = Favorite::where('user_id', $userId)
+            ->where('event_id', $eventId)
+            ->first();
+
+        if ($favorite) {
+            $favorite->delete();
+            $this->favoriteEventIds = array_diff($this->favoriteEventIds, [$eventId]);
+            $this->dispatch('removed-from-wishlist', message: 'Event removed from wishlist');
+        } else {
+            Favorite::create([
+                'user_id' => $userId,
+                'event_id' => $eventId,
+            ]);
+            $this->favoriteEventIds[] = $eventId;
+            $this->dispatch('added-to-wishlist', message: 'Event added to wishlist');
+        }
+    }
+
+    public function isFavorite(int $eventId): bool
+    {
+        return in_array($eventId, $this->favoriteEventIds);
+    }
+
     public function getLocationsProperty()
     {
         // Try to use Laravolt\Indonesia models
@@ -171,7 +215,7 @@ class EventList extends Component
 
     public function render(): View
     {
-        $query = Event::available()->with(['banner', 'ticketTypes', 'categories']);
+        $query = Event::available()->with(['banner', 'ticketTypes', 'categories', 'seoMetadata']);
 
         if ($this->search) {
             $query->where(function ($q) {

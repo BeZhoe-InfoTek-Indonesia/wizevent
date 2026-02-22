@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Jobs\SendEmailVerification;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -68,11 +69,14 @@ new #[Layout('layouts.visitor-auth')] class extends Component
             }
         }
 
+        // Dispatch queued job to send email verification
+        SendEmailVerification::dispatch($user->id);
+
+        // Log the user in so they can access the verification notice
         Auth::login($user);
 
-        // Redirect based on role
-        $redirectRoute = $this->getRedirectRoute($validated['role']);
-        $this->redirect(route($redirectRoute, absolute: false), navigate: true);
+        // Redirect user to verification notice page
+        $this->redirect(route('verification.notice', absolute: false), navigate: true);
     }
 
     /**

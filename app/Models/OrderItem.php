@@ -8,20 +8,31 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * @mixin IdeHelperOrderItem
- *
  * @property int $id
  * @property int $order_id
  * @property int $ticket_type_id
  * @property int $quantity
- * @property float $unit_price
- * @property float $total_price
+ * @property numeric $unit_price
+ * @property numeric $total_price
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Order $order
  * @property-read \App\Models\TicketType $ticketType
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Ticket> $tickets
  * @property-read int|null $tickets_count
+ * @method static \Database\Factories\OrderItemFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereOrderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereQuantity($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereTicketTypeId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereTotalPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUnitPrice($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|OrderItem whereUpdatedAt($value)
+ * @mixin \Eloquent
  */
 class OrderItem extends Model
 {

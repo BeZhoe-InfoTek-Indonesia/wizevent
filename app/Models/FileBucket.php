@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 /**
- * @mixin IdeHelperFileBucket
  * @property int $id
  * @property string $fileable_type
  * @property int $fileable_id
@@ -37,6 +36,7 @@ use Illuminate\Support\Str;
  * @property-read string $formatted_size
  * @property-read bool $is_image
  * @method static Builder<static>|FileBucket documents()
+ * @method static \Database\Factories\FileBucketFactory factory($count = null, $state = [])
  * @method static Builder<static>|FileBucket images()
  * @method static Builder<static>|FileBucket newModelQuery()
  * @method static Builder<static>|FileBucket newQuery()
@@ -64,6 +64,8 @@ use Illuminate\Support\Str;
  * @method static Builder<static>|FileBucket whereWidth($value)
  * @method static Builder<static>|FileBucket withTrashed(bool $withTrashed = true)
  * @method static Builder<static>|FileBucket withoutTrashed()
+ * @property string $ulid
+ * @method static Builder<static>|FileBucket whereUlid($value)
  * @mixin \Eloquent
  */
 class FileBucket extends Model
@@ -72,6 +74,12 @@ class FileBucket extends Model
 
     protected static function booted(): void
     {
+        static::creating(function (FileBucket $fileBucket) {
+            if (empty($fileBucket->ulid)) {
+                $fileBucket->ulid = (string) Str::ulid();
+            }
+        });
+
         static::saving(function (FileBucket $fileBucket) {
             if ($fileBucket->isDirty('file_path') && $fileBucket->file_path) {
                 if (Storage::disk('public')->exists($fileBucket->file_path)) {
@@ -94,7 +102,7 @@ class FileBucket extends Model
         'fileable_type', 'fileable_id', 'bucket_type', 'collection',
         'original_filename', 'stored_filename', 'file_path',
         'url', 'mime_type', 'file_size', 'width', 'height',
-        'metadata', 'sizes', 'created_by'
+        'metadata', 'sizes', 'created_by', 'ulid'
     ];
 
     protected $casts = [

@@ -30,13 +30,29 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(false)
+            ->renderHook(
+                'panels::head.done',
+                function (): string {
+                    if (request()->routeIs('filament.admin.pages.dashboard')) {
+                        return '
+                            <link rel="stylesheet" href="' . asset('css/filament-dashboard.css') . '">
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+                                    document.body.classList.add("dashboard-executive-theme");
+                                });
+                            </script>
+                        ';
+                    }
+                    return '';
+                },
+            )
             ->colors([
                 'primary' => Color::Blue,
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                \App\Filament\Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -64,6 +80,7 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 __('admin.groups.event_management'),
                 __('admin.groups.operations'),
+                __('admin.groups.visitors'),
                 __('admin.groups.master_data'),
                 __('admin.groups.system'),
             ])
