@@ -336,20 +336,7 @@
         </div>
     </div>
 
-    {{-- Success Notification Script --}}
-    <script>
-        document.addEventListener('livewire:init', () => {
-            Livewire.on('show-success-notification', (data) => {
-                const message = Array.isArray(data) ? data[0].message : (data.message || 'Order confirmed successfully.');
-                window.showNotification(message, 'success');
-            });
 
-            Livewire.on('show-notification', (data) => {
-                const payload = Array.isArray(data) ? data[0] : data;
-                window.showNotification(payload.message, payload.type || 'info');
-            });
-        });
-    </script>
 </div>
         </div>
     

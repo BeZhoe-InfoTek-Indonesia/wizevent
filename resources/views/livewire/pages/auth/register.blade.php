@@ -93,14 +93,12 @@ new #[Layout('layouts.visitor-auth')] class extends Component
 
 <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl overflow-hidden shadow-2xl transition-colors duration-300">
     <!-- Header Section -->
-    <div class="bg-indigo-600 dark:bg-slate-800 pt-10 pb-20 px-8 text-center transition-colors duration-300 relative">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm mb-4 shadow-inner">
-            <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
-            </svg>
+    <div class="bg-red-600 dark:bg-slate-800 pt-10 pb-20 px-8 text-center transition-colors duration-300 relative">
+        <div class="inline-flex items-center justify-center mb-4">
+            <img src="{{ asset('images/logo-difan.png') }}" class="h-16 w-auto object-contain" alt="{{ config('app.name') }}">
         </div>
-        <h1 class="text-3xl font-bold text-white mb-2 dark:text-emerald-400 transition-colors duration-300">{{ config('app.name', 'Event Hub') }}</h1>
-        <p class="text-indigo-200 dark:text-slate-400 text-sm font-medium tracking-wide">{{ __('Join us and start exploring') }}</p>
+        <h1 class="text-3xl font-bold text-white mb-2 dark:text-red-400 transition-colors duration-300">{{ config('app.name', 'Event Hub') }}</h1>
+        <p class="text-red-200 dark:text-slate-400 text-sm font-medium tracking-wide">{{ __('Join us and start exploring') }}</p>
     </div>
 
     <!-- Form Section -->
@@ -111,9 +109,9 @@ new #[Layout('layouts.visitor-auth')] class extends Component
             <div>
                 <label for="name" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 pl-1">{{ __('Name') }}</label>
                 <div class="relative">
-                    <input wire:model="name" id="name" type="text" name="name" required autofocus autocomplete="name"
-                           class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-indigo-500 dark:focus:border-emerald-500 focus:ring-indigo-500 dark:focus:ring-emerald-500 transition-colors duration-200"
-                           placeholder="John Doe">
+                         <input wire:model="name" id="name" type="text" name="name" required autofocus autocomplete="name"
+                             class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 transition-colors duration-200"
+                             placeholder="John Doe">
                 </div>
                 <x-input-error :messages="$errors->get('name')" class="mt-2 text-red-500 text-sm px-1" />
             </div>
@@ -122,9 +120,9 @@ new #[Layout('layouts.visitor-auth')] class extends Component
             <div>
                 <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 pl-1">{{ __('Email Address') }}</label>
                 <div class="relative">
-                    <input wire:model="email" id="email" type="email" name="email" required autocomplete="username"
-                           class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-indigo-500 dark:focus:border-emerald-500 focus:ring-indigo-500 dark:focus:ring-emerald-500 transition-colors duration-200"
-                           placeholder="name@example.com">
+                         <input wire:model="email" id="email" type="email" name="email" required autocomplete="username"
+                             class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 transition-colors duration-200"
+                             placeholder="name@example.com">
                 </div>
                 <x-input-error :messages="$errors->get('email')" class="mt-2 text-red-500 text-sm px-1" />
             </div>
@@ -133,9 +131,9 @@ new #[Layout('layouts.visitor-auth')] class extends Component
             <div x-data="{ show: false }">
                 <label for="password" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 pl-1">{{ __('Password') }}</label>
                 <div class="relative">
-                    <input wire:model="password" id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="new-password"
-                           class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-indigo-500 dark:focus:border-emerald-500 focus:ring-indigo-500 dark:focus:ring-emerald-500 transition-colors duration-200"
-                           placeholder="••••••••">
+                         <input wire:model="password" id="password" :type="show ? 'text' : 'password'" name="password" required autocomplete="new-password"
+                             class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 transition-colors duration-200"
+                             placeholder="••••••••">
                     <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
                         <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -153,9 +151,9 @@ new #[Layout('layouts.visitor-auth')] class extends Component
             <div x-data="{ show: false }">
                 <label for="password_confirmation" class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 pl-1">{{ __('Confirm Password') }}</label>
                 <div class="relative">
-                    <input wire:model="password_confirmation" id="password_confirmation" :type="show ? 'text' : 'password'" name="password_confirmation" required autocomplete="new-password"
-                           class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-indigo-500 dark:focus:border-emerald-500 focus:ring-indigo-500 dark:focus:ring-emerald-500 transition-colors duration-200"
-                           placeholder="••••••••">
+                         <input wire:model="password_confirmation" id="password_confirmation" :type="show ? 'text' : 'password'" name="password_confirmation" required autocomplete="new-password"
+                             class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-slate-700 border-gray-200 dark:border-slate-600 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-400 focus:border-red-500 dark:focus:border-red-400 focus:ring-red-500 dark:focus:ring-red-400 transition-colors duration-200"
+                             placeholder="••••••••">
                     <button type="button" @click="show = !show" class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 focus:outline-none">
                         <svg x-show="!show" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -171,7 +169,7 @@ new #[Layout('layouts.visitor-auth')] class extends Component
 
             <!-- Register Button -->
             <button type="submit"
-                    class="w-full py-3.5 px-4 bg-indigo-600 hover:bg-indigo-700 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-900 font-bold rounded-xl shadow-lg shadow-indigo-200 dark:shadow-emerald-900/20 transform transition-all duration-200 hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-emerald-500">
+                    class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 dark:bg-red-400 dark:hover:bg-red-300 text-white dark:text-slate-900 font-bold rounded-xl shadow-lg shadow-red-200 dark:shadow-red-900/20 transform transition-all duration-200 hover:scale-[1.01] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:focus:ring-red-400">
                 {{ __('REGISTER') }}
             </button>
         </form>
@@ -187,7 +185,7 @@ new #[Layout('layouts.visitor-auth')] class extends Component
         </div>
 
         <!-- Google Register -->
-        <a href="{{ route('auth.google') }}" class="flex items-center justify-center w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
+        <a href="{{ route('auth.google') }}" class="flex items-center justify-center w-full px-4 py-3 bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-xl shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
             <svg class="h-5 w-5 mr-3" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -200,14 +198,14 @@ new #[Layout('layouts.visitor-auth')] class extends Component
         <!-- Sign In Link -->
         <div class="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
             {{ __("Already have an account?") }}
-            <a href="{{ route('login') }}" class="font-bold text-indigo-600 dark:text-emerald-400 hover:text-indigo-500 dark:hover:text-emerald-300" wire:navigate>
+            <a href="{{ route('login') }}" class="font-bold text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300" wire:navigate>
                 {{ __('Log In') }}
             </a>
         </div>
 
         <!-- Back to Home -->
         <div class="mt-6 text-center">
-            <a href="/" class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors" wire:navigate>
+            <a href="/" class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-red-700 dark:hover:text-red-200 transition-colors" wire:navigate>
                  <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                  </svg>

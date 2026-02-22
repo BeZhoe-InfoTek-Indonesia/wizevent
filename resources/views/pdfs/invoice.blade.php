@@ -278,7 +278,7 @@
 
     <div class="header">
         <div class="logo-section">
-            <h1 class="logo">DIFAN EVENT</h1>
+            <img src="{{ public_path('images/logo-difan.png') }}" alt="DIFAN EVENT" height="40" style="margin-bottom: 5px;">
             <div class="tagline">Event Management System</div>
         </div>
         <div class="invoice-title-wrapper">

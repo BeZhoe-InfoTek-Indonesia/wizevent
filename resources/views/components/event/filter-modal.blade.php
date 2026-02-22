@@ -15,6 +15,7 @@
     x-data="{ show: @entangle('showFilterModal') }"
     x-show="show"
     x-on:keydown.escape.window="show = false"
+    x-on:open-filter-modal.window="show = true"
     x-transition:enter="transition ease-out duration-200"
     x-transition:enter-start="opacity-0"
     x-transition:enter-end="opacity-100"

@@ -12,6 +12,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 
 #[Layout('layouts.app-visitor')]
 class BookingConfirmation extends Component
@@ -41,10 +42,13 @@ class BookingConfirmation extends Component
             $user = Auth::user();
             if ($user && (empty($user->identity_number) || empty($user->mobile_phone_number))) {
                 $this->sameAsContact = false;
-                $this->dispatch('show-notification', [
-                    'message' => 'Your profile is incomplete. Please fill in your identity number and mobile phone number in your profile first.',
-                    'type' => 'warning'
-                ]);
+                LivewireAlert::title('Profile Incomplete')
+                    ->text('Please fill in your identity number and mobile phone number in your profile first.')
+                    ->warning()
+                    ->position('top-end')
+                    ->toast()
+                    ->timer(5000)
+                    ->show();
                 return;
             }
             $this->syncContactDetails();
@@ -199,9 +203,14 @@ class BookingConfirmation extends Component
         $this->statusMessage = __('payment_proof.uploaded_successfully');
 
         // Show success notification and redirect to event list
-        $this->dispatch('show-success-notification', [
-            'message' => 'Order confirmed successfully. Please check your email for payment instructions.'
-        ]);
+        LivewireAlert::title('Order confirmed successfully')
+            ->text('Please check your email for payment instructions.')
+            ->success()
+            ->timer(3000)
+            ->position('center')
+            ->toast(false)
+            ->withConfirmButton('OK')
+            ->show();
 
         return redirect()->route('events.index');
     }

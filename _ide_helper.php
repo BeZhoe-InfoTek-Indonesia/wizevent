@@ -33026,6 +33026,7 @@ namespace  {
     class FilamentExceptions extends \BezhanSalleh\FilamentExceptions\Facades\FilamentExceptions {}
     class FilamentShield extends \BezhanSalleh\FilamentShield\Facades\FilamentShield {}
     class Image extends \Intervention\Image\Laravel\Facades\Image {}
+    class LivewireAlert extends \Jantinnerezo\LivewireAlert\LivewireAlert {}
     class Socialite extends \Laravel\Socialite\Facades\Socialite {}
     class Indonesia extends \Laravolt\Indonesia\Facade {}
     class Livewire extends \Livewire\Livewire {}
@@ -33034,6 +33035,11 @@ namespace  {
 }
 
 
+namespace Facades\Livewire\Features\SupportFileUploads {
+    /**
+     * @mixin \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl     */
+    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl {}
+}
 
 
 

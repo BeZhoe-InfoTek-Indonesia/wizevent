@@ -81,6 +81,8 @@ return [
     'account_settings' => 'Pengaturan Akun',
     'manage_profile_preferences' => 'Kelola profil dan preferensi Anda',
     'profile_information' => 'Informasi Profil',
+    'basic_info' => 'Informasi Dasar',
+    'identity_verification' => 'Identitas & Verifikasi',
     'name' => 'Nama',
     'email' => 'Email',
     'identity_number' => 'Nomor Identitas',
@@ -99,6 +101,7 @@ return [
     'choose_file' => 'Pilih Berkas',
     'image_requirements' => 'JPG, PNG, atau WebP hingga 5MB',
     'upload_picture' => 'Unggah Foto',
+    'save_picture' => 'Simpan Foto',
     'remove_picture' => 'Hapus Foto',
     'member_since' => 'Anggota Sejak',
     'status' => 'Status',
@@ -155,4 +158,22 @@ return [
     'current_password_placeholder' => 'Masukkan kata sandi saat ini',
     'new_password_placeholder' => 'Masukkan kata sandi baru',
     'confirm_password_placeholder' => 'Konfirmasi kata sandi baru Anda',
+
+    // Slider Navigation
+    'previous_slide' => 'Slide sebelumnya',
+    'next_slide' => 'Slide berikutnya',
+
+    // Reviews
+    'your_reviews_desc' => 'Kelola ulasan',
+    'sort_latest' => 'Terbaru',
+    'sort_oldest' => 'Terlama',
+    'sort_rating_high' => 'Peringkat Tertinggi',
+    'sort_rating_low' => 'Peringkat Terendah',
+    'total_reviews' => 'Total Ulasan',
+    'helpful_feedback' => 'Ulasan Bermanfaat',
+    'events_to_review' => 'Acara untuk Diulas',
+
+    // Wishlist
+    'favorite_events' => 'Acara Favorit',
+    'clear_all' => 'Hapus Semua',
 ];

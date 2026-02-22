@@ -250,10 +250,7 @@
                     <tr>
                         <td align="center">
                             <div style="display: inline-flex; align-items: center;">
-                                <div style="background-color: #E52D27; color: #ffffff; padding: 6px; border-radius: 6px; margin-right: 10px;">
-                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6v-2a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v2z"/><line x1="13" y1="3" x2="13" y2="21"/></svg>
-                                </div>
-                                <span style="font-size: 20px; font-weight: 800; color: #111827; letter-spacing: 1px;">{{ config('app.name') }}</span>
+                                <img src="{{ asset('images/logo-difan.png') }}" alt="{{ config('app.name') }}" height="32" style="height: 32px; width: auto; object-fit: contain;">
                             </div>
                         </td>
                     </tr>

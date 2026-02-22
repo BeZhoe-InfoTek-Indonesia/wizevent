@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Masmerise\Toaster\Toaster;
+use Jantinnerezo\LivewireAlert\Facades\LivewireAlert;
 use App\Services\ProfileService;
 
 #[Layout('layouts.app-visitor')]
@@ -73,7 +73,12 @@ class ProfileComponent extends Component
             'mobile_phone_number' => $this->mobile_phone_number,
         ]);
 
-        Toaster::success(__('profile.profile_updated_successfully'));
+        LivewireAlert::title(__('profile.profile_updated_successfully'))
+            ->success()
+            ->toast()
+            ->position('top-end')
+            ->timer(3000)
+            ->show();
     }
 
     public function updatePassword(ProfileService $profileService)
@@ -98,7 +103,12 @@ class ProfileComponent extends Component
         $this->password = '';
         $this->password_confirmation = '';
 
-        Toaster::success(__('profile.password_updated_successfully'));
+        LivewireAlert::title(__('profile.password_updated_successfully'))
+            ->success()
+            ->toast()
+            ->position('top-end')
+            ->timer(3000)
+            ->show();
     }
 
     public function updateAvatar(ProfileService $profileService)
@@ -115,7 +125,14 @@ class ProfileComponent extends Component
             // Clear avatar input
             $this->avatar = null;
 
-            Toaster::success(__('profile.avatar_updated_successfully'));
+            LivewireAlert::title(__('profile.avatar_updated_successfully'))
+                ->success()
+                ->toast()
+                ->position('top-end')
+                ->timer(3000)
+                ->show();
+
+            $this->dispatch('avatar-updated');
 
         } catch (\Exception $e) {
             $this->addError('avatar', __('profile.failed_to_update_avatar'));
@@ -127,7 +144,14 @@ class ProfileComponent extends Component
         $user = Auth::user();
         $profileService->deleteAvatar($user);
 
-        Toaster::success(__('profile.avatar_deleted_successfully'));
+        LivewireAlert::title(__('profile.avatar_deleted_successfully'))
+            ->success()
+            ->toast()
+            ->position('top-end')
+            ->timer(3000)
+            ->show();
+
+        $this->dispatch('avatar-deleted');
     }
 
     public function render(ProfileService $profileService)

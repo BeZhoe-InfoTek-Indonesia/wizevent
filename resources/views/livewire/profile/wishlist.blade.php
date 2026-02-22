@@ -1,20 +1,28 @@
 <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex items-center justify-between">
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Wishlist</h2>
-        
-        @if($this->wishlist->count() > 0)
-            <button 
-                wire:click="clearAll"
-                wire:confirm="Are you sure you want to clear your entire wishlist?"
-                class="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-red-600 transition-colors"
-            >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-                Clear all
-            </button>
-        @endif
+    <!-- Header Card -->
+    <div class="glass-panel rounded-3xl shadow-float p-6 md:p-8 bg-white/80 dark:bg-gray-800/80 mb-8">
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-black text-gray-900 dark:text-gray-100 tracking-tight">{{ __('profile.wishlist') ?? 'Wishlist' }}</h2>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="w-2 h-2 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.4)]"></span>
+                    <p class="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">{{ __('profile.favorite_events') ?? 'Favorite Events' }}</p>
+                </div>
+            </div>
+            
+            @if($this->wishlist->count() > 0)
+                <button 
+                    wire:click="clearAll"
+                    wire:confirm="Are you sure you want to clear your entire wishlist?"
+                    class="glass-btn px-6 py-3 rounded-2xl flex items-center gap-2 text-xs font-black uppercase tracking-widest text-gray-400 hover:text-red-500 transition-all active:scale-95"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                    </svg>
+                    {{ __('profile.clear_all') ?? 'Clear All' }}
+                </button>
+            @endif
+        </div>
     </div>
 
     @if($this->wishlist->count() > 0)

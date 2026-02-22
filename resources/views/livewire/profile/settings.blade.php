@@ -295,7 +295,7 @@
 
     </form>
     {{-- Filament action modals --}}
-    <x-filament-actions::modals />
+    {{-- Filament action modals removed to fix context error --}}
 
 </div>
 

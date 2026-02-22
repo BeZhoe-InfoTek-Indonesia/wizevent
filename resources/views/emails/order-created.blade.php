@@ -282,7 +282,7 @@
         <!-- Header -->
         <div class="header">
             <div class="logo">
-                <span style="font-size: 24px; margin-right: 8px;">🎟️</span> <span class="logo-text">{{ strtoupper(config('app.name')) }}</span>
+                <img src="{{ asset('images/logo-difan.png') }}" alt="{{ config('app.name') }}" height="32" style="height: 32px; width: auto; object-fit: contain;">
             </div>
             <div class="order-id">
                 Order #{{ $order->order_number }}

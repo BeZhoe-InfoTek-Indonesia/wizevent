@@ -18,6 +18,7 @@
         "google-gemini-php/laravel": "*",
         "intervention/image": "^3.11",
         "intervention/image-laravel": "^1.5",
+        "jantinnerezo/livewire-alert": "^4.0",
         "laravel/framework": "^11.31",
         "laravel/sanctum": "^4.3",
         "laravel/socialite": "^5.24",

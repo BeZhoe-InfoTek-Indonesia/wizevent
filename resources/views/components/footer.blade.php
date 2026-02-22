@@ -6,11 +6,10 @@
             
             <!-- Brand Column -->
             <div class="space-y-6">
-                <a href="{{ route('dashboard') }}" class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-500 to-red-600 flex items-center justify-center shadow-lg shadow-red-500/30">
-                         <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 100 4v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2a2 2 0 100-4V6z"/></svg>
+                <a href="{{ route('dashboard') }}" class="flex items-center gap-3 group">
+                    <div class="transform group-hover:scale-110 transition-transform duration-300">
+                        <img src="{{ asset('images/logo-difan.png') }}" alt="{{ config('app.name') }}" class="h-10 w-auto">
                     </div>
-                    <span class="text-2xl font-black text-gray-900 tracking-tight">{{ config('app.name') }}</span>
                 </a>
                 <p class="text-gray-500 leading-relaxed text-sm">
                     Your premier destination for booking tickets to the hottest concerts, festivals, and events worldwide.

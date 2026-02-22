@@ -1,4 +1,6 @@
 import './bootstrap';
+import Swal from 'sweetalert2';
+window.Swal = Swal;
 
 // Register Service Worker for Offline Ticket Access
 if ('serviceWorker' in navigator) {

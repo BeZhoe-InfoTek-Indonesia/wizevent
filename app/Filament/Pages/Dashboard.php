@@ -61,13 +61,6 @@ class Dashboard extends BaseDashboard
                 }),
         ];
     }
-
-    public function getExtraBodyAttributes(): array
-    {
-        return [
-            'class' => 'dashboard-executive-theme',
-        ];
-    }
 }
 
 

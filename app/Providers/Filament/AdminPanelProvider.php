@@ -30,22 +30,6 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login(false)
-            ->renderHook(
-                'panels::head.done',
-                function (): string {
-                    if (request()->routeIs('filament.admin.pages.dashboard')) {
-                        return '
-                            <link rel="stylesheet" href="' . asset('css/filament-dashboard.css') . '">
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-                                    document.body.classList.add("dashboard-executive-theme");
-                                });
-                            </script>
-                        ';
-                    }
-                    return '';
-                },
-            )
             ->colors([
                 'primary' => Color::Blue,
             ])

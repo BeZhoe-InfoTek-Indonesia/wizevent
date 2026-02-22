@@ -100,6 +100,8 @@ return [
     'account_settings' => 'Account Settings',
     'manage_profile_preferences' => 'Manage your profile and preferences',
     'profile_information' => 'Profile Information',
+    'basic_info' => 'Basic Information',
+    'identity_verification' => 'Identity & Verification',
     'name' => 'Name',
     'email' => 'Email',
     'identity_number' => 'Identity Number',
@@ -118,6 +120,7 @@ return [
     'choose_file' => 'Choose File',
     'image_requirements' => 'JPG, PNG, or WebP up to 5MB',
     'upload_picture' => 'Upload Picture',
+    'save_picture' => 'Save Picture',
     'remove_picture' => 'Remove Picture',
     'member_since' => 'Member Since',
     'status' => 'Status',
@@ -167,4 +170,22 @@ return [
     'current_password_placeholder' => 'Enter current password',
     'new_password_placeholder' => 'Enter new password',
     'confirm_password_placeholder' => 'Confirm your new password',
+
+    // Slider Navigation
+    'previous_slide' => 'Previous slide',
+    'next_slide' => 'Next slide',
+
+    // Reviews
+    'your_reviews_desc' => 'Manage feedback',
+    'sort_latest' => 'Newest First',
+    'sort_oldest' => 'Oldest First',
+    'sort_rating_high' => 'Top Rated',
+    'sort_rating_low' => 'Lowest Rated',
+    'total_reviews' => 'Total Reviews',
+    'helpful_feedback' => 'Helpful Feedback',
+    'events_to_review' => 'Events to Review',
+
+    // Wishlist
+    'favorite_events' => 'Favorite Events',
+    'clear_all' => 'Clear All',
 ];

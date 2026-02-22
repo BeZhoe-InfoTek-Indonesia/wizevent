@@ -7,15 +7,20 @@ This project includes custom AI skills for automated code review and best practi
   - Use for: General Laravel, Livewire, and service layer code review, security, i18n, and N+1 query prevention.
   - Trigger by asking: "Review code for Laravel 11 best practices", "Analyze this file for N+1 issues", etc.
 
-- **Filament v4 Code Review Skill** (`fillamentv4-code-review`)
-  - Location: `prompter/skills/fillamentv4-code-review/SKILL.md`
+- **Filament v4 Code Review Skill** (`filamentv4-code-review`)
+  - Location: `prompter/skills/filamentv4-code-review/SKILL.md`
   - Use for: Reviewing Filament admin resources, widgets, and pages for UI/UX, modal usage, i18n, and permission checks.
   - Trigger by asking: "Review all Filament resources for best practices", "Check admin panel for i18n issues", etc.
 
+- **UI Checking & Validation Skill** (`ui-checking`)
+  - Location: `prompter/skills/ui-checking/SKILL.md`
+  - Use for: Visual and structural validation for Skeuomorphism 2.0 design system, responsiveness, and component consistency.
+  - Trigger by asking: "Review this UI component", "Check design system compliance", "Audit this Blade file for visual consistency", etc.
+
 **How to Use Skills:**
-- Simply describe your review or analysis goal in your request (e.g., "review code for N+1 queries", "analyze Filament resource for i18n").
+- Simply describe your review or analysis goal in your request (e.g., "review code for N+1 queries", "analyze Filament resource for i18n", "check UI for design system compliance").
 - The AI agent will load the relevant SKILL.md and follow its workflows and review criteria.
-- You can specify a file, directory, or focus area (e.g., security, service layer) in your request.
+- You can specify a file, directory, or focus area (e.g., security, service layer, visual consistency) in your request.
 
 See each SKILL.md for detailed workflows, review steps, and bundled scripts or references.
 <!-- PROMPTER:START -->
