@@ -1,66 +1,357 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Event Ticket Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive Laravel-based SaaS platform for event creation, ticket distribution, payment processing, and real-time QR code-based venue access control.
 
-## About Laravel
+## 🚀 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Event Management**: Create and manage events with wizard-based configuration
+- **Ticketing System**: Multiple ticket types with dynamic pricing and inventory control
+- **Payment Processing**: Secure payment verification workflow with proof upload
+- **Digital Tickets**: PDF ticket generation with secure QR codes
+- **Admin Panel**: Full-featured Filament v4 admin interface
+- **User Management**: Role-based access control with 5 predefined roles
+- **Multi-language**: English and Indonesian support
+- **AI-Powered Planning**: Event planning with AI budget forecasting and risk assessment
+- **CMS System**: Banner management, FAQs, and content pages
+- **PWA Support**: Progressive Web App capabilities for mobile users
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📋 System Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **PHP**: 8.2 or higher
+- **Composer**: 2.x
+- **Node.js**: 18.x or higher
+- **NPM**: 9.x or higher
+- **Database**: MySQL 8.0+ or PostgreSQL 13+
+- **Web Server**: Apache or Nginx
+- **Extensions**: 
+  - OpenSSL, PDO, Mbstring, Tokenizer, XML, Ctype, JSON, BCMath
+  - GD Extension (for image processing)
+  - Zip Extension (for PDF generation)
 
-## Learning Laravel
+## 🔧 Installation
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 1. Clone the Repository
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+```bash
+git clone <repository-url>
+cd event-management
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install Dependencies
 
-## Laravel Sponsors
+Install PHP dependencies:
+```bash
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Install Node.js dependencies:
+```bash
+npm install
+```
 
-### Premium Partners
+### 3. Environment Configuration
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+Copy the example environment file:
+```bash
+cp .env.example .env
+```
 
-## Contributing
+Edit `.env` and configure the following settings:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```env
+APP_NAME="Event Management"
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost:8000
 
-## Code of Conduct
+# Database Configuration
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=event_management
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Mail Configuration (for email notifications)
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_ENCRYPTION=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
 
-## Security Vulnerabilities
+# Google OAuth (optional)
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_REDIRECT_URI="${APP_URL}/auth/google/callback"
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# AI Services (optional - for event planning features)
+GEMINI_API_KEY=
+OPENAI_API_KEY=
+```
 
-## License
+Generate application key:
+```bash
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 4. Database Setup
+
+Create a new database and run migrations:
+```bash
+php artisan migrate
+```
+
+Seed the database with initial data (roles, permissions, etc.):
+```bash
+php artisan db:seed
+```
+
+### 5. Link Storage
+
+Create symbolic link for public storage:
+```bash
+php artisan storage:link
+```
+
+### 6. Build Assets
+
+Compile frontend assets:
+```bash
+npm run build
+```
+
+For development (with hot module replacement):
+```bash
+npm run dev
+```
+
+### 7. Generate IDE Helper Files (Optional)
+
+For better IDE support (autocomplete, type hints):
+```bash
+php artisan ide-helper:generate
+php artisan ide-helper:models
+php artisan ide-helper:meta
+```
+
+### 8. Start Development Server
+
+Run the Laravel development server:
+```bash
+php artisan serve
+```
+
+The application will be available at `http://localhost:8000`
+
+**Access Points:**
+- **Admin Panel**: `http://localhost:8000/admin`
+- **Visitor Interface**: `http://localhost:8000`
+
+### 9. Create Admin User
+
+After installation, you'll need to create an admin user. You can do this via:
+
+**Option 1: Register through the UI**
+1. Visit `http://localhost:8000/register`
+2. Create a new account
+3. Assign Super Admin role via database or tinker:
+
+```bash
+php artisan tinker
+```
+
+```php
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
+$user = User::find(1);
+$user->assignRole('Super Admin');
+```
+
+**Option 2: Create via Tinker**
+
+```bash
+php artisan tinker
+```
+
+```php
+use App\Models\User;
+use Spatie\Permission\Models\Role;
+
+$user = User::create([
+    'name' => 'Admin User',
+    'email' => 'admin@example.com',
+    'password' => bcrypt('password'),
+]);
+
+$user->assignRole('Super Admin');
+```
+
+## 📁 Project Structure
+
+```
+event-management/
+├── app/
+│   ├── Console/           # Artisan commands
+│   ├── Filament/          # Admin panel resources and pages
+│   ├── Http/              # Controllers and middleware
+│   ├── Jobs/              # Queue jobs
+│   ├── Livewire/          # Livewire components
+│   ├── Mail/              # Email templates
+│   ├── Models/            # Eloquent models
+│   └── Services/          # Business logic layer
+├── config/                # Configuration files
+├── database/
+│   ├── factories/         # Model factories
+│   ├── migrations/        # Database migrations
+│   └── seeders/           # Database seeders
+├── lang/                  # Translation files (en, id)
+├── public/                # Public assets
+├── resources/
+│   ├── css/               # Stylesheets
+│   ├── js/                # JavaScript files
+│   └── views/             # Blade templates
+└── routes/                # Route definitions
+```
+
+## 👥 User Roles & Permissions
+
+The system includes 5 predefined roles:
+
+1. **Super Admin**: Full system access
+2. **Event Manager**: Event and ticket management
+3. **Finance Admin**: Payment verification and financial reporting
+4. **Check-in Staff**: QR scanning and ticket validation
+5. **Visitor**: Event browsing and ticket purchase
+
+## 🔐 Security Features
+
+- Role-based access control (Spatie Permission)
+- Activity logging for audit trails
+- CSRF protection
+- SQL injection prevention
+- XSS protection
+- Secure password hashing (bcrypt)
+- Encrypted QR codes (AES-256-CBC)
+
+## 🧪 Testing
+
+Run the test suite:
+```bash
+php artisan test
+```
+
+Run with coverage:
+```bash
+php artisan test --coverage
+```
+
+Run static analysis (PHPStan):
+```bash
+composer phpstan
+```
+
+## 📚 Documentation
+
+For detailed documentation, see:
+- [`docs/AGENTS.md`](docs/AGENTS.md) - Complete project knowledge base
+- [`docs/requirement.md`](docs/requirement.md) - Full requirements specification
+- [`docs/admin-interface-guide.md`](docs/admin-interface-guide.md) - Admin panel guide
+- [`docs/permissions-and-roles.md`](docs/permissions-and-roles.md) - Permission system details
+
+## 🛠️ Development Tools
+
+### Queue Worker
+
+For processing background jobs (emails, PDF generation, etc.):
+
+```bash
+php artisan queue:work
+```
+
+### Cache Management
+
+Clear all caches:
+```bash
+php artisan optimize:clear
+```
+
+### Permission Cache
+
+Reset permission cache:
+```bash
+php artisan permission:cache-reset
+```
+
+### Activity Log Cleanup
+
+Clean old activity logs (runs daily via scheduler):
+```bash
+php artisan activitylog:clean
+```
+
+## 🐛 Troubleshooting
+
+### Permission Issues
+
+If you encounter permission issues, run:
+```bash
+php artisan permission:cache-reset
+php artisan shield:generate --all
+```
+
+### Filament Admin Panel Not Accessible
+
+1. Check user has admin role:
+```bash
+php artisan tinker
+User::find(1)->roles
+```
+
+2. Clear caches:
+```bash
+php artisan optimize:clear
+php artisan filament:cache-clear
+```
+
+### Assets Not Loading
+
+1. Clear and rebuild assets:
+```bash
+npm run build
+php artisan view:clear
+```
+
+2. Check storage link:
+```bash
+php artisan storage:link
+```
+
+## 📄 License
+
+This project is proprietary software. All rights reserved.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these guidelines:
+
+1. Follow PSR-12 coding standards
+2. Write tests for new features
+3. Update documentation
+4. Run `composer phpstan` before committing
+5. Follow the existing code style and patterns
+
+## 📞 Support
+
+For support and questions:
+- Check the documentation in the `docs/` directory
+- Review the troubleshooting section above
+- Check Laravel logs: `storage/logs/laravel.log`
+
+---
+
+**Built with ❤️ using Laravel 11, Filament v4, and Livewire**
