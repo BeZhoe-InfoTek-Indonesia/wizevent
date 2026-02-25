@@ -229,11 +229,11 @@ class SecurityMonitor
     {
         return [
             'blocked_ips' => Cache::getStore()->getPrefix().'blocked_ip:*',
-            'recent_alerts' => activity()
+            'recent_alerts' => \Spatie\Activitylog\Models\Activity::query()
                 ->where('properties->alert_type', 'security')
                 ->where('created_at', '>', now()->subHours(24))
                 ->count(),
-            'failed_logins_today' => activity()
+            'failed_logins_today' => \Spatie\Activitylog\Models\Activity::query()
                 ->where('event', 'login_failed')
                 ->whereDate('created_at', today())
                 ->count(),

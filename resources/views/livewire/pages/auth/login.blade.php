@@ -25,7 +25,10 @@ new #[Layout('layouts.visitor-auth')] class extends Component
         $user = Auth::user();
         $redirectRoute = $this->getRedirectRoute($user);
 
-        $this->redirectIntended(default: route($redirectRoute, absolute: false), navigate: true);
+        $redirectUrl = route($redirectRoute, absolute: false);
+        $shouldNavigate = ! str_starts_with($redirectRoute, 'filament.');
+
+        $this->redirectIntended(default: $redirectUrl, navigate: $shouldNavigate);
     }
 
     /**

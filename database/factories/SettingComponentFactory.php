@@ -21,8 +21,9 @@ class SettingComponentFactory extends Factory
 
         $value = match ($type) {
             'string' => fake()->word(),
-            'integer' => fake()->randomNumber(),
+            'integer' => (string) fake()->randomNumber(),
             'boolean' => fake()->boolean() ? 'true' : 'false',
+            default => fake()->word(),
         };
 
         return [

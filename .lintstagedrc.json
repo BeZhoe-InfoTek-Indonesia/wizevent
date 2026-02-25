@@ -1,0 +1,13 @@
+{
+    "*.php": [
+        "./vendor/bin/pint",
+        "git add"
+    ],
+    "app/**/*.php": [
+        "./vendor/bin/phpstan analyse --memory-limit=512M --no-progress"
+    ],
+    "*.blade.php": [],
+    "*.json": [
+        "node -e \"JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')); console.log('JSON valid: ' + process.argv[1]);\""
+    ]
+}

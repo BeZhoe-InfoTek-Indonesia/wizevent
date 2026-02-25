@@ -51,7 +51,6 @@ class EventService
             'latitude' => $data['latitude'] ?? $event->latitude,
             'longitude' => $data['longitude'] ?? $event->longitude,
             'google_place_id' => $data['google_place_id'] ?? $event->google_place_id,
-            'category_id' => $data['category_id'] ?? $event->category_id,
             'updated_by' => auth()->id(),
         ]);
 
@@ -68,7 +67,7 @@ class EventService
         $errors = $this->validateForPublishing($event);
 
         if (! empty($errors)) {
-            throw new \Illuminate\Validation\ValidationException($errors);
+            throw \Illuminate\Validation\ValidationException::withMessages($errors);
         }
 
         $event->update([

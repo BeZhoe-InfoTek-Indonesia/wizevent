@@ -2,11 +2,9 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Event;
 use App\Models\Order;
 use App\Models\Organizer;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Facades\DB;
 
 class TopOrganizersWidget extends ChartWidget
 {
@@ -14,7 +12,12 @@ class TopOrganizersWidget extends ChartWidget
 
     protected ?string $pollingInterval = '60s';
 
-    protected int | string | array $columnSpan = 2;
+    protected int|string|array $columnSpan = [
+        'default' => 'full',
+        'xl' => 6,
+    ];
+
+    protected ?string $maxHeight = '320px';
 
     public ?string $filter = 'revenue';
 
@@ -86,14 +89,14 @@ class TopOrganizersWidget extends ChartWidget
                 $query->whereBetween('events.created_at', [$startDate, $endDate]);
             }])
             ->get()
-            ->map(function ($organizer) use ($startDate, $endDate, $filterType) {
+            ->map(function ($organizer) use ($startDate, $endDate) {
                 $eventIds = $organizer->events->pluck('id');
-                
+
                 $revenue = Order::whereIn('event_id', $eventIds)
                     ->where('status', 'completed')
                     ->whereBetween('orders.created_at', [$startDate, $endDate])
                     ->sum('total_amount');
-                
+
                 $orders = Order::whereIn('event_id', $eventIds)
                     ->where('status', 'completed')
                     ->whereBetween('orders.created_at', [$startDate, $endDate])

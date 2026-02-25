@@ -3,32 +3,36 @@
 namespace App\Livewire\Admin\Events;
 
 use App\Models\Event;
-use Livewire\Attributes\Computed;
+use Filament\Actions\Concerns\InteractsWithActions;
+use Filament\Actions\Contracts\HasActions;
+use Filament\Forms\Components\Checkbox;
+use Filament\Forms\Components\Radio;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\ViewField;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
-use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Checkbox;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Components\ViewField;
-use Filament\Actions\Contracts\HasActions;
-use Filament\Actions\Concerns\InteractsWithActions;
-use Livewire\Component;
-use Illuminate\Support\Str;
+use Filament\Schemas\Schema;
 use Filament\Support\RawJs;
+use Illuminate\Support\Str;
+use Livewire\Attributes\Computed;
+use Livewire\Component;
 
-class RevenueCalculator extends Component implements HasForms, HasActions
+/**
+ * @property \Filament\Schemas\Schema $form
+ */
+class RevenueCalculator extends Component implements HasActions, HasForms
 {
-    use InteractsWithForms;
     use InteractsWithActions;
+    use InteractsWithForms;
 
     public Event $event;
+
     public ?array $data = [];
 
     public function mount(Event $event)
@@ -43,10 +47,10 @@ class RevenueCalculator extends Component implements HasForms, HasActions
             'merchConversionRate' => 0.0,
             'ticketConfig' => $this->getTicketConfig(),
             'costs' => [
-                 ['id' => Str::random(), 'name' => 'Venue Rental', 'amount' => 0],
-                 ['id' => Str::random(), 'name' => 'Marketing', 'amount' => 0],
-                 ['id' => Str::random(), 'name' => 'Artist Fees', 'amount' => 0],
-                 ['id' => Str::random(), 'name' => 'Production (Sound/Light)', 'amount' => 0],
+                ['id' => Str::random(), 'name' => 'Venue Rental', 'amount' => 0],
+                ['id' => Str::random(), 'name' => 'Marketing', 'amount' => 0],
+                ['id' => Str::random(), 'name' => 'Artist Fees', 'amount' => 0],
+                ['id' => Str::random(), 'name' => 'Production (Sound/Light)', 'amount' => 0],
             ],
         ]);
     }
@@ -63,6 +67,7 @@ class RevenueCalculator extends Component implements HasForms, HasActions
                 'is_vip' => str_contains(strtolower($ticketType->name), 'vip'),
             ];
         }
+
         return $config;
     }
 
@@ -170,7 +175,7 @@ class RevenueCalculator extends Component implements HasForms, HasActions
                                                 ->live()
                                                 ->columnSpanFull()
                                                 ->inline(false),
-                                            
+
                                             TextInput::make('merchRevPerUnit')
                                                 ->label('Profit per Unit')
                                                 ->mask(RawJs::make(<<<'JS'
@@ -183,7 +188,7 @@ class RevenueCalculator extends Component implements HasForms, HasActions
                                                 ->visible(fn (Get $get) => $get('enableMerch'))
                                                 ->live(debounce: 500)
                                                 ->columnSpan(1),
-                                            
+
                                             TextInput::make('merchConversionRate')
                                                 ->label('Conversion Rate (%)')
                                                 ->numeric()
@@ -194,7 +199,7 @@ class RevenueCalculator extends Component implements HasForms, HasActions
                                                 ->columnSpan(1),
                                         ]),
                                     ]),
-                                
+
                                 // Costs
                                 Section::make('Fixed Production Costs')
                                     ->icon('heroicon-m-banknotes')
@@ -231,7 +236,7 @@ class RevenueCalculator extends Component implements HasForms, HasActions
                                 ViewField::make('stats')
                                     ->view('livewire.admin.events.revenue-calculator-stats')
                                     ->hiddenLabel()
-                                    ->key(fn() => 'stats-' . time()),
+                                    ->key(fn () => 'stats-'.time()),
                             ]),
                     ]),
             ])
@@ -242,17 +247,17 @@ class RevenueCalculator extends Component implements HasForms, HasActions
     public function metrics(): array
     {
         $data = $this->form->getRawState();
-        
+
         $scenario = $data['scenario'] ?? 'optimistic';
         $ticketConfig = $data['ticketConfig'] ?? [];
         $costs = $data['costs'] ?? [];
         $enableMerch = $data['enableMerch'] ?? false;
-        $merchRevPerUnit = (float)($data['merchRevPerUnit'] ?? 0);
-        $merchConversionRate = (float)($data['merchConversionRate'] ?? 0);
-        $taxRate = (float)($data['taxRate'] ?? 10);
-        $platformFeeRate = (float)($data['platformFeeRate'] ?? 0);
+        $merchRevPerUnit = (float) ($data['merchRevPerUnit'] ?? 0);
+        $merchConversionRate = (float) ($data['merchConversionRate'] ?? 0);
+        $taxRate = (float) ($data['taxRate'] ?? 10);
+        $platformFeeRate = (float) ($data['platformFeeRate'] ?? 0);
 
-        $multiplier = match($scenario) {
+        $multiplier = match ($scenario) {
             'pessimistic' => 0.5,
             default => 1.0,
         };
@@ -263,7 +268,7 @@ class RevenueCalculator extends Component implements HasForms, HasActions
         $vipTicketsSold = 0;
 
         // Helper to parse money string (remove dots)
-        $parseMoney = fn($val) => (float) str_replace('.', '', (string) ($val ?? 0));
+        $parseMoney = fn ($val) => (float) str_replace('.', '', (string) ($val ?? 0));
 
         foreach ($data['ticketConfig'] ?? [] as $ticket) {
             $quantity = (int) ($ticket['quantity'] ?? 0);
@@ -273,11 +278,11 @@ class RevenueCalculator extends Component implements HasForms, HasActions
             // "Scenario" logic was: $sold = $quantity * $multiplier
             // Let's keep existing logic but use $multiplier
             $sold = (int) ($quantity * $multiplier); // multiplier is 1.0 or 0.5
-            
+
             $grossTicketRevenue += $sold * $price;
             $totalTicketsSold += $sold;
-            
-            if (!empty($ticket['is_vip'])) {
+
+            if (! empty($ticket['is_vip'])) {
                 $vipTicketsSold += $sold;
             }
         }
@@ -295,11 +300,11 @@ class RevenueCalculator extends Component implements HasForms, HasActions
 
         // 3. Expenses
         // Parse fixed costs
-        $fixedExpenses = collect($costs)->sum(fn($c) => $parseMoney($c['amount']));
-        
+        $fixedExpenses = collect($costs)->sum(fn ($c) => $parseMoney($c['amount']));
+
         $taxAmount = $grossTicketRevenue * ($taxRate / 100);
         $feeAmount = $grossTicketRevenue * ($platformFeeRate / 100);
-        
+
         $totalExpenses = $fixedExpenses + $taxAmount + $feeAmount;
 
         // 4. Net Profit
@@ -308,13 +313,13 @@ class RevenueCalculator extends Component implements HasForms, HasActions
         // 5. Break Even Point
         $breakEvenTickets = 0;
         $avgTicketPrice = $totalTicketsSold > 0 ? $grossTicketRevenue / $totalTicketsSold : 0;
-        
+
         if ($avgTicketPrice > 0) {
             $variableCostPerTicket = $avgTicketPrice * (($taxRate + $platformFeeRate) / 100);
             $contributionMargin = $avgTicketPrice - $variableCostPerTicket;
-            
+
             if ($contributionMargin > 0) {
-                 $breakEvenTickets = ceil($fixedExpenses / $contributionMargin);
+                $breakEvenTickets = ceil($fixedExpenses / $contributionMargin);
             }
         }
 
@@ -331,7 +336,6 @@ class RevenueCalculator extends Component implements HasForms, HasActions
             'total_tickets_sold' => $totalTicketsSold,
         ];
     }
-
 
     public function render()
     {

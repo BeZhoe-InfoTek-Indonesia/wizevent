@@ -53,25 +53,25 @@ class FileBucketService
 
         // Store file
         if ($this->isImage($file)) {
-             // Securely process and save image using Intervention Image
-             // This re-encodes the image, stripping metadata and potential payloads
-             $fullPath = Storage::disk('public')->path($filePath);
-             
-             // Ensure directory exists
-             $directory = dirname($fullPath);
-             if (!file_exists($directory)) {
-                 mkdir($directory, 0755, true);
-             }
+            // Securely process and save image using Intervention Image
+            // This re-encodes the image, stripping metadata and potential payloads
+            $fullPath = Storage::disk('public')->path($filePath);
 
-             Image::read($file->getRealPath())->save($fullPath);
+            // Ensure directory exists
+            $directory = dirname($fullPath);
+            if (! file_exists($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            Image::read($file->getRealPath())->save($fullPath);
         } else {
-             Storage::disk('public')->put($filePath, file_get_contents($file->getRealPath()));
+            Storage::disk('public')->put($filePath, file_get_contents($file->getRealPath()));
         }
 
         // Create FileBucket record
         $fileBucket = FileBucket::create([
             'fileable_type' => get_class($fileable),
-            'fileable_id' => $fileable->id,
+            'fileable_id' => $fileable->getKey(),
             'bucket_type' => $bucketType,
             'collection' => $options['collection'] ?? null,
             'original_filename' => $file->getClientOriginalName(),
@@ -102,8 +102,10 @@ class FileBucketService
 
     /**
      * Upload multiple files
+     *
+     * @return \Illuminate\Support\Collection<int, FileBucket>
      */
-    public function uploadMultiple(Model $fileable, array $files, string $bucketType, array $options = []): Collection
+    public function uploadMultiple(Model $fileable, array $files, string $bucketType, array $options = []): \Illuminate\Support\Collection
     {
         $fileBuckets = collect();
 
@@ -120,7 +122,7 @@ class FileBucketService
     public function retrieve(Model $fileable, string $bucketType, ?string $size = null): ?FileBucket
     {
         return FileBucket::where('fileable_type', get_class($fileable))
-            ->where('fileable_id', $fileable->id)
+            ->where('fileable_id', $fileable->getKey())
             ->where('bucket_type', $bucketType)
             ->latest()
             ->first();
@@ -132,7 +134,7 @@ class FileBucketService
     public function retrieveAll(Model $fileable, string $bucketType): Collection
     {
         return FileBucket::where('fileable_type', get_class($fileable))
-            ->where('fileable_id', $fileable->id)
+            ->where('fileable_id', $fileable->getKey())
             ->where('bucket_type', $bucketType)
             ->latest()
             ->get();
@@ -156,6 +158,7 @@ class FileBucketService
         $count = 0;
 
         foreach ($fileBuckets as $fileBucket) {
+            /** @var FileBucket $fileBucket */
             if ($this->delete($fileBucket)) {
                 $count++;
             }
@@ -293,7 +296,7 @@ class FileBucketService
     {
         $fileableType = Str::plural(Str::snake(class_basename($fileable)));
 
-        return "file-buckets/{$bucketType}/{$fileableType}/{$fileable->id}/{$filename}";
+        return "file-buckets/{$bucketType}/{$fileableType}/{$fileable->getKey()}/{$filename}";
     }
 
     /**

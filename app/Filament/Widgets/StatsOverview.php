@@ -11,6 +11,10 @@ use Spatie\Activitylog\Models\Activity;
 
 class StatsOverview extends BaseWidget
 {
+    protected int|string|array $columnSpan = 'full';
+
+    protected static ?int $sort = 0;
+
     protected function getStats(): array
     {
         return [
@@ -24,7 +28,7 @@ class StatsOverview extends BaseWidget
                 ->description('Registered event attendees')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('info'),
-            Stat::make('Net Revenue', 'IDR ' . number_format(Order::completed()->sum('total_amount'), 0, ',', '.'))
+            Stat::make('Net Revenue', 'IDR '.number_format(Order::completed()->sum('total_amount'), 0, ',', '.'))
                 ->description('Total revenue from completed orders')
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->chart(Order::completed()->latest('completed_at')->take(7)->pluck('total_amount')->reverse()->toArray())
@@ -40,4 +44,3 @@ class StatsOverview extends BaseWidget
         ];
     }
 }
-

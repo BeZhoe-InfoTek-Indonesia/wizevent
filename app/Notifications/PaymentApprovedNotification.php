@@ -2,35 +2,32 @@
 
 namespace App\Notifications;
 
+use App\Models\Order;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PromotionNotification extends Mailable
+class PaymentApprovedNotification extends Mailable
 {
     use Queueable, SerializesModels;
 
     public function __construct(
-        public string $title,
-        public string $description,
-        public ?string $link = null
+        public Order $order
     ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: $this->title,
+            subject: 'Payment Approved — Your Tickets Are Ready!',
         );
     }
 
     public function build(): Mailable
     {
-        return $this->view('emails.promotion')
+        return $this->view('emails.payment-approved')
             ->with([
-                'title' => $this->title,
-                'description' => $this->description,
-                'link' => $this->link,
+                'order' => $this->order,
             ]);
     }
 }

@@ -60,7 +60,7 @@
             <div class="flex flex-col lg:flex-row gap-8 lg:gap-16 items-center">
                 {{-- Event Poster --}}
                 <div class="w-full lg:w-[560px] shrink-0">
-                    <div class="aspect-[16/10] rounded-2xl overflow-hidden shadow-skeuo border-4 border-white relative bg-black">
+                    <div class="aspect-[16/10] rounded-2xl overflow-hidden shadow-skeuo relative bg-black">
                         <template x-if="images.length > 0">
                             <div class="relative w-full h-full">
                                 <template x-for="(img, index) in images" :key="index">
@@ -83,19 +83,47 @@
                             </svg>
                         </button>
                         
-                         {{-- Favorite Button --}}
-                         <div class="absolute top-6 right-6 z-20">
+                        {{-- Mobile Top Navigation --}}
+                        <div class="absolute top-4 left-4 z-30 md:hidden">
+                            <button onclick="history.back()" class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all text-black shadow-lg">
+                                <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                                </svg>
+                            </button>
+                        </div>
+
+                         {{-- Top Right Actions --}}
+                         <div class="absolute top-4 right-4 z-30 flex gap-2">
+                             {{-- Favorite Button --}}
                              <button wire:click="toggleFavorite"
-                                     class="w-12 h-12 glass-btn rounded-2xl flex items-center justify-center hover:scale-110 active:scale-95 transition-all group/fav">
+                                     class="w-10 h-10 bg-white rounded-full flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg group/fav">
                                  @if($this->isFavorited)
-                                     <svg class="w-6 h-6 text-red-500 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                     <svg class="w-5 h-5 text-[#dc2626] transition-colors" fill="currentColor" viewBox="0 0 24 24">
                                          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                      </svg>
                                  @else
-                                     <svg class="w-6 h-6 text-gray-700 transition-colors group-hover/fav:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                                     <svg class="w-5 h-5 text-gray-400 transition-colors group-hover/fav:text-[#dc2626]" fill="currentColor" viewBox="0 0 24 24">
+                                         <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                                      </svg>
                                  @endif
+                             </button>
+
+                             {{-- Share Button (Mobile Only) --}}
+                             <button x-data="{
+                                        shareUrl() {
+                                            if (navigator.share) {
+                                                navigator.share({
+                                                    title: '{{ addslashes($event->title) }}',
+                                                    url: '{{ route('events.show', $event->slug) }}'
+                                                }).catch(console.error);
+                                            }
+                                        }
+                                     }"
+                                     @click="shareUrl()"
+                                     class="w-10 h-10 bg-white rounded-full flex flex md:hidden items-center justify-center hover:scale-105 active:scale-95 transition-all text-gray-700 shadow-lg">
+                                 <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                     <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92c0-1.61-1.31-2.92-2.92-2.92z"/>
+                                 </svg>
                              </button>
                          </div>
                         
@@ -121,10 +149,10 @@
                 </div>
 
                 {{-- Event Info --}}
-                <div class="flex-1 space-y-8">
+                <div class="flex-1 space-y-6">
                     <div class="space-y-4">
                         <div class="flex flex-wrap gap-2" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 translate-y-4">
-                            <span class="px-3 py-1 bg-red-500/20 backdrop-blur-md rounded-full text-red-400 text-[10px] font-bold uppercase tracking-widest border border-red-500/30">
+                            <span class="px-3 py-1 bg-red-500/20 backdrop-blur-md rounded-full text-red-500 text-[10px] font-bold uppercase tracking-widest border border-red-500/30">
                                 {{ __('event.recommended') }}
                             </span>
                             @if($event->category)
@@ -133,66 +161,64 @@
                             </span>
                             @endif
                         </div>
-                        <h1 class="text-4xl md:text-5xl lg:text-7xl font-black text-white leading-[1.1] tracking-tight">
+                        <h1 class="text-2xl md:text-3xl lg:text-[40px] font-bold text-white leading-snug tracking-tight">
                             {{ $event->title }}
                         </h1>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-4 pt-2">
                         {{-- Location --}}
-                        <div class="group flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
-                            <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <div class="flex items-start gap-4">
+                            <div class="mt-0.5 text-gray-300 shrink-0">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                                 </svg>
                             </div>
-                            <div class="space-y-0.5">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{{ __('event.venue') }}</p>
-                                <p class="text-gray-200 text-sm font-semibold leading-tight line-clamp-1">
-                                    {{ $event->venue_name ?? $event->location }}
+                            <div>
+                                <p class="text-gray-200 text-sm leading-relaxed">
+                                    {{ $event->venue_name ? $event->venue_name . ', ' : '' }}{{ $event->location }}
                                 </p>
                             </div>
                         </div>
 
                         {{-- Date --}}
-                        <div class="group flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-all duration-300">
-                            <div class="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center text-red-500 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        <div class="flex items-start gap-4">
+                            <div class="mt-0.5 text-gray-300 shrink-0">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7v-5z"/>
                                 </svg>
                             </div>
-                            <div class="space-y-0.5">
-                                <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none">{{ __('event.date') }}</p>
-                                <p class="text-gray-200 text-sm font-semibold leading-tight">
-                                    {{ $event->event_date?->format('d M Y') }}
+                            <div>
+                                <p class="text-gray-200 text-sm leading-relaxed">
+                                    {{ $event->event_date?->format('l, d F Y') }}
+                                </p>
+                            </div>
+                        </div>
+
+                        {{-- Ticket Price --}}
+                        <div class="flex items-start gap-4">
+                            <div class="mt-0.5 text-gray-300 shrink-0">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M22 10V6a2 2 0 00-2-2H4a2 2 0 00-2 2v4c1.1 0 2 .9 2 2s-.9 2-2 2v4a2 2 0 002 2h16a2 2 0 002-2v-4c-1.1 0-2-.9-2-2s.9-2 2-2zm-2-4v2.41a3.998 3.998 0 000 7.18V18H4v-2.41a3.998 3.998 0 000-7.18V6h16zM11 15h2v2h-2zm0-4h2v2h-2zm0-4h2v2h-2z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="text-gray-200 text-sm leading-relaxed whitespace-nowrap">
+                                    Ticket prices start from IDR {{ number_format($this->ticketTypes->min('price') ?? $event->ticket_prices ?? 0) }}
                                 </p>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Action Bar --}}
-                    <div class="flex flex-col sm:flex-row items-center gap-6 pt-4">
-                        <button wire:click="book"
-                           class="group relative inline-flex items-center justify-center w-full sm:w-auto overflow-hidden rounded-2xl p-0.5 font-bold transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_40px_rgba(220,38,38,0.3)]">
-                            <span class="absolute inset-0 bg-gradient-to-r from-[#ef4444] to-[#dc2626]"></span>
-                            <span class="relative w-full sm:w-auto min-w-[240px] px-10 py-5 bg-[#dc2626] rounded-[14px] text-white flex items-center justify-center gap-3 transition-all">
-                                <span class="text-lg">{{ __('event.get_tickets_now') }}</span>
-                                <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7"></path>
-                                </svg>
+                    {{-- Action Card --}}
+                    <div class="mt-8 bg-[#1f1f1f] rounded-2xl p-4 md:p-5 border border-white/5 backdrop-blur-sm max-w-xl">
+                        <p class="text-gray-300 text-[13px] mb-3">Available now, secure your spot!</p>
+                        <button wire:click="book" class="w-full relative inline-flex items-center justify-center overflow-hidden rounded-xl p-0.5 font-bold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] group">
+                            <span class="absolute inset-0 bg-[#EE2E24]"></span>
+                            <span class="relative w-full px-8 py-3 bg-[#EE2E24] rounded-xl text-white flex items-center justify-center transition-all group-hover:bg-opacity-90">
+                                <span class="text-sm font-bold tracking-wide">Buy ticket now</span>
                             </span>
                         </button>
-                        <div class="flex items-center gap-2">
-                            <div class="flex -space-x-2">
-                                <div class="w-8 h-8 rounded-full border-2 border-black bg-gray-800 flex items-center justify-center text-[10px] font-bold text-white">JD</div>
-                                <div class="w-8 h-8 rounded-full border-2 border-black bg-red-600 flex items-center justify-center text-[10px] font-bold text-white">AS</div>
-                                <div class="w-8 h-8 rounded-full border-2 border-black bg-red-800 flex items-center justify-center text-[10px] font-bold text-white">
-                                    {{ $event->sold_tickets > 0 ? number_format($event->sold_tickets) . '+' : '+1k' }}
-                                </div>
-                            </div>
-                            <p class="text-xs text-gray-400 font-medium tracking-tight">{{ __('event.attendees') }}</p>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -210,7 +236,7 @@
                     {{-- Row: Event Details & Ticket Selection --}}
                     <div class="flex flex-col xl:flex-row gap-12">
                         
-                        <div class="flex-1 space-y-12">
+                        <div class="flex-1 space-y-12 order-2 xl:order-1">
                             <section class="relative">
                                 <div class="flex items-center gap-4 mb-8">
                                     <div class="w-1.5 h-8 bg-[#EF4444] rounded-full shadow-[0_0_10px_rgba(239,68,68,0.5)]"></div>
@@ -388,7 +414,7 @@
                         </div>
 
                         {{-- Right Side: Tickets Sidebar --}}
-                        <div class="w-full lg:w-[420px] shrink-0" id="tickets-section">
+                        <div class="w-full lg:w-[420px] shrink-0 order-1 xl:order-2" id="tickets-section">
                             <div class="sticky top-12 space-y-6">
                                 <div class="bg-white rounded-[32px] border border-gray-100 shadow-[0_30px_100px_rgba(0,0,0,0.08)] overflow-hidden">
                                     {{-- Available now bar integrated into sidebar --}}
@@ -402,7 +428,7 @@
                                             <p class="text-gray-500 text-[11px] leading-tight">{{ __('event.select_category') }}</p>
                                         </div>
                                         <button wire:click="book"
-                                           class="flex items-center justify-center gap-2 px-5 py-3 glass-btn-primary rounded-xl text-xs font-bold hover:scale-105 transition-all shadow-lg active:scale-95">
+                                           class="flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-xs font-bold hover:scale-105 transition-all shadow-lg active:scale-95 bg-[#EE2E24] text-white">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7"></path>
                                             </svg>
@@ -438,19 +464,6 @@
                                                 <p class="text-gray-400 text-sm font-medium px-4">Sold out or no tickets available yet.</p>
                                             </div>
                                         @endif
-                                        
-                                        <div class="mt-8 pt-6 border-t border-gray-100 p-4 bg-gray-50/50 rounded-2xl">
-                                            <div class="flex gap-3">
-                                                <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm shrink-0">
-                                                    <svg class="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
-                                                    </svg>
-                                                </div>
-                                                <p class="text-[10px] text-gray-400 leading-relaxed">
-                                                    Prices include convenience fee and tax. Secure payment powered by Midtrans.
-                                                </p>
-                                            </div>
-                                        </div>
                                     </div>
                                 </div>
                                                                 
@@ -681,29 +694,29 @@
                     {{-- Recommendations Section --}}
                     @if($this->relatedEvents->isNotEmpty())
                     <section class="border-t border-gray-100 pt-16">
-                        <div class="flex items-center justify-between mb-10">
-                            <h2 class="text-3xl font-black text-gray-900 tracking-tight">You Might Also Like</h2>
-                            <button class="text-sm font-bold text-red-600 hover:underline">See All Events</button>
+                        <div class="mb-6">
+                            <h2 class="text-2xl font-bold text-gray-800">You Might Also Like This</h2>
                         </div>
                         
-                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
-                            @foreach($this->relatedEvents->take(5) as $rel)
-                                <a href="{{ route('events.show', $rel->slug) }}" class="group block space-y-4">
-                                    <div class="aspect-[16/10] rounded-[24px] overflow-hidden bg-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.05)] group-hover:shadow-[0_20px_40px_rgba(0,0,0,0.1)] transition-all duration-500">
+                        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                            @foreach($this->relatedEvents->take(4) as $rel)
+                                <a href="{{ route('events.show', $rel->slug) }}" class="group flex flex-col bg-white rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-all duration-300 overflow-hidden h-full border border-gray-100 hover:-translate-y-1">
+                                    <div class="aspect-[4/3] w-full overflow-hidden bg-gray-100 shrink-0 relative">
                                         @if($rel->banner)
                                             <img src="{{ Str::startsWith($rel->banner->url, 'http') ? $rel->banner->url : Storage::url($rel->banner->file_path) }}" 
-                                                 class="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-2 transition-transform duration-700">
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
                                         @endif
                                     </div>
-                                    <div class="space-y-2 px-1">
-                                        <div class="flex items-center gap-2">
-                                            <span class="px-2 py-0.5 bg-red-50 text-red-600 text-[9px] font-black uppercase tracking-widest rounded-md">
-                                                {{ $rel->event_date?->format('M j') }}
-                                            </span>
-                                            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $rel->location }}</p>
+                                    <div class="p-4 md:p-5 flex flex-col flex-1">
+                                        <p class="text-[13px] md:text-sm text-gray-500 mb-1.5">
+                                            {{ $rel->event_date?->format('d M Y') }}
+                                        </p>
+                                        <h4 class="font-bold text-gray-900 text-sm md:text-base line-clamp-2 leading-snug mb-1 group-hover:text-red-500 transition-colors uppercase">{{ $rel->title }}</h4>
+                                        <p class="text-[13px] md:text-sm text-gray-500 mb-4">{{ $rel->location }}</p>
+                                        
+                                        <div class="mt-auto">
+                                            <p class="text-sm md:text-base font-bold text-[#EE2E24]">IDR {{ number_format($rel->ticketTypes->min('price') ?? 0) }}</p>
                                         </div>
-                                        <h4 class="font-black text-gray-900 text-sm line-clamp-2 leading-snug group-hover:text-red-600 transition-colors">{{ $rel->title }}</h4>
-                                        <p class="text-sm font-black text-gray-900">IDR {{ number_format($rel->ticketTypes->min('price') ?? 0) }}</p>
                                     </div>
                                 </a>
                             @endforeach
@@ -712,6 +725,31 @@
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
+
+    {{-- Mobile Sticky Buy Button --}}
+    <div x-cloak
+         x-show="scrolled"
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0 translate-y-full"
+         x-transition:enter-end="opacity-100 translate-y-0"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100 translate-y-0"
+         x-transition:leave-end="opacity-0 translate-y-full"
+         class="fixed bottom-0 left-0 right-0 z-[100] p-4 bg-white/90 backdrop-blur-md border-t border-gray-100 shadow-[0_-10px_30px_rgba(0,0,0,0.1)] xl:hidden pb-safe">
+        <div class="flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+                <p class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">Starting from</p>
+                <p class="text-gray-900 font-black text-lg leading-none">IDR {{ number_format($this->ticketTypes->min('price') ?? $event->ticket_prices ?? 0) }}</p>
+            </div>
+            <button wire:click="book"
+                    class="flex items-center justify-center gap-2 px-8 py-3.5 bg-[#EE2E24] text-white rounded-xl text-sm font-bold shadow-[0_8px_16px_rgba(238,46,36,0.3)] hover:bg-[#d9261d] active:scale-95 transition-all">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7-7 7"></path>
+                </svg>
+                {{ __('event.buy_ticket_now') }}
+            </button>
         </div>
     </div>
 

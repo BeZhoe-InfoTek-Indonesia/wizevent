@@ -26,7 +26,7 @@
     --}}
     <div class="fixed inset-0 pointer-events-none bg-gradient-to-br from-white/40 via-transparent to-gray-200/30 z-0"></div>
 
-    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-16">
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-10 space-y-16">
         
         {{-- 
             HERO CAROUSEL - Clean & Modern Design
@@ -187,7 +187,7 @@
                         </div>
                         
                         <!-- Title -->
-                        <h1 class="text-white text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 md:mb-6 leading-tight" x-text="slide.title"></h1>
+                        <h1 class="text-white text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight" x-text="slide.title"></h1>
                         
                         <!-- Description -->
                         <p class="text-white text-sm md:text-base lg:text-lg mb-6 md:mb-8 leading-relaxed max-w-xl md:max-w-2xl line-clamp-3 md:line-clamp-none" x-text="slide.description"></p>
@@ -197,9 +197,9 @@
                             <a :href="slide.link"
                                :target="slide.link_target"
                                @click="slide.id > 0 && $wire.call('trackBannerClick', slide.id)"
-                               class="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-lg transition-colors">
+                               class="group inline-flex items-center gap-2 bg-[#EE2E24] hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition-all duration-300 hover:-translate-y-1 hover:scale-105 hover:shadow-[0_8px_20px_rgba(238,46,36,0.4)] active:scale-95">
                                 Discover Events
-                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
                                 </svg>
                             </a>
@@ -286,7 +286,7 @@
                         <!-- Filter Button -->
                         <button 
                             wire:click="toggleFilterModal"
-                            class="bg-red-500 hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg flex items-center gap-2 transition-colors shadow-md whitespace-nowrap">
+                            class="bg-[#EE2E24] hover:bg-red-600 text-white font-bold px-6 py-3 rounded-lg flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:-translate-y-0.5 hover:shadow-[0_8px_15px_rgba(238,46,36,0.3)] active:scale-95 whitespace-nowrap">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                             </svg>
@@ -324,7 +324,7 @@
         --}}
         <div class="space-y-6 mt-12 mb-12" x-data="{ slider: null }" x-init="slider = $refs.hotDealsSlider">
             <div class="flex items-center justify-between">
-                <h2 class="text-3xl font-black text-gray-800 tracking-tight">Hot Deals</h2>
+                <h2 class="text-2xl font-black text-gray-800 tracking-tight">Hot Deals</h2>
                 <div class="flex gap-2">
                     <button
                         type="button"
@@ -376,7 +376,7 @@
                             </div>
                         </div>
                         
-                        <button class="bg-white text-red-500 px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-gray-50 active:scale-95 transition-all">
+                        <button class="bg-white text-red-500 px-6 py-3 rounded-xl font-bold text-sm shadow-lg hover:bg-gray-50 active:scale-95 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/10">
                             Claim Now
                         </button>
                     </div>
@@ -406,7 +406,7 @@
                             </div>
                         </div>
                         
-                        <button class="bg-gradient-to-r from-red-500 to-red-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-red-900/30 hover:brightness-110 active:scale-95 transition-all">
+                        <button class="bg-gradient-to-r from-[#EE2E24] to-red-600 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-red-900/30 hover:brightness-110 active:scale-95 transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(238,46,36,0.4)]">
                             Upgrade
                         </button>
                     </div>
@@ -448,19 +448,19 @@
         <div class="space-y-8">
             <!-- Header -->
             <div class="flex items-center justify-between px-2">
-                <h4 class="text-3xl font-black text-gray-900 tracking-tight">Upcoming Events</h2>
+                <h4 class="text-2xl font-black text-gray-900 tracking-tight">Upcoming Events</h2>
                 <a href="{{ route('events.index') }}" class="text-red-500 font-bold hover:text-red-600 transition flex items-center gap-1 text-sm">
                     View all <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>
             </div>
 
             <!-- Grid/Slider -->
-            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 -mx-4 px-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:pb-0 sm:overflow-visible sm:mx-0 sm:px-0 scrollbar-hide items-stretch">
+            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-6 pt-4 -mx-4 px-4 sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:gap-6 sm:pb-0 sm:pt-0 sm:overflow-visible sm:mx-0 sm:px-0 scrollbar-hide items-stretch">
                 @forelse($events as $event)
-                    <div class="min-w-[85%] sm:min-w-0 snap-center group relative bg-white rounded-[2.5rem] p-3 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 cursor-pointer border border-gray-100 flex flex-col justify-between h-full">
+                    <div class="min-w-[85%] sm:min-w-0 snap-center group relative bg-white rounded-2xl p-3 shadow-[0_10px_30px_-5px_rgba(0,0,0,0.05)] hover:shadow-[0_20px_40px_-5px_rgba(0,0,0,0.1)] transition-all duration-300 hover:-translate-y-2 cursor-pointer border border-gray-100 flex flex-col justify-between h-full">
                         
                         <!-- Image Container -->
-                        <div class="relative h-48 w-full rounded-[2rem] overflow-hidden mb-5 shrink-0">
+                        <div class="relative h-48 w-full rounded-xl overflow-hidden mb-5 shrink-0">
                             @if($event->banner)
                                 <img src="{{ Storage::url($event->banner->file_path) }}" alt="{{ $event->title }}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700">
                             @else
@@ -543,7 +543,7 @@
             
             @if($events->count() > 0)
                 <div class="flex justify-center pt-10">
-                     <a href="{{ route('events.index') }}" class="inline-flex items-center gap-3 px-10 py-4 rounded-full bg-white text-gray-800 font-bold shadow-[0_4px_15px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_25px_rgba(0,0,0,0.1)] hover:-translate-y-1 transition-all duration-300 border border-gray-100">
+                     <a href="{{ route('events.index') }}" class="glass-btn-primary bg-[#EE2E24] text-white hover:bg-red-700 shadow-lg shadow-red-500/30 inline-flex items-center gap-3 px-10 py-4 rounded-full font-bold transition-all duration-300 hover:-translate-y-1">
                         View More Events
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                     </a>
@@ -593,74 +593,153 @@
     @endif
 
     <!-- Trending Now Section -->
-    <div class="bg-gray-900 text-white w-full py-20 relative overflow-hidden">
-        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-[500px] h-[500px] bg-red-600/20 rounded-full blur-3xl opacity-50"></div>
-        <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl opacity-50"></div>
+    <div class="w-full py-20 relative bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div class="flex items-center gap-4 mb-10">
-                <div class="w-2 h-10 bg-red-500 rounded-full shadow-[0_0_15px_rgba(239,68,68,0.8)]"></div>
-                <h2 class="text-4xl font-extrabold text-white drop-shadow-lg">Trending Now</h2>
+                <div class="w-1.5 h-8 bg-[#EE2E24] rounded-full"></div>
+                <h2 class="text-2xl font-black text-gray-900 tracking-tight">Trending Now</h2>
             </div>
-            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 md:grid md:grid-cols-3 md:gap-6 md:auto-rows-[280px] md:pb-0 md:mx-0 md:px-0 scrollbar-hide items-center">
-                @forelse($bestSellerEvents ?? [] as $event)
-                    @php
-                        $bannerUrl = $event->banner?->url ?? ($event->banners->first()?->url ?? 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop');
-                        $categoryName = $event->categories?->first()?->name ?? __('Event');
-                    @endphp
-                    <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center md:col-span-1 md:row-span-1 relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden group cursor-pointer border border-white/10 shadow-2xl flex flex-col justify-end" style="background: linear-gradient(0deg, rgba(0,0,0,0.7) 40%, transparent 100%), url('{{ $bannerUrl }}') center/cover no-repeat;">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90"></div>
-                        <div class="absolute top-6 right-6 bg-red-600 text-white text-[10px] font-black uppercase px-4 py-2 rounded-lg shadow-[0_0_20px_rgba(220,38,38,0.6)] animate-pulse border border-red-400">
-                            {{ __('Selling Fast') }} 🔥
+            
+            @php
+                $trendingEvents = collect($bestSellerEvents ?? [])->take(3);
+                $mobileEvents = collect($bestSellerEvents ?? []);
+            @endphp
+            
+            @if($mobileEvents->isEmpty())
+                <div class="w-full h-[350px] rounded-[2rem] bg-gray-50 flex items-center justify-center border border-gray-100">
+                    <p class="text-gray-500 font-medium">{{ __('No trending events yet') }}</p>
+                </div>
+            @else
+                <!-- Desktop Grid Layout (hidden on mobile) -->
+                <div class="hidden md:grid grid-cols-3 grid-rows-2 gap-6 h-[500px]">
+                    @foreach($trendingEvents as $index => $event)
+                        @php
+                            $bannerUrl = $event->banner?->url ?? ($event->banners->first()?->url ?? 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop');
+                            $categoryName = $event->categories?->first()?->name ?? __('Event');
+                        @endphp
+                        
+                        @if($index === 0)
+                            <!-- Large Left Card -->
+                            <div class="col-span-2 row-span-2 relative rounded-[1.5rem] overflow-hidden group cursor-pointer border border-black/5 shadow-sm flex flex-col justify-end" style="background: linear-gradient(0deg, rgba(17,24,39,0.95) 0%, rgba(17,24,39,0.2) 60%, transparent 100%), url('{{ $bannerUrl }}') center/cover no-repeat;">
+                                <div class="absolute top-6 right-6 bg-[#EE2E24] text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-lg shadow-md flex items-center gap-1">
+                                    {{ __('Selling Fast') }} 🔥
+                                </div>
+                                <div class="relative z-10 p-10 max-w-2xl">
+                                    <p class="text-[#EE2E24] font-bold mb-2 uppercase tracking-widest text-xs drop-shadow-sm">{{ $categoryName }}</p>
+                                    <h3 class="text-3xl lg:text-4xl font-extrabold text-white mb-3">{{ $event->title }}</h3>
+                                    <p class="text-gray-300 text-sm lg:text-base mb-6 line-clamp-2 leading-relaxed">{{ $event->short_description ?? Str::limit(strip_tags($event->description), 100) }}</p>
+                                    <a href="{{ route('events.show', $event->slug) }}" class="group/btn inline-flex items-center gap-2 bg-[#EE2E24] text-white font-bold px-6 py-3 rounded-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(238,46,36,0.4)] active:scale-95 text-sm w-fit z-30 relative">
+                                        {{ __('Get Tickets') }} 
+                                        <svg class="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                    </a>
+                                </div>
+                                <a href="{{ route('events.show', $event->slug) }}" class="absolute inset-0 z-20"><span class="sr-only">View Event</span></a>
+                            </div>
+                        @else
+                            <!-- Small Right Cards -->
+                            <div class="col-span-1 row-span-1 relative rounded-[1.5rem] overflow-hidden group cursor-pointer border border-black/5 shadow-sm flex flex-col justify-end" style="background: linear-gradient(0deg, rgba(17,24,39,0.95) 0%, rgba(17,24,39,0.2) 70%, transparent 100%), url('{{ $bannerUrl }}') center/cover no-repeat;">
+                                @if($index === 2)
+                                    <div class="absolute top-5 right-5 bg-[#EE2E24] text-white text-[9px] font-black uppercase px-2.5 py-1.5 rounded-lg shadow-md">
+                                        {{ __('Last Few Seats') }}
+                                    </div>
+                                @endif
+                                <div class="relative z-10 p-6 lg:p-8">
+                                    <p class="text-[#EE2E24] font-bold mb-1.5 uppercase tracking-widest text-[10px] drop-shadow-sm">{{ $categoryName }}</p>
+                                    <h3 class="text-xl lg:text-2xl font-bold text-white leading-tight">{{ $event->title }}</h3>
+                                </div>
+                                <a href="{{ route('events.show', $event->slug) }}" class="absolute inset-0 z-20"><span class="sr-only">View Event</span></a>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+
+                <!-- Mobile Slider Layout (hidden on desktop) -->
+                <div class="flex md:hidden overflow-x-auto snap-x snap-mandatory gap-4 pb-8 -mx-4 px-4 scrollbar-hide items-stretch scroll-smooth">
+                    @foreach($mobileEvents as $event)
+                        @php
+                            $bannerUrl = $event->banner?->url ?? ($event->banners->first()?->url ?? 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop');
+                            $categoryName = $event->categories?->first()?->name ?? __('Event');
+                        @endphp
+                        <div class="min-w-[85%] shrink-0 snap-center relative h-[350px] rounded-[2rem] overflow-hidden group border border-gray-100 shadow-xl flex flex-col justify-end" style="background: linear-gradient(0deg, rgba(17,24,39,0.85) 20%, transparent 100%), url('{{ $bannerUrl }}') center/cover no-repeat;">
+                            <div class="absolute top-5 right-5 bg-[#EE2E24] text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-lg shadow-md">
+                                {{ __('Selling Fast') }} 🔥
+                            </div>
+                            <div class="absolute bottom-0 left-0 p-6 w-full">
+                                <div class="text-[#EE2E24] font-bold mb-2 uppercase tracking-widest text-xs drop-shadow-sm">{{ $categoryName }}</div>
+                                <h3 class="text-2xl font-extrabold text-white mb-3 leading-tight">{{ $event->title }}</h3>
+                                <a href="{{ route('events.show', $event->slug) }}" class="group bg-[#EE2E24] text-white border border-white/20 inline-flex items-center px-6 py-3 rounded-xl font-bold transition-all duration-300 hover:scale-105 hover:-translate-y-1 hover:shadow-[0_8px_20px_rgba(238,46,36,0.4)] active:scale-95 text-sm relative z-30 w-fit mt-1">
+                                    {{ __('Get Tickets') }} <svg class="w-4 h-4 ml-2 transition-transform duration-300 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                </a>
+                            </div>
                         </div>
-                        <div class="absolute bottom-0 left-0 p-8 max-w-2xl">
-                            <div class="text-red-400 font-bold mb-3 uppercase tracking-widest text-sm drop-shadow-sm">{{ $categoryName }}</div>
-                            <h3 class="text-2xl md:text-4xl font-extrabold text-white mb-4 leading-tight">{{ $event->title }}</h3>
-                            <p class="text-gray-300 mb-6 text-lg line-clamp-2 leading-relaxed">{{ $event->short_description ?? Str::limit(strip_tags($event->description), 80) }}</p>
-                            <a href="{{ route('events.show', $event->slug) }}" class="bg-gradient-to-r from-red-500 to-red-600 text-white border border-white/20 inline-flex items-center px-8 py-4 rounded-2xl font-bold transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(220,38,38,0.5)]">
-                                {{ __('Get Tickets') }} <svg class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                            </a>
-                        </div>
-                    </div>
-                @empty
-                    <!-- Fallback: Show placeholder when no events -->
-                    <div class="min-w-[80%] md:min-w-0 shrink-0 snap-center md:col-span-1 relative h-[350px] md:h-auto rounded-[2.5rem] overflow-hidden bg-gray-700 border border-white/10 shadow-2xl flex items-center justify-center">
-                        <p class="text-white text-center">{{ __('No trending events yet') }}</p>
-                    </div>
-                @endforelse
-            </div>
-            </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
+    </div>
 
         <!-- Testimonials Section -->
-        <div class="relative z-10 py-20 bg-gradient-to-br from-[#e0e7ff] to-[#f3f4f6] border-y border-white/50 shadow-[inset_0_2px_10px_rgba(0,0,0,0.02)]">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 class="text-3xl font-extrabold text-gray-800 mb-16 text-center drop-shadow-sm">What Fans Are Saying</h2>
-            <div class="flex overflow-x-auto snap-x snap-mandatory gap-4 pt-6 pb-8 -mx-4 px-4 md:grid md:grid-cols-3 md:gap-12 md:pb-0 md:mx-0 md:px-0 scrollbar-hide items-stretch">
+        <div class="relative z-10 py-24 bg-gradient-to-br from-[#EE2E24] to-[#c1271d] border-y border-white/10 shadow-[inset_0_2px_20px_rgba(0,0,0,0.1)]">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" x-data="{ slider: null }" x-init="slider = $refs.testimonialsSlider">
+                <div class="flex flex-col items-center justify-center mb-16 w-full relative">
+                    <div class="text-center max-w-2xl px-4 md:px-12">
+                        <span class="text-red-100 font-bold uppercase tracking-[0.2em] text-[11px] mb-3 block">Community Feedback</span>
+                        <h2 class="text-3xl md:text-4xl font-black text-white mb-4">What Fans Are Saying</h2>
+                        <p class="text-white/80 md:text-lg leading-relaxed">Join thousands of happy attendees who have transformed their event experiences with us.</p>
+                    </div>
+                    <!-- Controls -->
+                    <div class="hidden md:flex gap-2 absolute right-0 top-1/2 -translate-y-1/2">
+                        <button type="button" class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md shadow-lg hover:bg-white/20 flex items-center justify-center text-white transition-all active:scale-95 border border-white/20" x-on:click="slider && slider.scrollBy({ left: -(slider.clientWidth * 0.9), behavior: 'smooth' })">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                        </button>
+                        <button type="button" class="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md shadow-lg hover:bg-white/20 flex items-center justify-center text-white transition-all active:scale-95 border border-white/20" x-on:click="slider && slider.scrollBy({ left: slider.clientWidth * 0.9, behavior: 'smooth' })">
+                            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                    </div>
+                </div>
+                
+            <div x-ref="testimonialsSlider" class="flex overflow-x-auto snap-x snap-mandatory gap-4 pt-6 pb-8 -mx-4 px-4 md:gap-8 md:mx-0 md:px-0 scrollbar-hide items-stretch scroll-smooth">
                 @forelse($testimonials as $testimonial)
-                    <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
-                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-blue-400 shadow-md border-2 border-white/50 z-20"></div>
-                        <div class="h-full bg-gradient-to-b from-[#fffcf5] to-white p-4 md:p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-2 hover:rotate-0 transition-transform duration-300">
-                            <div class="flex items-center gap-0.5 md:gap-1 mb-4 text-yellow-400">
-                                @for($i = 0; $i < ($testimonial->rating ?? 5); $i++)
-                                    <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                @endfor
+                    <div class="min-w-[85%] md:min-w-[350px] max-w-[350px] snap-center shrink-0 relative group">
+                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-white shadow-md border-2 border-[#EE2E24] z-20"></div>
+                        <div class="h-full min-h-[250px] md:min-h-[280px] bg-gradient-to-b from-[#fffcf5] to-white p-6 md:p-8 rounded-2xl shadow-[0_4px_6px_rgba(0,0,0,0.05),0_10px_15px_rgba(0,0,0,0.1)] border border-black/5 transform rotate-2 hover:rotate-0 transition-transform duration-300 flex flex-col">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center gap-0.5 md:gap-1 text-yellow-400">
+                                    @for($i = 0; $i < ($testimonial->rating ?? 5); $i++)
+                                        <svg class="w-3 h-3 md:w-4 md:h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    @endfor
+                                </div>
+                                @if($testimonial->event)
+                                    <span class="text-[9px] font-bold text-red-500 uppercase tracking-tight truncate max-w-[150px]">{{ $testimonial->event->title }}</span>
+                                @endif
                             </div>
-                            <p class="text-gray-600 italic mb-6 leading-relaxed text-xs md:text-sm font-serif">{{ $testimonial->content ?? __('No testimonial content') }}</p>
-                            <div class="flex items-center gap-2 md:gap-3">
-                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 border-2 border-white shadow-md overflow-hidden shrink-0">
-                                    <img src="{{ $testimonial->avatar_url ?? 'https://i.pravatar.cc/150?u=' . ($testimonial->id ?? rand(1,1000)) }}" alt="User" class="w-full h-full object-cover">
+                            <p class="text-gray-600 italic mb-6 leading-relaxed text-xs md:text-sm font-serif line-clamp-4">{{ $testimonial->content ?? __('No testimonial content') }}</p>
+                            
+                            <div class="flex items-center gap-2 md:gap-3 mt-auto pt-4 border-t border-gray-50">
+                                <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-red-100 border-2 border-white shadow-md overflow-hidden shrink-0 flex items-center justify-center">
+                                    @if($testimonial->user?->avatar)
+                                        <img src="{{ Storage::url($testimonial->user->avatar) }}" alt="{{ $testimonial->user->name }}" class="w-full h-full object-cover">
+                                    @else
+                                        @php
+                                            $initials = collect(explode(' ', $testimonial->user?->name ?? 'User'))
+                                                ->map(fn($n) => mb_substr($n, 0, 1))
+                                                ->take(2)
+                                                ->join('');
+                                        @endphp
+                                        <span class="text-red-500 font-bold text-xs md:text-sm uppercase">{{ $initials }}</span>
+                                    @endif
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="font-bold text-gray-800 text-xs md:text-sm truncate">{{ $testimonial->name ?? __('Anonymous') }}</p>
-                                    <p class="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase truncate">{{ $testimonial->location ?? __('Unknown Location') }}</p>
+                                    <p class="font-bold text-gray-800 text-xs md:text-sm truncate">{{ $testimonial->user?->name ?? __('Anonymous') }}</p>
+                                    <p class="text-[8px] md:text-[10px] text-gray-400 font-bold uppercase truncate">{{ $testimonial->location ?? __('Verified Attendee') }}</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 @empty
-                    <div class="min-w-[85%] md:min-w-0 snap-center shrink-0 relative group">
-                        <div class="h-full bg-white p-4 md:p-8 rounded-2xl shadow border border-black/5 flex items-center justify-center">
-                            <span class="text-gray-400 text-sm">{{ __('No testimonials found.') }}</span>
+                    <div class="min-w-[85%] md:min-w-[350px] max-w-[350px] snap-center shrink-0 relative group">
+                        <div class="h-full bg-white/10 backdrop-blur-md p-4 md:p-8 rounded-2xl shadow border border-white/20 flex items-center justify-center">
+                            <span class="text-white/60 text-sm font-medium">{{ __('No testimonials found.') }}</span>
                         </div>
                     </div>
                 @endforelse
@@ -668,97 +747,61 @@
             </div>
         </div>
 
-        <!-- Organizers Section -->
+
+        <!-- Organizers Section (Dynamic) -->
         <div class="relative z-10 py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-             <h2 class="text-2xl font-bold text-gray-700 mb-12 text-center opacity-80">Trusted by Top Organizers</h2>
-             <div class="relative w-full" 
-              x-data="{ 
-                  interval: null,
-                  startAutoScroll() { 
-                      this.interval = setInterval(() => { 
-                          if (this.$refs.slider) {
-                              // Smooth scroll increment
-                              this.$refs.slider.scrollLeft += 1; 
-                              // Reset if reached end (simple loop)
-                              if (this.$refs.slider.scrollLeft + this.$refs.slider.clientWidth >= this.$refs.slider.scrollWidth - 1) {
-                                  this.$refs.slider.scrollLeft = 0; 
-                              }
-                          }
-                      }, 30); 
-                  },
-                  stopAutoScroll() { clearInterval(this.interval) }
-              }" 
-              x-init="startAutoScroll()"
-              @mouseenter="stopAutoScroll()" 
-              @mouseleave="startAutoScroll()">
-            <div x-ref="slider" class="flex overflow-x-auto pb-8 gap-6 snap-x snap-mandatory px-4 sm:px-6 lg:px-8 -mx-4 sm:-mx-6 lg:-mx-8 scrollbar-hide" style="scrollbar-width: none; -ms-overflow-style: none;">
-                <!-- Ticketmaster -->
-                <div class="flex-shrink-0 snap-center w-64 h-24 bg-white rounded-2xl flex items-center px-6 gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 group transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer">
-                    <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2a3 3 0 003 3v2a3 3 0 00-3 3v2h-9v-2a3 3 0 00-3-3v-2a3 3 0 003-3V5h9z" /></svg>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">Ticketmaster</h4>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Global Partner</p>
-                    </div>
-                </div>
-
-                <!-- Live Nation -->
-                <div class="flex-shrink-0 snap-center w-64 h-24 bg-white rounded-2xl flex items-center px-6 gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 group transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer">
-                    <div class="w-12 h-12 bg-red-50 rounded-xl flex items-center justify-center text-red-600 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">Live Nation</h4>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Music Events</p>
-                    </div>
-                </div>
-
-                <!-- Eventbrite -->
-                <div class="flex-shrink-0 snap-center w-64 h-24 bg-white rounded-2xl flex items-center px-6 gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 group transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer">
-                    <div class="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-600 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">Eventbrite</h4>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Workshops</p>
+            <h2 class="text-2xl font-bold text-gray-700 mb-12 text-center opacity-80">Trusted by Top Organizers</h2>
+            @if(isset($organizers) && $organizers->isNotEmpty())
+                <div class="relative w-full"
+                    x-data="{ 
+                        interval: null,
+                        startAutoScroll() {
+                            this.stopAutoScroll();
+                            this.interval = setInterval(() => { 
+                                if (this.$refs.slider) {
+                                    this.$refs.slider.scrollLeft += 1; 
+                                    if (this.$refs.slider.scrollLeft + this.$refs.slider.clientWidth >= this.$refs.slider.scrollWidth - 1) {
+                                        this.$refs.slider.scrollLeft = 0; 
+                                    }
+                                }
+                            }, 30); 
+                        },
+                        stopAutoScroll() { clearInterval(this.interval); this.interval = null; }
+                    }"
+                    x-init="startAutoScroll()"
+                    @mouseenter="stopAutoScroll()"
+                    @mouseleave="startAutoScroll()"
+                    @touchstart.passive="stopAutoScroll()"
+                    @touchend.passive="startAutoScroll()"
+                    @touchcancel.passive="startAutoScroll()">
+                    <div x-ref="slider" class="flex overflow-x-auto pb-8 gap-6 snap-x snap-mandatory px-4 sm:px-6 lg:px-8 -mx-4 sm:-mx-6 lg:-mx-8 scrollbar-hide" style="scrollbar-width: none; -ms-overflow-style: none;">
+                        @foreach($organizers as $organizer)
+                            @php
+                                $logoUrl = $organizer->logo?->url ?? null;
+                            @endphp
+                            <div class="flex-shrink-0 snap-center w-64 h-24 bg-white rounded-2xl flex items-center px-6 gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 group transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer">
+                                <div class="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center text-gray-600 group-hover:scale-110 transition-transform overflow-hidden">
+                                    @if($logoUrl)
+                                        <img src="{{ $logoUrl }}" alt="{{ $organizer->name }}" class="w-full h-full object-contain" loading="lazy">
+                                    @else
+                                        <span class="font-bold text-lg">{{ mb_substr($organizer->name, 0, 1) }}</span>
+                                    @endif
+                                </div>
+                                <div class="min-w-0">
+                                    <h4 class="font-bold text-gray-800 truncate">{{ $organizer->name }}</h4>
+                                    @if($organizer->description)
+                                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider truncate">{{ Str::limit($organizer->description, 32) }}</p>
+                                    @endif
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
-
-                <!-- AEG Presents -->
-                <div class="flex-shrink-0 snap-center w-64 h-24 bg-white rounded-2xl flex items-center px-6 gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 group transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer">
-                    <div class="w-12 h-12 bg-purple-50 rounded-xl flex items-center justify-center text-purple-600 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" /></svg>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">AEG Presents</h4>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Concerts</p>
-                    </div>
+            @else
+                <div class="w-full h-24 flex items-center justify-center bg-gray-50 rounded-2xl border border-gray-100">
+                    <span class="text-gray-400 text-sm font-medium">No organizers found.</span>
                 </div>
-
-                <!-- StubHub -->
-                <div class="flex-shrink-0 snap-center w-64 h-24 bg-white rounded-2xl flex items-center px-6 gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 group transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer">
-                    <div class="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center text-green-600 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">StubHub</h4>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Resale Market</p>
-                    </div>
-                </div>
-
-                 <!-- Feat -->
-                 <div class="flex-shrink-0 snap-center w-64 h-24 bg-white rounded-2xl flex items-center px-6 gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-gray-100 group transition-all hover:-translate-y-1 hover:shadow-lg cursor-pointer">
-                    <div class="w-12 h-12 bg-pink-50 rounded-xl flex items-center justify-center text-pink-600 group-hover:scale-110 transition-transform">
-                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
-                    </div>
-                    <div>
-                        <h4 class="font-bold text-gray-800">Fever</h4>
-                        <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Local Experiences</p>
-                    </div>
-                </div>
-            </div>
-            </div>
+            @endif
         </div>
     </div>
 

@@ -10,6 +10,10 @@ class EventsChart extends ChartWidget
 {
     protected static ?int $sort = 1;
 
+    protected int|string|array $columnSpan = 6;
+
+    protected ?string $maxHeight = '260px';
+
     public function getHeading(): string
     {
         return 'Total Events';
@@ -44,4 +48,3 @@ class EventsChart extends ChartWidget
         return 'bar';
     }
 }
-

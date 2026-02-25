@@ -43,6 +43,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // Cache API only supports GET; pass non-GET requests straight through.
+    if (event.request.method !== 'GET') {
+        return;
+    }
+
     if (isStaticAsset(url.pathname)) {
         event.respondWith(handleStaticAsset(event.request));
     } else if (isDynamicContent(url.pathname)) {
@@ -63,6 +68,9 @@ function isDynamicContent(pathname) {
 }
 
 async function handleStaticAsset(request) {
+    if (request.method !== 'GET') {
+        return fetch(request);
+    }
     try {
         const cachedResponse = await caches.match(request);
         if (cachedResponse) {
@@ -90,7 +98,7 @@ async function handleStaticAsset(request) {
 async function handleDynamicContent(request) {
     try {
         const networkResponse = await fetch(request);
-        if (networkResponse.ok) {
+        if (networkResponse.ok && request.method === 'GET') {
             const cache = await caches.open(DYNAMIC_CACHE);
             cache.put(request, networkResponse.clone());
         }
@@ -107,9 +115,11 @@ async function handleDynamicContent(request) {
 async function handleNavigation(request) {
     try {
         const networkResponse = await fetch(request);
-        if (networkResponse && networkResponse.ok) {
+        if (networkResponse && networkResponse.ok && request.method === 'GET') {
             const cache = await caches.open(DYNAMIC_CACHE);
             cache.put(request, networkResponse.clone());
+        }
+        if (networkResponse) {
             return networkResponse;
         }
         return networkResponse;

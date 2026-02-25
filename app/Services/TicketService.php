@@ -11,9 +11,6 @@ class TicketService
 {
     /**
      * Generate tickets for a given order item.
-     * 
-     * @param OrderItem $orderItem
-     * @return void
      */
     public function generateTickets(OrderItem $orderItem): void
     {
@@ -39,9 +36,6 @@ class TicketService
 
     /**
      * Generate and save a QR code for a ticket.
-     * 
-     * @param Ticket $ticket
-     * @return string
      */
     public function generateQrCode(Ticket $ticket): string
     {
@@ -60,10 +54,8 @@ class TicketService
 
     /**
      * Validate an encrypted QR code payload.
-     * 
-     * @param string $encryptedPayload
+     *
      * @throws \Exception
-     * @return Ticket
      */
     public function validateQrCode(string $encryptedPayload): Ticket
     {
@@ -90,7 +82,7 @@ class TicketService
                 throw new \Exception(__('scanner.ticket_already_used', ['time' => $time]));
             }
 
-            if ($ticket->status === 'cancelled' || $ticket->status === 'cancelled') {
+            if ($ticket->status === 'cancelled') {
                 throw new \Exception(__('scanner.ticket_cancelled_error'));
             }
 
@@ -108,10 +100,8 @@ class TicketService
 
     /**
      * Mark a ticket as used/checked-in.
-     * 
-     * @param Ticket $ticket
+     *
      * @throws \Illuminate\Validation\ValidationException
-     * @return Ticket
      */
     public function markTicketAsUsed(Ticket $ticket): Ticket
     {
@@ -136,9 +126,6 @@ class TicketService
 
     /**
      * Cancel a ticket.
-     * 
-     * @param Ticket $ticket
-     * @return Ticket
      */
     public function cancelTicket(Ticket $ticket): Ticket
     {
@@ -154,10 +141,6 @@ class TicketService
 
     /**
      * Generate a PDF file for the ticket.
-     * 
-     * @param Ticket $ticket
-     * @param string $driver
-     * @return string
      */
     public function generateTicketPdf(Ticket $ticket, string $driver = 'dompdf'): string
     {
@@ -184,9 +167,6 @@ class TicketService
 
     /**
      * Generate a PDF file for the ticket using Browsershot.
-     * 
-     * @param Ticket $ticket
-     * @return string
      */
     public function generateTicketPdfBrowsershot(Ticket $ticket): string
     {
@@ -222,9 +202,6 @@ class TicketService
     /**
      * Generate a PNG image for a ticket (Full Ticket Design).
      * Returns storage path (public disk).
-     *
-     * @param Ticket $ticket
-     * @return string
      */
     public function generateTicketPng(Ticket $ticket): string
     {
@@ -243,7 +220,7 @@ class TicketService
 
         $manager = ImageManager::gd();
         $canvas = $manager->create($width, $height);
-        
+
         // Background - Page color
         $canvas->fill('#f4f5f7');
 
@@ -267,16 +244,18 @@ class TicketService
         if ($ticket->ticketType->event->banner && $ticket->ticketType->event->banner->url) {
             try {
                 $banner = $manager->read(file_get_contents($ticket->ticketType->event->banner->url));
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
         // Random image fallback
-        if (!$banner) {
+        if (! $banner) {
             try {
                 $seed = $ticket->ticketType->event_id ?? 'default';
                 $randomUrl = "https://picsum.photos/seed/{$seed}/800/400";
                 $banner = $manager->read(file_get_contents($randomUrl));
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+            }
         }
 
         if ($banner) {
@@ -293,15 +272,15 @@ class TicketService
         $badgeX = $cardX + $cardWidth - 110;
         $badgeY = $cardY + 30;
         $badgeText = strtoupper($ticket->ticketType->name);
-        
+
         // Badge background (Pill)
-        $canvas->drawRectangle($badgeX, $badgeY, function($draw) {
+        $canvas->drawRectangle($badgeX, $badgeY, function ($draw) {
             $draw->size(80, 40);
             $draw->background('#ffffff');
             // Simplified: rectangular badge for certainty in v3 draw
         });
 
-        $canvas->text('★ ' . $badgeText, $badgeX + 40, $badgeY + 20, function ($font) {
+        $canvas->text('★ '.$badgeText, $badgeX + 40, $badgeY + 20, function ($font) {
             $font->size(12);
             $font->color('#e67e22');
             $font->align('center');
@@ -328,7 +307,7 @@ class TicketService
         });
 
         $y += 110;
-        
+
         // GRID DATA
         // Labels
         $canvas->text('DATE', $cardX + 40, $y, function ($font) {
@@ -391,17 +370,17 @@ class TicketService
         // 4. CUTOUT SEPARATOR
         // Draw dotted line
         for ($i = $cardX; $i < $cardX + $cardWidth; $i += 15) {
-            $canvas->drawRectangle($i, $y, function($draw) {
+            $canvas->drawRectangle($i, $y, function ($draw) {
                 $draw->size(8, 2);
                 $draw->background('#f1f5f9');
             });
         }
         // Cutout circles (match page background)
-        $canvas->drawCircle($cardX, $y, function ($draw) { 
+        $canvas->drawCircle($cardX, $y, function ($draw) {
             $draw->radius(20);
             $draw->background('#f4f5f7');
         });
-        $canvas->drawCircle($cardX + $cardWidth, $y, function ($draw) { 
+        $canvas->drawCircle($cardX + $cardWidth, $y, function ($draw) {
             $draw->radius(20);
             $draw->background('#f4f5f7');
         });
@@ -423,7 +402,7 @@ class TicketService
             $font->size(18);
             $font->color('#0d1b2a');
         });
-        $canvas->text('#' . ($ticket->orderItem->order->order_number ?? '8901'), $cardX + $cardWidth - 40, $y, function ($font) {
+        $canvas->text('#'.($ticket->orderItem->order->order_number ?? '8901'), $cardX + $cardWidth - 40, $y, function ($font) {
             $font->size(18);
             $font->color('#94a3b8');
             $font->align('right');
@@ -435,12 +414,12 @@ class TicketService
             ->size(220)
             ->margin(1)
             ->generate($ticket->qr_code_content);
-        
+
         $qrImg = $manager->read($qrBinary);
         $canvas->place($qrImg, 'top-center', 0, $y);
 
         $y += 240;
-        $securityCode = 'SEC:' . implode('-', str_split($ticket->ticket_number, 4));
+        $securityCode = 'SEC:'.implode('-', str_split($ticket->ticket_number, 4));
         $canvas->text($securityCode, $width / 2, $y, function ($font) {
             $font->size(12);
             $font->color('#cbd5e1');
@@ -456,9 +435,6 @@ class TicketService
     /**
      * Generate a single PNG image containing all tickets for an order.
      * This composes individual ticket tiles into one long PNG and returns the storage path.
-     *
-     * @param \App\Models\Order $order
-     * @return string
      */
     public function generateOrderTicketsImage(\App\Models\Order $order): string
     {
@@ -497,13 +473,8 @@ class TicketService
         return $relative;
     }
 
-
     /**
      * Generate a PDF file for all tickets in an order.
-     * 
-     * @param \App\Models\Order $order
-     * @param string $driver
-     * @return string
      */
     public function generateOrderTicketsPdf(\App\Models\Order $order, string $driver = 'dompdf'): string
     {
@@ -536,9 +507,6 @@ class TicketService
 
     /**
      * Generate a PDF file for all tickets in an order using Browsershot.
-     * 
-     * @param \App\Models\Order $order
-     * @return string
      */
     public function generateOrderTicketsPdfBrowsershot(\App\Models\Order $order): string
     {
@@ -580,9 +548,6 @@ class TicketService
     /**
      * Generate PNG files for all tickets in an order and package them into a ZIP.
      * Returns storage path to the ZIP (public disk).
-     *
-     * @param \App\Models\Order $order
-     * @return string
      */
     public function generateOrderTicketsZip(\App\Models\Order $order): string
     {
@@ -592,16 +557,16 @@ class TicketService
 
         foreach ($order->orderItems->flatMap->tickets as $ticket) {
             $ticketPath = $this->generateTicketPng($ticket);
-            $ticketFiles[] = storage_path('app/public/' . $ticketPath);
+            $ticketFiles[] = storage_path('app/public/'.$ticketPath);
         }
 
         $zipRelative = "orders/{$order->uuid}/tickets/all.zip";
-        $zipPath = storage_path('app/public/' . $zipRelative);
+        $zipPath = storage_path('app/public/'.$zipRelative);
 
         // ensure directory exists
         \Illuminate\Support\Facades\Storage::disk('public')->makeDirectory("orders/{$order->uuid}/tickets");
 
-        $zip = new \ZipArchive();
+        $zip = new \ZipArchive;
         if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
             throw new \Exception('Could not create ZIP file for tickets');
         }
@@ -619,9 +584,8 @@ class TicketService
 
     /**
      * Get base64 encoded banner for an event.
-     * 
-     * @param \App\Models\Event|null $event
-     * @return string|null
+     *
+     * @param  \App\Models\Event|null  $event
      */
     private function getBase64Banner($event): ?string
     {
@@ -635,7 +599,7 @@ class TicketService
             // Prefer local storage for stability
             if ($banner->file_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($banner->file_path)) {
                 $content = \Illuminate\Support\Facades\Storage::disk('public')->get($banner->file_path);
-            } 
+            }
             // Fallback to URL if it's external or disk fetch fails
             elseif ($banner->url) {
                 try {
@@ -646,7 +610,7 @@ class TicketService
         }
 
         // If no content found, use a random image fallback from Picsum
-        if (!$content) {
+        if (! $content) {
             try {
                 $seed = $event ? $event->id : rand(1, 1000);
                 $randomUrl = "https://picsum.photos/seed/{$seed}/800/400";
@@ -657,7 +621,7 @@ class TicketService
         }
 
         if ($content) {
-            return 'data:' . $mimeType . ';base64,' . base64_encode($content);
+            return 'data:'.$mimeType.';base64,'.base64_encode($content);
         }
 
         return null;

@@ -45,6 +45,7 @@ class SettingComponentsRelationManager extends RelationManager
                         'integer' => 'blue',
                         'boolean' => 'green',
                         'html' => 'yellow',
+                        default => 'gray',
                     }),
                 TextColumn::make('value')
                     ->label(__('setting.component_value'))
@@ -61,11 +62,11 @@ class SettingComponentsRelationManager extends RelationManager
                             'html' => $data['value_html'],
                             default => $data['value_text'] ?? null,
                         };
-                        
+
                         unset($data['value_boolean'], $data['value_html'], $data['value_text']);
-                        
+
                         return $data;
-                    })  
+                    })
                     ->modal(),
                 DeleteAction::make(),
             ])
@@ -77,9 +78,9 @@ class SettingComponentsRelationManager extends RelationManager
                             'html' => $data['value_html'],
                             default => $data['value_text'] ?? null,
                         };
-                        
+
                         unset($data['value_boolean'], $data['value_html'], $data['value_text']);
-                        
+
                         return $data;
                     })
                     ->modal(),

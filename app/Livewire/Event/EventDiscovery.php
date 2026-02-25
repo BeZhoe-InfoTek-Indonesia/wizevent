@@ -4,6 +4,7 @@ namespace App\Livewire\Event;
 
 use App\Models\Banner;
 use App\Models\Event;
+use App\Models\Organizer;
 use App\Models\SettingComponent;
 use App\Models\Testimonial;
 use Livewire\Component;
@@ -14,18 +15,29 @@ class EventDiscovery extends Component
     use WithPagination;
 
     public $search = '';
+
     public $selectedCategories = [];
+
     public $selectedLocation = null;
+
     public $minPrice = 0;
+
     public $maxPrice = 10000000;
+
     public $sort = 'most_popular';
+
     public $dateFilter = 'all';
+
     public $startDate = null;
+
     public $endDate = null;
-    
+
     public $showFilterModal = false;
+
     public $showLocationModal = false;
+
     public $locationSearch = '';
+
     public $activeTab = 'sort'; // sort, category, price, date
 
     protected $queryString = [
@@ -42,12 +54,12 @@ class EventDiscovery extends Component
 
     public function toggleFilterModal()
     {
-        $this->showFilterModal = !$this->showFilterModal;
+        $this->showFilterModal = ! $this->showFilterModal;
     }
 
     public function toggleLocationModal()
     {
-        $this->showLocationModal = !$this->showLocationModal;
+        $this->showLocationModal = ! $this->showLocationModal;
     }
 
     public function selectLocation($location)
@@ -120,30 +132,30 @@ class EventDiscovery extends Component
         // Try to use Laravolt\Indonesia models
         try {
             if ($this->locationSearch) {
-                $cities = \Laravolt\Indonesia\Models\City::where('name', 'like', '%' . $this->locationSearch . '%')
+                $cities = \Laravolt\Indonesia\Models\City::where('name', 'like', '%'.$this->locationSearch.'%')
                     ->orderBy('name')
                     ->take(20)
                     ->pluck('name')
-                    ->map(fn($name) => (string) str($name)->title())
+                    ->map(fn ($name) => (string) str($name)->title())
                     ->toArray();
-                    
-                $provinces = \Laravolt\Indonesia\Models\Province::where('name', 'like', '%' . $this->locationSearch . '%')
+
+                $provinces = \Laravolt\Indonesia\Models\Province::where('name', 'like', '%'.$this->locationSearch.'%')
                     ->orderBy('name')
                     ->take(10)
                     ->pluck('name')
-                    ->map(fn($name) => (string) str($name)->title())
+                    ->map(fn ($name) => (string) str($name)->title())
                     ->toArray();
-                
+
                 return [
-                    'Results' => array_unique(array_merge($provinces, $cities))
+                    'Results' => array_unique(array_merge($provinces, $cities)),
                 ];
             }
 
             $provinces = \Laravolt\Indonesia\Models\Province::orderBy('name')
                 ->pluck('name')
-                ->map(fn($name) => (string) str($name)->title())
+                ->map(fn ($name) => (string) str($name)->title())
                 ->toArray();
-            
+
             return [
                 'Provinces' => $provinces,
             ];
@@ -164,16 +176,16 @@ class EventDiscovery extends Component
         $groups = [];
         foreach ($categories as $cat) {
             $groupName = 'All Categories';
-            
+
             if (stripos($cat->name, 'Pass') !== false || stripos($cat->name, 'Park') !== false || stripos($cat->name, 'Museum') !== false || stripos($cat->name, 'Site') !== false) {
                 $groupName = 'Attractions';
             } elseif (stripos($cat->name, 'Play') !== false || stripos($cat->name, 'Indoor') !== false || stripos($cat->name, 'Arcade') !== false) {
                 $groupName = 'Playground';
             }
-            
+
             $groups[$groupName][] = $cat;
         }
-        
+
         return $groups;
     }
 
@@ -211,21 +223,23 @@ class EventDiscovery extends Component
             $q->where('key', 'event_categories');
         })->get();
 
-        $heroBanners    = Banner::active()->scheduled()->byType('hero')->with('fileBucket')->orderBy('position')->get();
+        $heroBanners = Banner::active()->scheduled()->byType('hero')->with('fileBucket')->orderBy('position')->get();
         $sectionBanners = Banner::active()->scheduled()->byType('section')->with('fileBucket')->orderBy('position')->get();
-        $mobileBanner   = Banner::active()->scheduled()->byType('mobile')->with('fileBucket')->orderBy('position')->first();
+        $mobileBanner = Banner::active()->scheduled()->byType('mobile')->with('fileBucket')->orderBy('position')->first();
 
         $bestSellerEvents = $this->getBestSellerEvents();
-        $testimonials = Testimonial::limit(10)->get();
+        $testimonials = Testimonial::with(['user', 'event'])->limit(10)->get();
+        $organizers = Organizer::with('logo')->whereNull('deleted_at')->orderBy('name')->limit(10)->get();
 
         return view('livewire.event.event-discovery', [
-            'events'           => $events,
-            'categories'       => $categories,
-            'heroBanners'      => $heroBanners,
-            'sectionBanners'   => $sectionBanners,
-            'mobileBanner'     => $mobileBanner,
+            'events' => $events,
+            'categories' => $categories,
+            'heroBanners' => $heroBanners,
+            'sectionBanners' => $sectionBanners,
+            'mobileBanner' => $mobileBanner,
             'bestSellerEvents' => $bestSellerEvents,
-            'testimonials'     => $testimonials,
+            'testimonials' => $testimonials,
+            'organizers' => $organizers,
         ]);
     }
 }

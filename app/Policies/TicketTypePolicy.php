@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Policies;
 
 use App\Models\TicketType;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Foundation\Auth\User as AuthUser;
 
 class TicketTypePolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny(AuthUser $authUser): bool
+    public function viewAny(User $authUser): bool
     {
         return $authUser->can('tickets.view');
     }
 
-    public function view(AuthUser $authUser, TicketType $ticketType): bool
+    public function view(User $authUser, TicketType $ticketType): bool
     {
         if ($authUser->can('tickets.view')) {
             return true;
@@ -26,12 +26,12 @@ class TicketTypePolicy
         return $this->ownsEvent($authUser, $ticketType);
     }
 
-    public function create(AuthUser $authUser): bool
+    public function create(User $authUser): bool
     {
         return $authUser->can('tickets.create');
     }
 
-    public function update(AuthUser $authUser, TicketType $ticketType): bool
+    public function update(User $authUser, TicketType $ticketType): bool
     {
         if ($authUser->can('tickets.edit')) {
             return true;
@@ -40,7 +40,7 @@ class TicketTypePolicy
         return $this->ownsEvent($authUser, $ticketType);
     }
 
-    public function delete(AuthUser $authUser, TicketType $ticketType): bool
+    public function delete(User $authUser, TicketType $ticketType): bool
     {
         if ($ticketType->sold_count > 0) {
             return false;
@@ -53,7 +53,7 @@ class TicketTypePolicy
         return $this->ownsEvent($authUser, $ticketType);
     }
 
-    public function restore(AuthUser $authUser, TicketType $ticketType): bool
+    public function restore(User $authUser, TicketType $ticketType): bool
     {
         if ($authUser->can('tickets.edit')) {
             return true;
@@ -62,33 +62,33 @@ class TicketTypePolicy
         return $this->ownsEvent($authUser, $ticketType);
     }
 
-    public function forceDelete(AuthUser $authUser, TicketType $ticketType): bool
+    public function forceDelete(User $authUser, TicketType $ticketType): bool
     {
         return $authUser->hasRole('Super Admin');
     }
 
-    public function forceDeleteAny(AuthUser $authUser): bool
+    public function forceDeleteAny(User $authUser): bool
     {
         return $authUser->hasRole('Super Admin');
     }
 
-    public function restoreAny(AuthUser $authUser): bool
+    public function restoreAny(User $authUser): bool
     {
         return $authUser->hasRole('Super Admin') ||
                $authUser->can('tickets.view');
     }
 
-    public function replicate(AuthUser $authUser, TicketType $ticketType): bool
+    public function replicate(User $authUser, TicketType $ticketType): bool
     {
         return $this->create($authUser);
     }
 
-    public function reorder(AuthUser $authUser): bool
+    public function reorder(User $authUser): bool
     {
         return $authUser->hasRole('Super Admin');
     }
 
-    protected function ownsEvent(AuthUser $authUser, TicketType $ticketType): bool
+    protected function ownsEvent(User $authUser, TicketType $ticketType): bool
     {
         return $authUser->hasRole('Super Admin') ||
                ($ticketType->event && $authUser->id === $ticketType->event->created_by);

@@ -26,7 +26,14 @@ class CleanupActivityLogs extends Command
      */
     public function handle()
     {
-        $days = $this->option('days');
+        $daysOption = $this->option('days');
+        if (! is_numeric($daysOption)) {
+            $this->error('Days must be a numeric value.');
+
+            return 1;
+        }
+
+        $days = (int) $daysOption;
         $force = $this->option('force');
 
         if ($days < 1 || $days > 365) {

@@ -14,7 +14,12 @@ class RevenueOrderChart extends ChartWidget
 
     protected ?string $pollingInterval = '60s';
 
-    protected int | string | array $columnSpan = 2;
+    protected int|string|array $columnSpan = [
+        'default' => 'full',
+        'xl' => 6,
+    ];
+
+    protected ?string $maxHeight = '320px';
 
     public ?string $filter = 'last_30_days';
 
@@ -64,15 +69,14 @@ class RevenueOrderChart extends ChartWidget
                 ->label(__('admin.filter_period'))
                 ->icon('heroicon-o-calendar-days'),
 
-            ActionGroup::make(array_map(fn ($year) => 
-                Action::make("year_{$year}")
-                    ->label($year)
-                    ->color(($this->filter === 'this_year' && $this->year == $year) ? 'primary' : 'gray')
-                    ->action(fn () => $this->setFilter('this_year', $year)),
+            ActionGroup::make(array_map(fn ($year) => Action::make("year_{$year}")
+                ->label($year)
+                ->color(($this->filter === 'this_year' && $this->year == $year) ? 'primary' : 'gray')
+                ->action(fn () => $this->setFilter('this_year', $year)),
                 $years))
                 ->label(__('admin.year'))
                 ->icon('heroicon-o-calendar')
-                ->visible(!empty($years)),
+                ->visible(! empty($years)),
 
             Action::make('custom_range')
                 ->label(__('admin.custom_range'))
@@ -172,10 +176,10 @@ class RevenueOrderChart extends ChartWidget
             foreach ($period as $date) {
                 $dateStr = $date->format('Y-m-d');
                 $labels[] = $date->format('M d');
-                
+
                 $revenueRecord = $revenueData->firstWhere('date', $dateStr);
                 $revenueValues[] = $revenueRecord ? (float) $revenueRecord->revenue : 0;
-                
+
                 $orderCountRecord = $orderCountData->firstWhere('date', $dateStr);
                 $orderCountValues[] = $orderCountRecord ? (int) $orderCountRecord->order_count : 0;
             }

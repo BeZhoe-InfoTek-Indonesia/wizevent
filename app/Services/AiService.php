@@ -2,18 +2,14 @@
 
 namespace App\Services;
 
+use Gemini\Laravel\Facades\Gemini;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Gemini\Laravel\Facades\Gemini;
-use Exception;
 
 class AiService
 {
     /**
      * Generate an enhanced event description.
-     *
-     * @param array $data
-     * @return string|null
      */
     public function generateDescription(array $data): ?string
     {
@@ -48,21 +44,21 @@ class AiService
             $openaiKey = config('services.openai.key');
             if ($openaiKey) {
                 $model = config('services.openai.model', 'gpt-4o');
-                
+
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Authorization' => "Bearer {$openaiKey}",
-                ])->timeout(30)->post("https://api.openai.com/v1/chat/completions", [
+                ])->timeout(30)->post('https://api.openai.com/v1/chat/completions', [
                     'model' => $model,
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'You are an expert event marketer and copywriter who only speaks in well-formatted HTML results.'
+                            'content' => 'You are an expert event marketer and copywriter who only speaks in well-formatted HTML results.',
                         ],
                         [
                             'role' => 'user',
-                            'content' => $prompt
-                        ]
+                            'content' => $prompt,
+                        ],
                     ],
                     'temperature' => 0.7,
                     'max_tokens' => 2048,
@@ -70,26 +66,25 @@ class AiService
 
                 if ($response->successful()) {
                     $result = $response->json();
+
                     return $result['choices'][0]['message']['content'] ?? null;
                 }
 
-                Log::error('OpenAI API Error: ' . $response->body());
+                Log::error('OpenAI API Error: '.$response->body());
             }
 
             // Final fallback to mocked description
             return $this->getMockedDescription($title, $tone);
 
         } catch (\Exception $e) {
-            Log::error('AI Description Generation Failed: ' . $e->getMessage());
+            Log::error('AI Description Generation Failed: '.$e->getMessage());
+
             return $this->getMockedDescription($title, $tone);
         }
     }
 
     /**
      * Generate a polished event concept from rough notes.
-     *
-     * @param array $data
-     * @return string|null
      */
     public function generateConcept(array $data): ?string
     {
@@ -127,24 +122,23 @@ class AiService
 
                 if ($response->successful()) {
                     $result = $response->json();
+
                     return $result['choices'][0]['message']['content'] ?? null;
                 }
 
-                Log::error('OpenAI API Error (generateConcept): ' . $response->body());
+                Log::error('OpenAI API Error (generateConcept): '.$response->body());
             }
 
             return $this->getMockedConcept($title, $category);
         } catch (\Exception $e) {
-            Log::error('AI Concept Generation Failed: ' . $e->getMessage());
+            Log::error('AI Concept Generation Failed: '.$e->getMessage());
+
             return $this->getMockedConcept($title, $category);
         }
     }
 
     /**
      * Generate a budget forecast for an event plan.
-     *
-     * @param array $data
-     * @return array|null
      */
     public function generateBudgetForecast(array $data): ?array
     {
@@ -190,21 +184,19 @@ class AiService
                     }
                 }
 
-                Log::error('OpenAI API Error (generateBudgetForecast): ' . $response->body());
+                Log::error('OpenAI API Error (generateBudgetForecast): '.$response->body());
             }
 
             return $this->getMockedBudgetForecast($category, (int) $audienceSize);
         } catch (\Exception $e) {
-            Log::error('AI Budget Forecast Failed: ' . $e->getMessage());
+            Log::error('AI Budget Forecast Failed: '.$e->getMessage());
+
             return $this->getMockedBudgetForecast($category, (int) $audienceSize);
         }
     }
 
     /**
      * Suggest a ticket pricing strategy for an event plan.
-     *
-     * @param array $data
-     * @return array|null
      */
     public function suggestPricingStrategy(array $data): ?array
     {
@@ -250,21 +242,19 @@ class AiService
                     }
                 }
 
-                Log::error('OpenAI API Error (suggestPricingStrategy): ' . $response->body());
+                Log::error('OpenAI API Error (suggestPricingStrategy): '.$response->body());
             }
 
             return $this->getMockedPricingStrategy($audienceSize, $revenueTarget);
         } catch (\Exception $e) {
-            Log::error('AI Pricing Strategy Failed: ' . $e->getMessage());
+            Log::error('AI Pricing Strategy Failed: '.$e->getMessage());
+
             return $this->getMockedPricingStrategy($audienceSize, $revenueTarget);
         }
     }
 
     /**
      * Assess risks for an event plan.
-     *
-     * @param array $data
-     * @return array|null
      */
     public function assessRisks(array $data): ?array
     {
@@ -311,21 +301,19 @@ class AiService
                     }
                 }
 
-                Log::error('OpenAI API Error (assessRisks): ' . $response->body());
+                Log::error('OpenAI API Error (assessRisks): '.$response->body());
             }
 
             return $this->getMockedRiskAssessment($category, $eventDate);
         } catch (\Exception $e) {
-            Log::error('AI Risk Assessment Failed: ' . $e->getMessage());
+            Log::error('AI Risk Assessment Failed: '.$e->getMessage());
+
             return $this->getMockedRiskAssessment($category, $eventDate);
         }
     }
 
     /**
      * Generate SEO metadata for an event.
-     *
-     * @param array $data
-     * @return array|null
      */
     public function generateSeoMetadata(array $data): ?array
     {
@@ -351,6 +339,7 @@ class AiService
                     if (isset($result['description'])) {
                         $result['description'] = substr($result['description'], 0, 160);
                     }
+
                     return $result;
                 }
             }
@@ -383,17 +372,19 @@ class AiService
                             if (isset($decoded['description'])) {
                                 $decoded['description'] = substr($decoded['description'], 0, 160);
                             }
+
                             return $decoded;
                         }
                     }
                 }
 
-                Log::error('OpenAI API Error (generateSeoMetadata): ' . $response->body());
+                Log::error('OpenAI API Error (generateSeoMetadata): '.$response->body());
             }
 
             return $this->getMockedSeo($title);
         } catch (\Exception $e) {
-            Log::error('AI SEO Generation Failed: ' . $e->getMessage());
+            Log::error('AI SEO Generation Failed: '.$e->getMessage());
+
             return $this->getMockedSeo($title);
         }
     }
@@ -405,20 +396,22 @@ class AiService
     {
         try {
             $modelName = config('services.gemini.model', 'gemini-1.5-flash');
-            
+
             $response = Gemini::generativeModel($modelName)
-                ->generateContent('You are an expert event marketer and copywriter who only speaks in well-formatted HTML results. ' . $prompt);
+                ->generateContent('You are an expert event marketer and copywriter who only speaks in well-formatted HTML results. '.$prompt);
 
             $text = $response->text();
-            
+
             if ($text) {
                 info('Gemini Response success');
+
                 return $text;
             }
-            
+
             return null;
         } catch (\Exception $e) {
-            Log::error('Gemini API Exception: ' . $e->getMessage());
+            Log::error('Gemini API Exception: '.$e->getMessage());
+
             return null;
         }
     }
@@ -440,10 +433,10 @@ class AiService
         array $organizers = [],
         array $performers = []
     ): string {
-        $categoriesStr  = !empty($categories) ? implode(', ', array_map(fn($v) => $this->convertToString($v), $categories)) : '';
-        $tagsStr        = !empty($tags) ? implode(', ', array_map(fn($v) => $this->convertToString($v), $tags)) : '';
-        $organizersStr  = !empty($organizers) ? implode(', ', array_map(fn($v) => $this->convertToString($v), $organizers)) : '';
-        $performersStr  = !empty($performers) ? implode(', ', array_map(fn($v) => $this->convertToString($v), $performers)) : '';
+        $categoriesStr = ! empty($categories) ? implode(', ', array_map(fn ($v) => $this->convertToString($v), $categories)) : '';
+        $tagsStr = ! empty($tags) ? implode(', ', array_map(fn ($v) => $this->convertToString($v), $tags)) : '';
+        $organizersStr = ! empty($organizers) ? implode(', ', array_map(fn ($v) => $this->convertToString($v), $organizers)) : '';
+        $performersStr = ! empty($performers) ? implode(', ', array_map(fn ($v) => $this->convertToString($v), $performers)) : '';
 
         $lines = [
             'Create a detailed, engaging, and event description based on the following information:',
@@ -489,7 +482,7 @@ class AiService
             '5. Expertly highlight the performers/speakers, showcasing their significance and value to the audience.',
             '6. Mention the organizers briefly to build credibility and trust.',
             '7. Use the event categories and tags to naturally weave in relevant keywords for SEO.',
-            '8. Ensure the entire copy maintains a consistent ' . $tone . ' tone.',
+            '8. Ensure the entire copy maintains a consistent '.$tone.' tone.',
             '9. Use bullet points for key features, activities, or benefits for better readability.',
             '10. Include a clear, persuasive call to action (CTA) at the end.',
             '11. Format the output in clean HTML (only use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em>).',
@@ -534,21 +527,17 @@ HTML;
 
     /**
      * Helper to generate JSON content using Gemini.
-     *
-     * @param string $prompt
-     * @param string $apiKey
-     * @return array|null
      */
     protected function generateJsonWithGemini(string $prompt): ?array
     {
         try {
             $modelName = config('services.gemini.model', 'gemini-1.5-flash');
-            
+
             $response = Gemini::generativeModel($modelName)
-                ->generateContent('You are a JSON-only responder. Do not include markdown or code blocks. ' . $prompt);
+                ->generateContent('You are a JSON-only responder. Do not include markdown or code blocks. '.$prompt);
 
             $raw = $response->text();
-            
+
             if ($raw) {
                 // Strip markdown code fences if present
                 $raw = preg_replace('/^```(?:json)?\s*/m', '', $raw);
@@ -560,9 +549,11 @@ HTML;
             }
 
             Log::error('Gemini JSON API Error: No text returned or invalid JSON');
+
             return null;
         } catch (\Exception $e) {
-            Log::error('Gemini JSON API Exception: ' . $e->getMessage());
+            Log::error('Gemini JSON API Exception: '.$e->getMessage());
+
             return null;
         }
     }
@@ -758,6 +749,7 @@ HTML;
     protected function getMockedBudgetForecast(string $category, int $audienceSize): array
     {
         $base = max(1000, $audienceSize * 20);
+
         return [
             'categories' => [
                 ['category' => 'Venue Rental', 'estimated_amount' => round($base * 0.30), 'percentage_of_total' => 30, 'notes' => 'Demo estimate'],
@@ -772,7 +764,7 @@ HTML;
             'total_estimated' => $base,
             'contingency_amount' => round($base * 0.12),
             'contingency_percentage' => 12,
-            'summary' => '[DEMO MODE] Configure AI keys for real estimates. Based on audience size of ' . $audienceSize . ' for a ' . $category . ' event.',
+            'summary' => '[DEMO MODE] Configure AI keys for real estimates. Based on audience size of '.$audienceSize.' for a '.$category.' event.',
         ];
     }
 
@@ -798,6 +790,7 @@ HTML;
             }
             unset($tier);
             $total = array_sum(array_column($tiers, 'projected_revenue'));
+
             return [
                 'label' => $label,
                 'tiers' => $tiers,
@@ -832,11 +825,11 @@ HTML;
                 ['dimension' => 'Audience Target Mismatch', 'severity' => 'Low', 'description' => 'Category and audience size appear compatible.', 'mitigation' => 'Validate through pre-event surveys.'],
                 ['dimension' => 'Budget Adequacy', 'severity' => 'Medium', 'description' => 'Budget data provided; verify contingency allowance.', 'mitigation' => 'Maintain minimum 10-15% contingency reserve.'],
                 ['dimension' => 'Timeline Feasibility', 'severity' => 'Low', 'description' => 'Event date appears to allow sufficient planning time.', 'mitigation' => 'Track milestones with a detailed project timeline.'],
-                ['dimension' => 'Regulatory & Compliance', 'severity' => 'Low', 'description' => 'Standard permits may be required for ' . $category . '.', 'mitigation' => 'Confirm local event permit requirements early.'],
+                ['dimension' => 'Regulatory & Compliance', 'severity' => 'Low', 'description' => 'Standard permits may be required for '.$category.'.', 'mitigation' => 'Confirm local event permit requirements early.'],
             ],
             'overall_score' => 35,
             'overall_rating' => 'Low',
-            'summary' => '[DEMO MODE] Configure AI keys for real risk assessment. Category: ' . $category . '.',
+            'summary' => '[DEMO MODE] Configure AI keys for real risk assessment. Category: '.$category.'.',
         ];
     }
 
@@ -845,10 +838,10 @@ HTML;
      */
     protected function buildSeoPrompt(string $title, string $description, string $shortDescription, array $categories, array $tags = [], string $venueName = '', array $organizers = [], array $performers = []): string
     {
-        $cats = implode(', ', array_map(fn($v) => $this->convertToString($v), $categories));
-        $tagsStr = implode(', ', array_map(fn($v) => $this->convertToString($v), $tags));
-        $organizersStr = implode(', ', array_map(fn($v) => $this->convertToString($v), $organizers));
-        $performersStr = implode(', ', array_map(fn($v) => $this->convertToString($v), $performers));
+        $cats = implode(', ', array_map(fn ($v) => $this->convertToString($v), $categories));
+        $tagsStr = implode(', ', array_map(fn ($v) => $this->convertToString($v), $tags));
+        $organizersStr = implode(', ', array_map(fn ($v) => $this->convertToString($v), $organizers));
+        $performersStr = implode(', ', array_map(fn ($v) => $this->convertToString($v), $performers));
 
         return <<<PROMPT
 You are an SEO expert. Generate optimized SEO metadata for this event as JSON:
@@ -880,9 +873,6 @@ PROMPT;
 
     /**
      * Generate a short description from a full description.
-     *
-     * @param array $data
-     * @return string|null
      */
     public function generateShortDescription(array $data): ?string
     {
@@ -901,6 +891,7 @@ PROMPT;
                 if ($result) {
                     // Strip HTML tags and limit to 500 characters
                     $text = strip_tags($result);
+
                     return substr($text, 0, 500);
                 }
             }
@@ -913,17 +904,17 @@ PROMPT;
                 $response = Http::withHeaders([
                     'Content-Type' => 'application/json',
                     'Authorization' => "Bearer {$openaiKey}",
-                ])->timeout(30)->post("https://api.openai.com/v1/chat/completions", [
+                ])->timeout(30)->post('https://api.openai.com/v1/chat/completions', [
                     'model' => $model,
                     'messages' => [
                         [
                             'role' => 'system',
-                            'content' => 'You are an expert copywriter who creates compelling short descriptions. Respond with plain text only, no HTML or markdown.'
+                            'content' => 'You are an expert copywriter who creates compelling short descriptions. Respond with plain text only, no HTML or markdown.',
                         ],
                         [
                             'role' => 'user',
-                            'content' => $prompt
-                        ]
+                            'content' => $prompt,
+                        ],
                     ],
                     'temperature' => 0.7,
                     'max_tokens' => 500,
@@ -937,14 +928,15 @@ PROMPT;
                     }
                 }
 
-                Log::error('OpenAI API Error (generateShortDescription): ' . $response->body());
+                Log::error('OpenAI API Error (generateShortDescription): '.$response->body());
             }
 
             // Final fallback to mocked short description
             return $this->getMockedShortDescription($title, $description);
 
         } catch (\Exception $e) {
-            Log::error('AI Short Description Generation Failed: ' . $e->getMessage());
+            Log::error('AI Short Description Generation Failed: '.$e->getMessage());
+
             return $this->getMockedShortDescription($title, $description);
         }
     }
@@ -998,17 +990,14 @@ PROMPT;
     protected function getMockedSeo(string $title): array
     {
         return [
-            'title' => str_pad(substr($title . ' | Event Management Highlights', 0, 60), 50, ' '),
-            'description' => str_pad(substr('Join us for ' . $title . '. A premier event featuring world-class speakers, networking opportunities, and unforgettable experiences. Secure your spot now!', 0, 160), 150, ' '),
-            'keywords' => 'event, ' . strtolower($title) . ', registration, tickets, activities',
+            'title' => str_pad(substr($title.' | Event Management Highlights', 0, 60), 50, ' '),
+            'description' => str_pad(substr('Join us for '.$title.'. A premier event featuring world-class speakers, networking opportunities, and unforgettable experiences. Secure your spot now!', 0, 160), 150, ' '),
+            'keywords' => 'event, '.strtolower($title).', registration, tickets, activities',
         ];
     }
 
     /**
      * Generate an event rundown/agenda from plan parameters.
-     *
-     * @param array $data
-     * @return array|null
      */
     public function generateRundown(array $data): ?array
     {
@@ -1053,12 +1042,13 @@ PROMPT;
                     }
                 }
 
-                Log::error('OpenAI API Error (generateRundown): ' . $response->body());
+                Log::error('OpenAI API Error (generateRundown): '.$response->body());
             }
 
             return $this->getMockedRundown($category, $talents);
         } catch (\Exception $e) {
-            Log::error('AI Rundown Generation Failed: ' . $e->getMessage());
+            Log::error('AI Rundown Generation Failed: '.$e->getMessage());
+
             return $this->getMockedRundown($category, $talents);
         }
     }
@@ -1066,13 +1056,13 @@ PROMPT;
     /**
      * Build the prompt for rundown generation.
      *
-     * @param array<int, array<string, mixed>> $talents
+     * @param  array<int, array<string, mixed>>  $talents
      */
     protected function buildRundownPrompt(string $category, int $audienceSize, string $location, array $talents): string
     {
         $talentList = empty($talents)
             ? 'No confirmed talents yet.'
-            : implode("\n", array_map(fn ($t) => "- {$t['name']}" . (isset($t['duration']) ? " ({$t['duration']} min)" : ''), $talents));
+            : implode("\n", array_map(fn ($t) => "- {$t['name']}".(isset($t['duration']) ? " ({$t['duration']} min)" : ''), $talents));
 
         return <<<PROMPT
 You are an expert event producer. Generate a time-blocked event agenda (rundown) as JSON for this event:
@@ -1106,7 +1096,7 @@ PROMPT;
     /**
      * Mocked rundown for demo mode.
      *
-     * @param array<int, array<string, mixed>> $talents
+     * @param  array<int, array<string, mixed>>  $talents
      * @return array<string, mixed>
      */
     protected function getMockedRundown(string $category, array $talents): array
@@ -1130,7 +1120,7 @@ PROMPT;
                 $endTime = sprintf('%02d:%02d', $hour, $minute);
 
                 $items[] = [
-                    'title' => 'Performance: ' . ($talent['name'] ?? "Performer " . ($i + 1)),
+                    'title' => 'Performance: '.($talent['name'] ?? 'Performer '.($i + 1)),
                     'description' => 'Live performance set.',
                     'start_time' => $startTime,
                     'end_time' => $endTime,

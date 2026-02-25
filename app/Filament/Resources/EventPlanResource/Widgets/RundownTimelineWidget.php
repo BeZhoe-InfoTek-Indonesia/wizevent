@@ -34,22 +34,22 @@ class RundownTimelineWidget extends Widget
             ->orderBy('start_time')
             ->get()
             ->map(fn (EventPlanRundown $r): array => [
-                'title'       => $r->title,
-                'start_time'  => $r->start_time?->format('H:i') ?? '—',
-                'end_time'    => $r->end_time?->format('H:i') ?? '—',
-                'duration'    => $r->duration_minutes,
-                'type'        => $r->type,
-                'type_color'  => $r->type_color,
+                'title' => $r->title,
+                'start_time' => $r->start_time ? substr((string) $r->start_time, 0, 5) : '—',
+                'end_time' => $r->end_time ? substr((string) $r->end_time, 0, 5) : '—',
+                'duration' => $r->duration_minutes,
+                'type' => $r->type,
+                'type_color' => $r->type_color,
                 'talent_name' => $r->talent?->performer?->name,
                 'description' => $r->description,
             ])
             ->toArray();
 
         return [
-            'items'       => $items,
-            'empty'       => empty($items),
+            'items' => $items,
+            'empty' => empty($items),
             'empty_label' => __('event_plan_rundown.no_rundown'),
-            'heading'     => __('event_plan_rundown.timeline_heading'),
+            'heading' => __('event_plan_rundown.timeline_heading'),
         ];
     }
 }

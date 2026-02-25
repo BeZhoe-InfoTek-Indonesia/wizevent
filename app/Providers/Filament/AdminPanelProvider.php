@@ -2,24 +2,24 @@
 
 namespace App\Providers\Filament;
 
+use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
+use Filament\Navigation\MenuItem;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use Filament\Navigation\MenuItem;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use BezhanSalleh\FilamentExceptions\FilamentExceptionsPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -39,9 +39,7 @@ class AdminPanelProvider extends PanelProvider
                 \App\Filament\Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
-            ->widgets([
-                Widgets\AccountWidget::class,
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -71,8 +69,62 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 FilamentShieldPlugin::make()
                     ->navigationGroup(__('admin.groups.master_data')),
-                FilamentExceptionsPlugin::make()
+                FilamentExceptionsPlugin::make(),
             ])
+            ->renderHook(
+                PanelsRenderHook::SCRIPTS_BEFORE,
+                fn (): HtmlString => new HtmlString(<<<'HTML'
+                    <script>
+                        // Fallback: ensure the Alpine sidebar store is always initialized,
+                        // even when Livewire/Alpine fires `alpine:init` before Filament's
+                        // own dist/index.js has had a chance to register its listener.
+                        document.addEventListener('alpine:init', function () {
+                            if (typeof window.Alpine === 'undefined') return;
+                            if (typeof window.Alpine.store('sidebar') !== 'undefined') return;
+
+                            window.Alpine.store('sidebar', {
+                                isOpen: localStorage.getItem('_x_isOpen') !== 'false',
+                                isOpenDesktop: localStorage.getItem('_x_isOpenDesktop') !== 'false',
+                                collapsedGroups: JSON.parse(localStorage.getItem('_x_collapsedGroups') || 'null'),
+
+                                init: function () {},
+
+                                groupIsCollapsed: function (group) {
+                                    return Array.isArray(this.collapsedGroups) && this.collapsedGroups.includes(group);
+                                },
+
+                                toggleCollapsedGroup: function (group) {
+                                    if (!Array.isArray(this.collapsedGroups)) {
+                                        this.collapsedGroups = [];
+                                    }
+                                    this.collapsedGroups = this.collapsedGroups.includes(group)
+                                        ? this.collapsedGroups.filter(function (g) { return g !== group; })
+                                        : this.collapsedGroups.concat([group]);
+                                    localStorage.setItem('_x_collapsedGroups', JSON.stringify(this.collapsedGroups));
+                                },
+
+                                open: function () {
+                                    this.isOpen = true;
+                                    localStorage.setItem('_x_isOpen', 'true');
+                                    if (window.innerWidth >= 1024) {
+                                        this.isOpenDesktop = true;
+                                        localStorage.setItem('_x_isOpenDesktop', 'true');
+                                    }
+                                },
+
+                                close: function () {
+                                    this.isOpen = false;
+                                    localStorage.setItem('_x_isOpen', 'false');
+                                    if (window.innerWidth >= 1024) {
+                                        this.isOpenDesktop = false;
+                                        localStorage.setItem('_x_isOpenDesktop', 'false');
+                                    }
+                                },
+                            });
+                        });
+                    </script>
+                HTML)
+            )
             ->userMenuItems([
                 MenuItem::make()
                     ->label(__('admin.nav.english'))

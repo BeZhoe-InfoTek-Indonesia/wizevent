@@ -11,6 +11,13 @@ class EventsTrendChart extends ChartWidget
 {
     protected static ?int $sort = 3;
 
+    protected int|string|array $columnSpan = [
+        'default' => 'full',
+        'xl' => 6,
+    ];
+
+    protected ?string $maxHeight = '260px';
+
     public function getHeading(): string
     {
         return 'Events Created per Month';

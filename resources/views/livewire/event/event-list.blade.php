@@ -276,7 +276,7 @@
                 {{-- Event Grid --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                     @forelse($events as $event)
-                        <article class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                        <article class="relative group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
                             
                             {{-- Image --}}
                             <div class="relative aspect-[16/10] overflow-hidden bg-gray-100">
@@ -302,7 +302,7 @@
                                 {{-- Wishlist Button --}}
                                 <button 
                                     wire:click="toggleFavorite({{ $event->id }})"
-                                    class="absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all shadow-lg {{ $this->isFavorite($event->id) ? 'text-red-500 hover:text-red-600' : 'text-gray-600 hover:text-red-500 hover:bg-white' }}"
+                                    class="z-10 absolute top-3 right-3 w-9 h-9 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center transition-all shadow-lg {{ $this->isFavorite($event->id) ? 'text-red-500 hover:text-red-600' : 'text-gray-600 hover:text-red-500 hover:bg-white' }}"
                                 >
                                     @if($this->isFavorite($event->id))
                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
@@ -324,8 +324,8 @@
                                 </div>
 
                                 {{-- Title --}}
-                                <h3 class="text-lg font-black text-gray-900 mb-3 line-clamp-2 min-h-[3.5rem] group-hover:text-red-600 transition-colors">
-                                    <a href="{{ route('events.show', $event->slug) }}">{{ $event->title }}</a>
+                                <h3 class="text-base font-black text-gray-900 mb-0 line-clamp-2 group-hover:text-red-600 transition-colors">
+                                    <a href="{{ route('events.show', $event->slug) }}" class="before:absolute before:inset-0">{{ $event->title }}</a>
                                 </h3>
 
                                 {{-- Location --}}
@@ -335,25 +335,32 @@
                                 </div>
 
                                 {{-- Divider --}}
-                                <div class="border-t border-gray-100 pt-4 flex items-center justify-between">
-                                    <div>
-                                        <p class="text-xs text-gray-500 mb-1">Starting from</p>
-                                        @php $minPrice = $event->ticketTypes->min('price'); @endphp
-                                        <p class="text-xl font-black text-gray-900">
-                                            @if($minPrice)
-                                                <span class="text-base font-bold text-gray-500">IDR</span> {{ number_format($minPrice, 0, ',', '.') }}
-                                            @else
-                                                <span class="text-green-600">FREE</span>
-                                            @endif
-                                        </p>
+                                <div class="relative pt-5 mt-4">
+                                    <!-- Dashed Line -->
+                                    <div class="absolute left-0 right-0 top-0 border-t-2 border-dashed border-gray-100"></div>
+                                    <!-- Ticket Cutouts -->
+                                    <div class="absolute -left-8 -top-3 w-6 h-6 bg-gray-50 rounded-full"></div>
+                                    <div class="absolute -right-8 -top-3 w-6 h-6 bg-gray-50 rounded-full"></div>
+                                    
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex flex-col justify-center">
+                                            <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Starting from</p>
+                                            @php $minPrice = $event->ticketTypes->min('price'); @endphp
+                                            <p class="text-2xl font-black text-gray-900 tracking-tight leading-none">
+                                                @if($minPrice)
+                                                    Rp{{ number_format($minPrice, 0, ',', '.') }}
+                                                @else
+                                                    <span class="text-green-500">FREE</span>
+                                                @endif
+                                            </p>
+                                        </div>
+                                        <a 
+                                            href="{{ route('events.show', $event->slug) }}" 
+                                            class="z-10 relative flex flex-shrink-0 items-center justify-center w-12 h-12 bg-red-50 text-red-500 rounded-full hover:bg-red-500 hover:text-white transition-all duration-300 group/btn"
+                                        >
+                                            <svg class="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                        </a>
                                     </div>
-                                    <a 
-                                        href="{{ route('events.show', $event->slug) }}" 
-                                        class="flex items-center gap-2 px-5 py-2.5 bg-red-500 text-white text-sm font-bold rounded-xl hover:bg-red-600 hover:gap-3 transition-all shadow-lg shadow-red-500/30"
-                                    >
-                                        <span>View</span>
-                                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                                    </a>
                                 </div>
                             </div>
                         </article>
@@ -408,55 +415,62 @@
 
     <x-footer />
 
-    {{-- Notifications --}}
+    {{-- Notifications (SweetAlert2 Toast) --}}
+    {{-- Wrapped in DOMContentLoaded because app.js is a type="module" (deferred) script --}}
+    {{-- and window.Swal is not available until after module scripts execute. --}}
     <script>
-        // Simple notification function
-        window.showNotification = function(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white font-medium z-50 transform transition-all duration-300 translate-y-0 flex items-center gap-3 ${
-                type === 'success' ? 'bg-green-500' :
-                type === 'warning' ? 'bg-yellow-500' :
-                'bg-blue-500'
-            }`;
-
-            // Add icon based on type
-            const icon = document.createElement('div');
-            icon.className = 'flex-shrink-0';
-            if (type === 'success') {
-                icon.innerHTML = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
-            } else if (type === 'warning') {
-                icon.innerHTML = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
-            } else {
-                icon.innerHTML = '<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
-            }
-
-            const messageSpan = document.createElement('span');
-            messageSpan.textContent = message;
-
-            notification.appendChild(icon);
-            notification.appendChild(messageSpan);
-            document.body.appendChild(notification);
-
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.style.transform = 'translateY(-100px)';
-                notification.style.opacity = '0';
-                setTimeout(() => notification.remove(), 300);
-            }, 3000);
-        };
-
-        document.addEventListener('livewire:init', () => {
-            // Listen for wishlist events
-            Livewire.on('added-to-wishlist', (message) => {
-                window.showNotification(message.message || 'Event added to wishlist', 'success');
+        document.addEventListener('DOMContentLoaded', () => {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
             });
 
-            Livewire.on('removed-from-wishlist', (message) => {
-                window.showNotification(message.message || 'Event removed from wishlist', 'info');
-            });
+            window.showNotification = function(message, type = 'info') {
+                Toast.fire({
+                    icon: type,
+                    title: message,
+                });
+            };
 
-            Livewire.on('show-login-modal', () => {
-                window.showNotification('Please login to add events to your wishlist', 'warning');
+            document.addEventListener('livewire:init', () => {
+                // Listen for wishlist events
+                Livewire.on('added-to-wishlist', (data) => {
+                    Toast.fire({
+                        icon: 'success',
+                        title: data.message || 'Event added to wishlist',
+                    });
+                });
+
+                Livewire.on('removed-from-wishlist', (data) => {
+                    Toast.fire({
+                        icon: 'info',
+                        title: data.message || 'Event removed from wishlist',
+                    });
+                });
+
+                Livewire.on('show-login-modal', () => {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Login Required',
+                        text: 'Please login to add events to your wishlist.',
+                        confirmButtonText: 'Login',
+                        confirmButtonColor: '#EE2E24',
+                        showCancelButton: true,
+                        cancelButtonText: 'Cancel',
+                        reverseButtons: true,
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '{{ route('login') }}';
+                        }
+                    });
+                });
             });
         });
     </script>

@@ -135,7 +135,7 @@ new class extends Component
 
     <!-- Mobile Bottom Navigation -->
     <div class="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 pb-[env(safe-area-inset-bottom)] lg:hidden shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-        <div class="grid grid-cols-4 h-16">
+        <div class="grid grid-cols-5 h-16">
             <!-- Home -->
             <a href="{{ route('welcome') }}" wire:navigate class="flex flex-col items-center justify-center space-y-1 group">
                 <div class="{{ request()->routeIs('welcome') ? 'text-red-600' : 'text-gray-400 group-hover:text-gray-600' }}">
@@ -151,6 +151,22 @@ new class extends Component
                     @endif
                 </div>
                 <span class="text-[10px] font-bold {{ request()->routeIs('welcome') ? 'text-red-600' : 'text-gray-500' }}">Home</span>
+            </a>
+
+            <!-- Explore -->
+            <a href="{{ route('events.index') }}" wire:navigate class="flex flex-col items-center justify-center space-y-1 group">
+                <div class="{{ request()->routeIs('events.index') ? 'text-red-600' : 'text-gray-400 group-hover:text-gray-600' }}">
+                    @if(request()->routeIs('events.index'))
+                        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 100 13.5 6.75 6.75 0 000-13.5zM2.25 10.5a8.25 8.25 0 1114.59 5.28l4.69 4.69a.75.75 0 11-1.06 1.06l-4.69-4.69A8.25 8.25 0 012.25 10.5z" clip-rule="evenodd" />
+                        </svg>
+                    @else
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    @endif
+                </div>
+                <span class="text-[10px] font-bold {{ request()->routeIs('events.index') ? 'text-red-600' : 'text-gray-500' }}">Explore</span>
             </a>
 
             <!-- Wishlist -->

@@ -2,11 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Services\NotificationService;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Notification;
 
 class NotificationController extends Controller
 {
@@ -51,11 +47,9 @@ class NotificationController extends Controller
             ]);
         }
 
-        if ($notification) {
-            $notification->markAsRead();
+        $notification->markAsRead();
 
-            session()->put('unread_notifications_count', Auth::user()->unreadNotificationsCount());
-        }
+        session()->put('unread_notifications_count', Auth::user()->unread_notifications_count);
 
         return response()->json([
             'success' => true,
@@ -65,7 +59,7 @@ class NotificationController extends Controller
 
     public function markAllAsRead(): \Illuminate\Http\JsonResponse
     {
-        Auth::user()->unreadNotifications()->markAsRead();
+        Auth::user()->unreadNotifications->markAsRead();
 
         session()->put('unread_notifications_count', 0);
 
@@ -86,11 +80,9 @@ class NotificationController extends Controller
             ]);
         }
 
-        if ($notification) {
-            $notification->delete();
+        $notification->delete();
 
-            session()->put('unread_notifications_count', Auth::user()->unreadNotificationsCount());
-        }
+        session()->put('unread_notifications_count', Auth::user()->unread_notifications_count);
 
         return response()->json([
             'success' => true,

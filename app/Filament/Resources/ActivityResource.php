@@ -3,21 +3,22 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ActivityResource\Pages;
-use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\TextInput;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Schemas\Schema;
-use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Spatie\Activitylog\Models\Activity;
 use UnitEnum;
-use BackedEnum;
+
 class ActivityResource extends Resource
 {
     // ... model and properties ...
@@ -50,7 +51,7 @@ class ActivityResource extends Resource
                     ->readOnly(),
                 KeyValue::make('properties')
                     ->label('Properties')
-                    ->readOnly(),
+                    ->disabled(),
                 DateTimePicker::make('created_at')
                     ->label('Created At')
                     ->readOnly(),
@@ -84,7 +85,7 @@ class ActivityResource extends Resource
                     ->limit(50),
                 Tables\Columns\TextColumn::make('subject_type')
                     ->label('Subject')
-                    ->formatStateUsing(fn ($state, Activity $record) => $state ? class_basename($state) . ' #' . $record->subject_id : '-')
+                    ->formatStateUsing(fn ($state, Activity $record) => $state ? class_basename($state).' #'.$record->subject_id : '-')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('causer.name')
                     ->label('Causer')
@@ -95,9 +96,9 @@ class ActivityResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('log_name')
-                    ->options(fn() => Activity::query()->pluck('log_name', 'log_name')->unique()->toArray()),
+                    ->options(fn () => Activity::query()->pluck('log_name', 'log_name')->unique()->toArray()),
                 Tables\Filters\SelectFilter::make('subject_type')
-                    ->options(fn() => Activity::query()->pluck('subject_type', 'subject_type')->unique()->filter()->mapWithKeys(fn($type) => [$type => class_basename($type)])->toArray()),
+                    ->options(fn () => Activity::query()->pluck('subject_type', 'subject_type')->unique()->filter()->mapWithKeys(fn ($type) => [$type => class_basename($type)])->toArray()),
             ])
             ->actions([
                 ViewAction::make(),
@@ -116,7 +117,7 @@ class ActivityResource extends Resource
             'view' => Pages\ViewActivity::route('/{record}'),
         ];
     }
-    
+
     public static function canCreate(): bool
     {
         return false;
@@ -127,4 +128,3 @@ class ActivityResource extends Resource
         return false;
     }
 }
-

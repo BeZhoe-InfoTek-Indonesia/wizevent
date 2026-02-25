@@ -17,6 +17,13 @@ This project includes custom AI skills for automated code review and best practi
   - Use for: Visual and structural validation for Skeuomorphism 2.0 design system, responsiveness, and component consistency.
   - Trigger by asking: "Review this UI component", "Check design system compliance", "Audit this Blade file for visual consistency", etc.
 
+- **Pre-Commit Review Skill** (`pre-commit`)
+  - Location: `prompter/skills/pre-commit/SKILL.md`
+  - Use for: Full safety check across all staged files before committing — covers PHP quality, Blade/Livewire, i18n, Filament v4, service layer, and migration safety.
+  - Trigger by asking: "pre-commit review", "check staged files", "is this safe to commit?", "run pre-commit check", etc.
+  - Quick modes: "check PHP before commit", "check Blade before commit", "security scan before commit"
+  - Automated hooks: `.husky/pre-commit` runs Pint + PHPStan + i18n guard + Blade guard + translation sync on every `git commit`
+
 **How to Use Skills:**
 - Simply describe your review or analysis goal in your request (e.g., "review code for N+1 queries", "analyze Filament resource for i18n", "check UI for design system compliance").
 - The AI agent will load the relevant SKILL.md and follow its workflows and review criteria.

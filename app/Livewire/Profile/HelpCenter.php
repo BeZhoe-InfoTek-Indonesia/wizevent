@@ -4,6 +4,10 @@ namespace App\Livewire\Profile;
 
 use Livewire\Component;
 
+/**
+ * @property-read \Illuminate\Support\Collection $faqs
+ * @property-read array<string, string> $categories
+ */
 class HelpCenter extends Component
 {
     public $searchQuery = '';
@@ -70,7 +74,7 @@ class HelpCenter extends Component
         if ($this->searchQuery) {
             $query = strtolower($this->searchQuery);
             $faqs = $faqs->filter(function ($faq) use ($query) {
-                return str_contains(strtolower($faq['question']), $query) || 
+                return str_contains(strtolower($faq['question']), $query) ||
                        str_contains(strtolower($faq['answer']), $query);
             });
         }

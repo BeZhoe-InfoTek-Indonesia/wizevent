@@ -18,36 +18,39 @@ use Filament\Schemas\Components\Actions as SchemaActions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Concerns\InteractsWithSchemas;
 use Filament\Schemas\Contracts\HasSchemas;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Enums\FontWeight;
 
 class ReviewPayment extends Page implements HasSchemas
 {
     use InteractsWithSchemas;
+
     protected static string $resource = OrderResource::class;
 
     protected string $view = 'filament.resources.orders.pages.review-payment';
-    
+
     public Order $record;
+
     public ?string $status = null;
+
     public ?string $cancellation_reason = null;
 
     public function mount(Order $record): void
     {
         $this->record = $record->load(['files', 'paymentProof']);
         $this->status = $this->record->status;
-        
+
         if ($this->record->status !== 'pending_verification') {
             redirect()->to(OrderResource::getUrl('index'));
         }
     }
-    
-    public function getTitle(): string 
+
+    public function getTitle(): string
     {
-        return __('payment_proof.review') . ' #' . $this->record->order_number;
+        return __('payment_proof.review').' #'.$this->record->order_number;
     }
 
     public function schema(Schema $schema): Schema
@@ -134,7 +137,7 @@ class ReviewPayment extends Page implements HasSchemas
                                                 }
                                             },
                                         ]),
-                                    
+
                                     Textarea::make('cancellation_reason')
                                         ->label(__('order.cancellation_notes'))
                                         ->placeholder(__('order.cancellation_notes_placeholder'))
@@ -161,7 +164,7 @@ class ReviewPayment extends Page implements HasSchemas
                                                 $data = $this->getSchema('schema')->getState();
                                                 $newStatus = $data['status'];
                                                 $reason = $data['cancellation_reason'] ?? null;
-                                                
+
                                                 $this->status = $newStatus;
 
                                                 $this->record->update([
@@ -199,11 +202,11 @@ class ReviewPayment extends Page implements HasSchemas
                                                 } else {
                                                     $this->record->update(['status' => $newStatus]);
                                                     Notification::make()
-                                                        ->title(__('Status updated to') . ' ' . $newStatus)
+                                                        ->title(__('Status updated to').' '.$newStatus)
                                                         ->success()
                                                         ->send();
                                                 }
-                                                    
+
                                                 return redirect()->to(OrderResource::getUrl('index'));
                                             }),
                                     ])->fullWidth(),
@@ -223,10 +226,10 @@ class ReviewPayment extends Page implements HasSchemas
                             ])
                             ->schema([
                                 RepeatableEntry::make('files')
-                                    ->label(false)
+                                    ->hiddenLabel()
                                     ->schema([
                                         ViewEntry::make('url')
-                                            ->label(false)
+                                            ->hiddenLabel()
                                             ->view('filament.resources.orders.components.payment-proof-item'),
                                     ])
                                     ->grid(2)
@@ -237,7 +240,7 @@ class ReviewPayment extends Page implements HasSchemas
                                     ->schema([
                                         TextEntry::make('files_count')
                                             ->label(__('Files Uploaded'))
-                                            ->state(fn () => $this->record->files()->count() . ' Images')
+                                            ->state(fn () => $this->record->files()->count().' Images')
                                             ->weight(FontWeight::Bold)
                                             ->color('gray'),
                                         TextEntry::make('paymentProof.created_at')
