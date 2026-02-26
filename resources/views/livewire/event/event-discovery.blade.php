@@ -519,7 +519,7 @@
                                         <p class="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Starting from</p>
                                         @php $minPrice = $event->ticketTypes->min('price'); @endphp
                                         <p class="text-xl font-black text-gray-900">
-                                            {{ $minPrice ? 'Rp' . number_format($minPrice, 0, ',', '.') : 'FREE' }}
+                                            {{ $minPrice ? 'Rp ' . number_format($minPrice, 0, ',', '.') : 'FREE' }}
                                         </p>
                                     </div>
                                     <a href="{{ route('events.show', $event->slug) }}" class="w-10 h-10 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white hover:scale-110 hover:-rotate-12 transition-all duration-300 shadow-sm">

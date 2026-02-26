@@ -246,7 +246,7 @@
                             <div class="flex items-center justify-between mb-4">
                                 <span class="text-[15px] font-bold text-[#64748B]">Total Payment</span>
                                 <div class="flex items-center gap-2 group cursor-pointer">
-                                    <span class="text-[18px] font-black text-[#1E293B]">IDR {{ number_format($order->total_amount) }}</span>
+                                    <span class="text-[18px] font-black text-[#1E293B]">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
                                     <svg class="w-4 h-4 text-[#94A3B8] transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                                 </div>
                             </div>
@@ -256,7 +256,7 @@
                                     wire:click="confirmBooking"
                                     class="px-10 py-3 bg-gradient-to-br from-[#ef4444] to-[#dc2626] hover:from-[#f87171] hover:to-[#ef4444] text-white font-black text-[14px] rounded-[10px] transition-all shadow-[0_10px_15px_-3px_rgba(220,38,38,0.3)] hover:shadow-[0_15px_20px_-3px_rgba(220,38,38,0.4)] active:scale-[0.98] border border-white/20 uppercase tracking-tight"
                                 >
-                                    Continue to payment
+                                    Continue to order
                                 </button>
                             </div>
                         </div>
@@ -305,18 +305,7 @@
                                 </div>
                                 <div class="flex items-center gap-3.5 text-[#64748B]">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                                    <span class="text-[13px] font-bold">Instant Confirmation</span>
-                                </div>
-                                <div class="space-y-2">
-                                    <div class="flex items-center gap-3.5 text-[#1E293B]">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                                        <span class="text-[13px] font-black">Standing</span>
-                                    </div>
-                                    <p class="text-[12px] text-[#64748B] ml-[29px] font-medium leading-relaxed">All tickets are for standing area only.</p>
-                                </div>
-                                <div class="flex items-center gap-3.5 text-[#64748B]">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    <span class="text-[13px] font-bold">Valid on the selected date</span>
+                                    <span class="text-[13px] font-bold">Admin Confirmation</span>
                                 </div>
                             </div>
                         </div>
@@ -326,9 +315,12 @@
                             <div class="flex items-center justify-between group cursor-pointer">
                                 <span class="text-[13px] font-bold text-[#64748B] uppercase tracking-wider">Total Payment</span>
                                 <div class="flex items-center gap-2.5">
-                                    <span class="text-[20px] font-black text-[#1E293B] tracking-tight">IDR {{ number_format($order->total_amount) }}</span>
+                                    <span class="text-[20px] font-black text-[#1E293B] tracking-tight">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</span>
                                     <div class="w-6 h-6 rounded-full bg-[#F8FAFC] flex items-center justify-center group-hover:bg-[#F1F5F9] transition-colors">
-                                        <svg class="w-3.5 h-3.5 text-[#94A3B8] group-hover:text-[#1E293B] transition-transform duration-300 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
+                                        
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

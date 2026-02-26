@@ -133,6 +133,7 @@ return [
         'revenue_calculator_modal_heading' => 'Kalkulator Simulasi Pendapatan',
         'event_summary' => 'Ringkasan Acara',
         'event_summary_heading' => 'Ringkasan Acara: :event',
+        'view_results' => 'Lihat Hasil & Analitik',
         'ai_enhance' => 'Sempurnakan dengan AI',
         'ai_configure' => 'Konfigurasi',
         'generate_optimized_content' => 'Generate Konten Optimal',

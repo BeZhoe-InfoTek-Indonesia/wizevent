@@ -145,7 +145,7 @@
                 </div>
             </div>
             <div class="ns-value text-red" style="font-size: 1.5rem;">
-                <span style="font-size: 1rem; color: #fca5a5;">$</span>{{ number_format($totalRevenue) }}
+                <span style="font-size: 1rem; color: #fca5a5;">Rp</span> {{ number_format($totalRevenue, 0, ',', '.') }}
             </div>
             <div class="ns-flex ns-gap-2 text-emerald" style="font-size: 0.75rem; font-weight: 700; margin-top: 0.5rem; text-transform: uppercase;">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="width: 12px; height: 12px;"><path d="M13 7h8m0 0v8m0-8l-9 9-4-4-6 6"/></svg>
@@ -232,7 +232,7 @@
                             <tr>
                                 <td>{{ $ticket->name }}</td>
                                 <td style="text-align: center; color: #6b7280;">{{ number_format($ticket->sold_count) }}</td>
-                                <td style="text-align: right;">${{ number_format($ticket->sold_count * $ticket->price) }}</td>
+                                <td style="text-align: right;">Rp {{ number_format($ticket->sold_count * $ticket->price, 0, ',', '.') }}</td>
                                 <td style="text-align: right;">
                                     @if($tPerc >= 100)
                                         <span class="ns-badge" style="background: #f3f4f6; color: #4b5563;">SOLD OUT</span>
@@ -331,6 +331,17 @@
                  <div class="ns-label">{{ number_format($totalSold) }} RECORDS</div>
              </div>
         </div>
+
+        {{-- View Results --}}
+        <a href="{{ \App\Filament\Resources\EventResource::getUrl('results', ['record' => $event]) }}" class="ns-card ns-flex ns-gap-4" style="cursor: pointer; padding: 1rem; text-decoration: none; color: inherit;">
+             <div class="ns-icon-box" style="background: #dcfce7; color: #15803d; width: 3rem; height: 3rem;">
+                <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="width: 24px; height: 24px;"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+             </div>
+             <div>
+                 <div style="font-weight: 800; font-size: 0.875rem; color: #111827;">{{ __('event.actions.view_results') }}</div>
+                 <div class="ns-label">DETAILED ANALYTICS</div>
+             </div>
+        </a>
 
         {{-- Contact --}}
         <div class="ns-card ns-flex ns-gap-4" style="cursor: pointer; padding: 1rem;">

@@ -24,7 +24,7 @@
                         
                         <div>
                              <h4 class="font-black text-lg text-[#1E293B] leading-tight">{{ $order->event->title ?? 'Unknown Event' }}</h4>
-                             <p class="text-sm font-bold text-[#1A8DFF] mt-1">{{ Number::currency($order->total_amount, 'IDR') }}</p>
+                             <p class="text-sm font-bold text-[#1A8DFF] mt-1">Rp {{ number_format($order->total_amount, 0, ',', '.') }}</p>
                         </div>
                     </div>
                     

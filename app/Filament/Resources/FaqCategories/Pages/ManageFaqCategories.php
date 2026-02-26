@@ -3,17 +3,18 @@
 namespace App\Filament\Resources\FaqCategories\Pages;
 
 use App\Filament\Resources\FaqCategories\FaqCategoryResource;
-use Filament\Actions\CreateAction;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Actions;
+use Filament\Resources\Pages\ManageRecords;
 
-class ListFaqCategories extends ListRecords
+class ManageFaqCategories extends ManageRecords
 {
     protected static string $resource = FaqCategoryResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make(),
+            Actions\CreateAction::make()
+                ->modal(),
         ];
     }
 }

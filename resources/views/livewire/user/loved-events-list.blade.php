@@ -70,7 +70,7 @@
                                 @if($event->ticketTypes->isNotEmpty())
                                     <div class="flex items-center justify-between pt-3 border-t border-gray-50">
                                         <p class="text-sm font-black text-gray-900">
-                                            IDR {{ number_format($event->ticketTypes->min('price')) }}
+                                            Rp {{ number_format($event->ticketTypes->min('price'), 0, ',', '.') }}
                                         </p>
                                         <a href="{{ route('events.show', $event->slug) }}" class="text-xs font-bold text-[#1A8DFF] hover:underline">
                                             View Details

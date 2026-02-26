@@ -4,7 +4,6 @@
     href="{{ route('profile', ['tab' => $tab]) }}"
     role="tab"
     aria-controls="panel-{{ $tab }}"
-    @click.prevent="activeTab = '{{ $tab }}'; window.history.pushState({}, '', '?tab={{ $tab }}')"
     :aria-selected="activeTab === '{{ $tab }}' ? 'true' : 'false'"
     class="flex items-center gap-3.5 px-4 py-3.5 text-xs font-black transition-all rounded-[1.25rem] group w-full relative tracking-widest uppercase"
     :class="activeTab === '{{ $tab }}' 

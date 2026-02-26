@@ -204,7 +204,7 @@
                             </div>
                             <div>
                                 <p class="text-gray-200 text-sm leading-relaxed whitespace-nowrap">
-                                    Ticket prices start from IDR {{ number_format($this->ticketTypes->min('price') ?? $event->ticket_prices ?? 0) }}
+                                    Ticket prices start from Rp {{ number_format($this->ticketTypes->min('price') ?? $event->ticket_prices ?? 0, 0, ',', '.') }}
                                 </p>
                             </div>
                         </div>
@@ -450,7 +450,7 @@
                                                             <p class="text-[11px] text-gray-500 font-medium">{{ __('event.standard_admission') }}</p>
                                                         </div>
                                                         <div class="text-right">
-                                                            <p class="font-black text-gray-900 text-lg tracking-tight">IDR {{ number_format($ticket->price) }}</p>
+                                                            <p class="font-black text-gray-900 text-lg tracking-tight">Rp {{ number_format($ticket->price, 0, ',', '.') }}</p>
                                                         </div>
                                                     </div>
 
@@ -715,7 +715,7 @@
                                         <p class="text-[13px] md:text-sm text-gray-500 mb-4">{{ $rel->location }}</p>
                                         
                                         <div class="mt-auto">
-                                            <p class="text-sm md:text-base font-bold text-[#EE2E24]">IDR {{ number_format($rel->ticketTypes->min('price') ?? 0) }}</p>
+                                            <p class="text-sm md:text-base font-bold text-[#EE2E24]">Rp {{ number_format($rel->ticketTypes->min('price') ?? 0, 0, ',', '.') }}</p>
                                         </div>
                                     </div>
                                 </a>
@@ -741,7 +741,7 @@
         <div class="flex items-center justify-between gap-4">
             <div class="space-y-0.5">
                 <p class="text-gray-500 text-[11px] font-bold uppercase tracking-wider">Starting from</p>
-                <p class="text-gray-900 font-black text-lg leading-none">IDR {{ number_format($this->ticketTypes->min('price') ?? $event->ticket_prices ?? 0) }}</p>
+                <p class="text-gray-900 font-black text-lg leading-none">Rp {{ number_format($this->ticketTypes->min('price') ?? $event->ticket_prices ?? 0, 0, ',', '.') }}</p>
             </div>
             <button wire:click="book"
                     class="flex items-center justify-center gap-2 px-8 py-3.5 bg-[#EE2E24] text-white rounded-xl text-sm font-bold shadow-[0_8px_16px_rgba(238,46,36,0.3)] hover:bg-[#d9261d] active:scale-95 transition-all">

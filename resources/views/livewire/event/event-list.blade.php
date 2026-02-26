@@ -155,9 +155,9 @@
                             {{-- Range Slider --}}
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between text-xs text-gray-500">
-                                    <span>IDR {{ number_format($minPrice ?? 0, 0, ',', '.') }}</span>
+                                    <span>Rp {{ number_format($minPrice ?? 0, 0, ',', '.') }}</span>
                                     <span class="text-gray-400">—</span>
-                                    <span>IDR {{ number_format($maxPrice ?? 10000000, 0, ',', '.') }}</span>
+                                    <span>Rp {{ number_format($maxPrice ?? 10000000, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="relative">
                                     <input 
@@ -176,7 +176,7 @@
                                 <div>
                                     <label class="block text-xs text-gray-500 mb-1.5">Min Price</label>
                                     <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-gray-500 font-medium">IDR</span>
+                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-gray-500 font-medium">Rp</span>
                                         <input 
                                             type="number" 
                                             wire:model.live.debounce.500ms="minPrice"
@@ -190,7 +190,7 @@
                                 <div>
                                     <label class="block text-xs text-gray-500 mb-1.5">Max Price</label>
                                     <div class="relative">
-                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-gray-500 font-medium">IDR</span>
+                                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-xs text-gray-500 font-medium">Rp</span>
                                         <input 
                                             type="number" 
                                             wire:model.live.debounce.500ms="maxPrice"
@@ -348,7 +348,7 @@
                                             @php $minPrice = $event->ticketTypes->min('price'); @endphp
                                             <p class="text-2xl font-black text-gray-900 tracking-tight leading-none">
                                                 @if($minPrice)
-                                                    Rp{{ number_format($minPrice, 0, ',', '.') }}
+                                                    Rp {{ number_format($minPrice, 0, ',', '.') }}
                                                 @else
                                                     <span class="text-green-500">FREE</span>
                                                 @endif

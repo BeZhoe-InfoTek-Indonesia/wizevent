@@ -133,6 +133,7 @@ return [
         'revenue_calculator_modal_heading' => 'Revenue Simulation Calculator',
         'event_summary' => 'Event Summary',
         'event_summary_heading' => 'Event Summary: :event',
+        'view_results' => 'View Results & Analytics',
         'ai_enhance' => 'Magic AI Enhance',
         'ai_configure' => 'Configure',
         'generate_optimized_content' => 'Generate Optimized Content',

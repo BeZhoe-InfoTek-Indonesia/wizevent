@@ -425,7 +425,7 @@
     <div class="stats-hero-card {{ $isProfitable ? 'state-success' : 'state-danger' }}">
         <div class="hero-label">Estimated Net Profit</div>
         <div class="hero-value {{ $isProfitable ? 'profit' : 'loss' }}">
-             IDR {{ number_format($metrics['net_profit'], 0, ',', '.') }}
+             Rp {{ number_format($metrics['net_profit'], 0, ',', '.') }}
         </div>
         
         <div class="hero-footer">
@@ -465,7 +465,7 @@
                     </div>
                 </div>
                 <div class="item-value-large text-emerald-500">
-                    IDR {{ number_format($metrics['gross_revenue'], 0, ',', '.') }}
+                    Rp {{ number_format($metrics['gross_revenue'], 0, ',', '.') }}
                 </div>
             </div>
 
@@ -475,14 +475,14 @@
                     <div class="indicator-hollow"></div>
                     <span class="item-subtitle" style="font-weight: 500;">Ticket Sales</span>
                 </div>
-                <div class="item-value-small">IDR {{ number_format($metrics['ticket_revenue'], 0, ',', '.') }}</div>
+                <div class="item-value-small">Rp {{ number_format($metrics['ticket_revenue'], 0, ',', '.') }}</div>
             </div>
             <div class="list-item">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                      <div class="indicator-hollow"></div>
                     <span class="item-subtitle" style="font-weight: 500;">Merchandise</span>
                 </div>
-                 <div class="item-value-small">IDR {{ number_format($metrics['merch_revenue'], 0, ',', '.') }}</div>
+                 <div class="item-value-small">Rp {{ number_format($metrics['merch_revenue'], 0, ',', '.') }}</div>
             </div>
         </div>
     </div>
@@ -508,7 +508,7 @@
                     </div>
                 </div>
                 <div class="item-value-large text-rose-500">
-                    IDR {{ number_format($metrics['total_expenses'], 0, ',', '.') }}
+                    Rp {{ number_format($metrics['total_expenses'], 0, ',', '.') }}
                 </div>
             </div>
 
@@ -518,14 +518,14 @@
                      <div class="indicator-hollow"></div>
                     <span class="item-subtitle" style="font-weight: 500;">Fixed Production</span>
                 </div>
-                <div class="item-value-small">IDR {{ number_format($metrics['fixed_expenses'], 0, ',', '.') }}</div>
+                <div class="item-value-small">Rp {{ number_format($metrics['fixed_expenses'], 0, ',', '.') }}</div>
             </div>
             <div class="list-item">
                  <div style="display: flex; align-items: center; gap: 0.75rem;">
                      <div class="indicator-hollow"></div>
                     <span class="item-subtitle" style="font-weight: 500;">Tax & Fees</span>
                 </div>
-                 <div class="item-value-small">IDR {{ number_format($metrics['tax_amount'] + $metrics['fee_amount'], 0, ',', '.') }}</div>
+                 <div class="item-value-small">Rp {{ number_format($metrics['tax_amount'] + $metrics['fee_amount'], 0, ',', '.') }}</div>
             </div>
         </div>
     </div>
